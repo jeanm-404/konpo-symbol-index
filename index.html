@@ -572,9 +572,9 @@
 <body>
 
 <div id="intro" aria-hidden="true">
-  <div class="line" id="il1"><span class="w" style="--wd:0.00s">Every</span> <span class="w" style="--wd:0.11s">logo</span> <span class="w" style="--wd:0.22s">takes</span> <span class="w" style="--wd:0.33s">hundreds</span> <span class="w" style="--wd:0.44s">of</span> <span class="w" style="--wd:0.55s">proposals.</span><br><span class="w" style="--wd:0.66s">Only</span> <span class="w" style="--wd:0.77s">one</span> <span class="w" style="--wd:0.88s">gets</span> <span class="w" style="--wd:0.99s">picked.</span></div>
-  <div class="line" id="il2"><span class="w" style="--wd:0.00s">The</span> <span class="w" style="--wd:0.11s">rejections</span> <span class="w" style="--wd:0.22s">deserve</span> <span class="w" style="--wd:0.33s">better</span> <span class="w" style="--wd:0.44s">than</span> <span class="w" style="--wd:0.55s">a</span> <span class="w" style="--wd:0.66s">folder</span> <span class="w" style="--wd:0.77s">called</span> <span class="w" style="--wd:0.88s">&ldquo;old.&rdquo;</span></div>
-  <div class="line" id="il3"><span class="w" style="--wd:0.00s">This</span> <span class="w" style="--wd:0.11s">is</span> <span class="w" style="--wd:0.22s">the</span> <span class="w" style="--wd:0.33s">home</span> <span class="w" style="--wd:0.44s">of</span> <span class="w" style="--wd:0.55s">those</span> <span class="w r" style="--wd:0.66s">rejections.</span><br><span class="w" style="--wd:0.77s">Everyone</span> <span class="w" style="--wd:0.88s">here</span> <span class="w" style="--wd:0.99s">is</span> <span class="w" style="--wd:1.10s">up</span> <span class="w" style="--wd:1.21s">for</span> <span class="w" style="--wd:1.32s">adoption.</span></div>
+  <div class="line" id="il1"><span class="w" style="--wd:0.00s">A</span> <span class="w" style="--wd:0.11s">logo</span> <span class="w" style="--wd:0.22s">takes</span> <span class="w" style="--wd:0.33s">hundreds</span> <span class="w" style="--wd:0.44s">of</span> <span class="w" style="--wd:0.55s">proposals.</span><br><span class="w" style="--wd:0.66s">Only</span> <span class="w" style="--wd:0.77s">one</span> <span class="w" style="--wd:0.88s">gets</span> <span class="w" style="--wd:0.99s">picked.</span></div>
+  <div class="line" id="il2"><span class="w" style="--wd:0.00s">This</span> <span class="w" style="--wd:0.11s">is</span> <span class="w" style="--wd:0.22s">the</span> <span class="w" style="--wd:0.33s">shelter</span> <span class="w" style="--wd:0.44s">for</span> <span class="w" style="--wd:0.55s">those</span> <span class="w" style="--wd:0.66s">who</span> <span class="w" style="--wd:0.77s">didn&rsquo;t</span> <span class="w" style="--wd:0.88s">make</span> <span class="w" style="--wd:0.99s">it.</span><br><span class="w" style="--wd:1.10s">Everyone</span> <span class="w" style="--wd:1.21s">here</span> <span class="w" style="--wd:1.32s">is</span> <span class="w" style="--wd:1.43s">up</span> <span class="w" style="--wd:1.54s">for</span> <span class="w" style="--wd:1.65s">adoption.</span></div>
+  <div class="line" id="il3"><span class="w" style="--wd:0.00s">The</span> <span class="w r" style="--wd:0.11s">rejections</span> <span class="w" style="--wd:0.22s">deserve</span> <span class="w" style="--wd:0.33s">a</span> <span class="w" style="--wd:0.44s">home.</span></div>
   <div class="skip">Click to skip</div>
 </div>
 
@@ -2199,11 +2199,11 @@ if (document.fonts) document.fonts.ready.then(fitTitle);
 
   at(300,   () => l1.classList.add('show'));
   at(3700,  () => l1.classList.add('gone'));  // whole line blurs out as one
-  at(4800,  () => l2.classList.add('show'));  // beat of black between lines
-  at(8000,  () => l2.classList.add('gone'));  // single row: shorter hold
-  at(9100,  () => l3.classList.add('show'));
-  at(12900, () => l3.classList.add('gone'));
-  at(14000, finish);
+  at(5700,  () => l2.classList.add('show'));  // longer beat of black after the opener
+  at(9800,  () => l2.classList.add('gone'));
+  at(10900, () => l3.classList.add('show'));  // single short row: shorter hold
+  at(13700, () => l3.classList.add('gone'));
+  at(14800, finish);
   el.addEventListener('click', finish);
   document.addEventListener('keydown', function esc(e){
     if (e.key === 'Escape' || e.key === 'Enter') { finish(); document.removeEventListener('keydown', esc); }
