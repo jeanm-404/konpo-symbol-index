@@ -573,10 +573,10 @@
         </div>
         <p id="d-blurb"></p>
         <dl>
+          <dt>Status</dt><dd id="d-status"></dd>
+          <dt>Reason</dt><dd id="d-reason"></dd>
           <dt>Category</dt><dd id="d-category"></dd>
           <dt>Year</dt><dd id="d-year"></dd>
-          <dt>Industry</dt><dd id="d-industry"></dd>
-          <dt>Status</dt><dd id="d-status"></dd>
           <dt>Attachment</dt><dd id="d-attachment"></dd>
         </dl>
         <div class="revive">
@@ -2196,7 +2196,7 @@ function fillDrawer(s){
   document.getElementById('d-blurb').textContent = s.blurb || '';
   document.getElementById('d-category').textContent = s.cat || '—';
   document.getElementById('d-year').textContent = s.year || '—';
-  document.getElementById('d-industry').textContent = s.industry || '—';
+  document.getElementById('d-reason').textContent = s.reason || 'Unknown';
   const st = document.getElementById('d-status');
   st.textContent = s.status || '—';
   st.classList.toggle('revived', s.status === 'Adopted' || s.status === 'Revived');
