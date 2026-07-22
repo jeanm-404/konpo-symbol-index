@@ -464,6 +464,11 @@
   #drawer dd { font-family: var(--mono); font-size: 1.2rem; letter-spacing: 0.06em;
     text-transform: uppercase; color: var(--body); }
   #drawer .tag { color: var(--purple); }
+  #drawer dd a {
+    color: var(--white); text-decoration: underline;
+    text-underline-offset: 0.3em; transition: color .3s;
+  }
+  #drawer dd a:hover { color: var(--purple-vivid); }
 
   #drawer .content { transition: opacity .2s; }
   #drawer .content.swapping { opacity: 0; }
@@ -610,6 +615,8 @@
           <dt>Category</dt><dd id="d-category"></dd>
           <dt>Intake</dt><dd id="d-year"></dd>
           <dt>Attachment</dt><dd id="d-attachment"></dd>
+          <dt id="dt-adopter" hidden>Adopted by</dt><dd id="d-adopter" hidden></dd>
+          <dt id="dt-home" hidden>New home</dt><dd id="d-home" hidden><a id="d-home-link" target="_blank" rel="noopener"></a></dd>
         </dl>
         <div class="revive">
           <button class="revive-btn" id="revive-toggle">Want to revive it?</button>
@@ -704,7 +711,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-004",
@@ -795,7 +802,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-010",
@@ -885,6 +892,9 @@ const S = [
   "industry": "Mental Health",
   "status": "Adopted",
   "reason": "Too Modern",
+  "adopter": "Lena Vogel",
+  "adopterOrg": "Softgrid",
+  "adopterUrl": "https://softgrid.studio",
   "attachment": "High"
  },
  {
@@ -898,7 +908,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-017",
@@ -911,7 +921,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-018",
@@ -924,7 +934,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-019",
@@ -937,7 +947,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-020",
@@ -950,7 +960,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-021",
@@ -963,7 +973,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-022",
@@ -977,7 +987,10 @@ const S = [
   "industry": "—",
   "explode": "auto",
   "status": "Adopted",
-  "reason": "Too Timeless"
+  "reason": "Too Timeless",
+  "adopter": "Tomás Rivera",
+  "adopterOrg": "Hivemind Systems",
+  "adopterUrl": "https://hivemind.systems"
  },
  {
   "id": "SYM-023",
@@ -990,7 +1003,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-024",
@@ -1003,7 +1016,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-027",
@@ -1016,7 +1029,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-028",
@@ -1029,7 +1042,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-029",
@@ -1042,7 +1055,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-030",
@@ -1055,7 +1068,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-035",
@@ -1068,7 +1081,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-038",
@@ -1081,7 +1094,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-039",
@@ -1094,7 +1107,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-040",
@@ -1107,7 +1120,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-041",
@@ -1120,7 +1133,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-042",
@@ -1133,7 +1146,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-043",
@@ -1146,7 +1159,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-044",
@@ -1159,7 +1172,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-045",
@@ -1172,7 +1185,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-046",
@@ -1185,7 +1198,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-048",
@@ -1198,7 +1211,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-049",
@@ -1211,7 +1224,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-052",
@@ -1224,7 +1237,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-053",
@@ -1237,7 +1250,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-055",
@@ -1250,7 +1263,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-056",
@@ -1263,7 +1276,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-058",
@@ -1276,7 +1289,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-059",
@@ -1289,7 +1302,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-061",
@@ -1302,7 +1315,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-062",
@@ -1315,7 +1328,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-095",
@@ -1328,7 +1341,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-065",
@@ -1341,7 +1354,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-067",
@@ -1354,7 +1367,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-068",
@@ -1367,7 +1380,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-069",
@@ -1380,7 +1393,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-072",
@@ -1393,7 +1406,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-073",
@@ -1406,7 +1419,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-074",
@@ -1419,7 +1432,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-075",
@@ -1432,7 +1445,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-077",
@@ -1445,7 +1458,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-078",
@@ -1458,7 +1471,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-079",
@@ -1471,7 +1484,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-080",
@@ -1484,7 +1497,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-081",
@@ -1497,7 +1510,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-082",
@@ -1510,7 +1523,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-083",
@@ -1523,7 +1536,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-084",
@@ -1536,7 +1549,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-085",
@@ -1549,7 +1562,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-086",
@@ -1562,7 +1575,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-089",
@@ -1575,7 +1588,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-090",
@@ -1588,7 +1601,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-093",
@@ -1601,7 +1614,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  },
  {
   "id": "SYM-094",
@@ -1614,7 +1627,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Rejected"
  }
 ];
 
@@ -2056,6 +2069,15 @@ function fillDrawer(s){
   st.classList.toggle('revived', s.status === 'Adopted' || s.status === 'Revived');
   st.classList.toggle('rejected', s.status === 'Rejected');
   document.getElementById('d-attachment').textContent = s.attachment || '—';
+  // adopted marks credit their adopter and link to the new home
+  const adopted = s.status === 'Adopted' && s.adopter;
+  ['dt-adopter', 'd-adopter', 'dt-home', 'd-home'].forEach(id => document.getElementById(id).hidden = !adopted);
+  if (adopted) {
+    document.getElementById('d-adopter').textContent = s.adopter;
+    const link = document.getElementById('d-home-link');
+    link.textContent = s.adopterOrg || s.adopterUrl.replace(/^https?:\/\//, '');
+    link.href = s.adopterUrl || '#';
+  }
   closeAdopt(true);
   reviveToggle.textContent = 'Adopt ' + (s.name && s.name !== 'Untitled' ? s.name : s.id);
 }

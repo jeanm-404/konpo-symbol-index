@@ -29,8 +29,10 @@ for working on it.
             plain <line pathLength="1"> = solid dims (draw-on), <text> = corner notes
 - blurb     description shown in drawer — every mark has one, written to run
   ~3 lines at the drawer's 48ch measure
-- year / status   001–015: 2025; 001–014 "Rejected", 015 + 022 "Adopted";
-  the rest "—". (industry still in data but no longer shown in the drawer)
+- year / status   every mark is "Rejected" except 015 + 022 "Adopted";
+  year 2025 on 001–015, "—" elsewhere. (industry still in data, not shown)
+- adopter / adopterOrg / adopterUrl   set on Adopted marks; the drawer shows
+  "Adopted by" + a "New home" link only when status is Adopted.
 - reason    why it was rejected — quirky two-word "Too ___" vocabulary
   (Too Circular, Too Clever, Too Timeless…), set on the 13 catalogued marks,
   matched to each mark's character; drawer shows "Unknown" when absent.
