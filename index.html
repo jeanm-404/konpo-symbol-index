@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Symbol Index — Konpo Studio</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cstyle%3Ecircle%7Bfill:%230a0a0a%7D@media(prefers-color-scheme:dark)%7Bcircle%7Bfill:%23fff%7D%7D%3C/style%3E%3Ccircle cx='50' cy='50' r='32'/%3E%3C/svg%3E">
+<script defer src="https://unpkg.com/lottie-web@5.12.2/build/player/lottie.min.js"></script>
 <style>
   html { font-size: 62.5%; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -137,6 +138,10 @@
   #drawer dd.killed { color: #f87171; }
 
   .tile svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+  /* Lottie test (SYM-001..004): animated mark overlays the static one */
+  .tile .lottie-slot { position: absolute; inset: 0; pointer-events: none; }
+  .tile.lottie-live > svg .mark { opacity: 0; }
 
   .mark path, .mark circle, .mark rect, .mark ellipse, .mark line {
     fill: var(--white); stroke: none;
@@ -1825,8 +1830,33 @@ const ramp = (s) => `<div class="ramp">${[96, 64, 44, 28, 16].map(px =>
 const notes = (s) => { if (!s._t) s._t = typeset(s.con); return `<div class="notes">${s._t.notes}</div>`; };
 
 /* ---------- Render grid (tiles + featured breaks) ---------- */
+/* ---------- Lottie test: SYM-001..004 assemble-settle on the grid ----------
+   Scenes generated from the marks' own path data (text-to-lottie workflow).
+   The static mark stays as the fallback until the animation actually mounts. */
+let gridAnims = [];
+function mountLottie(tile, s){
+  if (!/^SYM-00[1-4]$/.test(s.id)) return;
+  if (!window.lottie || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const slot = document.createElement('div');
+  slot.className = 'lottie-slot';
+  tile.appendChild(slot);
+  const anim = lottie.loadAnimation({
+    container: slot, renderer: 'svg', loop: false, autoplay: false,
+    path: 'anim/sym-' + s.id.slice(4) + '.json'
+  });
+  anim.addEventListener('DOMLoaded', () => {
+    tile.classList.add('lottie-live');
+    // assemble in sync with the tile's own entrance
+    setTimeout(() => anim.play(), (parseFloat(tile.style.animationDelay) || 0) + 200);
+  });
+  tile.addEventListener('mouseenter', () => anim.goToAndPlay(0, true));
+  gridAnims.push(anim);
+}
+
 function renderGrid(filter){
   const grid = document.getElementById('grid');
+  gridAnims.forEach(a => a.destroy());
+  gridAnims = [];
   grid.innerHTML = '';
   let shown = 0, delay = 0;
 
@@ -1847,6 +1877,7 @@ function renderGrid(filter){
       </div>`;
     t.onclick = () => openDetail(t, s);
     grid.appendChild(t);
+    mountLottie(t, s);
     // one-by-one above the fold, then a quicker cascade so deep scrolls don't hit empty tiles
     delay += shown <= 12 ? 130 : 45;
   });
