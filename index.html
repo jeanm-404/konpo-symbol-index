@@ -479,12 +479,14 @@
   }
   #drawer .adopted-by[hidden] { display: none; }
   #drawer .adopted-by .ab-case { font-size: 1.5rem; color: var(--body); max-width: 48ch; }
-  #drawer .adopted-by .ab-meta {
-    display: flex; align-items: baseline; gap: 1.6rem;
-    font-family: var(--mono); font-size: 1.2rem; letter-spacing: 0.06em;
-    text-transform: uppercase;
+  #drawer .adopted-by .ab-name {
+    font-size: 3.2rem; font-weight: 400; color: var(--white); line-height: 1.1;
   }
-  #drawer .adopted-by .ab-name { color: var(--white); }
+  #drawer .adopted-by a {
+    align-self: flex-start;
+    font-family: var(--mono); font-size: 1.2rem; font-weight: 300;
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
 
   #drawer .content { transition: opacity .2s; }
   #drawer .content.swapping { opacity: 0; }
@@ -634,11 +636,9 @@
         </dl>
         <div class="adopted-by" id="adopted-by" hidden>
           <span class="mono ab-label">Adopted by</span>
-          <div class="ab-meta">
-            <span class="ab-name" id="ab-name"></span>
-            <a id="ab-link" target="_blank" rel="noopener"></a>
-          </div>
+          <h3 class="ab-name" id="ab-name"></h3>
           <p class="ab-case" id="ab-case"></p>
+          <a id="ab-link" target="_blank" rel="noopener"></a>
         </div>
         <div class="revive">
           <button class="revive-btn" id="revive-toggle">Want to revive it?</button>
