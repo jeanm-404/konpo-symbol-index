@@ -15,18 +15,19 @@ for working on it.
 
 ## Data schema (per entry in S)
 
-- id        "SYM-001"..."SYM-094" with gaps (089, 090, 093, 094 are 2026 intakes) — removed from the index: 003,
+- id        "SYM-001"..."SYM-094" with gaps (089, 090, 093, 094, 095 are 2026 intakes) — removed from the index: 003,
   008, 009, 025, 031, 032, 033, 034, 036, 037, 047, 051, 054, 057, 060, 063, 066,
-  070, 071, 076, 087, 088, 091, 092 (ids keep their numbers; 70 marks remain). SYM-026 sits in
+  064, 070, 071, 076, 087, 088, 091, 092 (ids keep their numbers; 70 marks
+  remain). SYM-095 sits in 064's old slot.. SYM-026 sits in
   003's old grid position and SYM-050 in 008/009's (array order, not renumbered).
-- name      SYM-001..015 named; 016+ are "Untitled" pending real names
-- cat       category; 016+ are "Uncatalogued"
+- name      every mark is named (distinct across the set)
+- cat       category: Monogram / Geometric / Abstract / Pictorial
 - spec      mono construction one-liner
 - mark      SVG inner markup (white fills via CSS; class="stroked" = stroke art,
   optionally with inline style="stroke-width:X" to keep a source's weight)
 - con       construction layer: class="guide" dashed, class="pt" points,
             plain <line pathLength="1"> = solid dims (draw-on), <text> = corner notes
-- blurb     description shown in drawer (empty on 016+)
+- blurb     description shown in drawer (all marks have one)
 - year / status   001–015: 2025; 001–014 "Rejected", 015 + 022 "Adopted";
   the rest "—". (industry still in data but no longer shown in the drawer)
 - reason    why it was rejected — quirky two-word "Too ___" vocabulary
@@ -95,7 +96,6 @@ for working on it.
 - SYM-016..088: baseline auto-annotations only (bbox frame, axes, center,
   W×H dim, part count). Rich per-mark construction like 001–015 requires
   deriving each mark's real geometry (orbits, radii, pitches) from path data.
-- Names, blurbs, year/industry/status all pending Jean's data.
 - Status system: green dot on .idx + green Status value keys off
   status === 'Revived'. Keep the color vocabulary tight: purple = construction,
   green = revived. Resist per-status colors.
