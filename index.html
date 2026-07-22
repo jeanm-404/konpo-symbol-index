@@ -194,6 +194,12 @@
   .tile:hover .notes span,
   .notes.on span { opacity: 1; transition-delay: var(--td, 0s); }
 
+  /* lottie tiles: annotations hold until the motion cycle completes (.annot-ready) */
+  .tile.lottie-live:not(.annot-ready):hover .construction line:not(.guide) { opacity: 0; stroke-dashoffset: 1; }
+  .tile.lottie-live:not(.annot-ready):hover .construction .guide { opacity: 0; stroke-dashoffset: 14; }
+  .tile.lottie-live:not(.annot-ready):hover .construction .pt { opacity: 0; }
+  .tile.lottie-live:not(.annot-ready):hover .notes span { opacity: 0; }
+
   /* one at a time: stagger by document order (delays only on the way in) */
   .tile:hover .construction > :nth-child(1),  .show-construction .construction > :nth-child(1)  { transition-delay: 0s; }
   .tile:hover .construction > :nth-child(2),  .show-construction .construction > :nth-child(2)  { transition-delay: .09s; }
@@ -1844,12 +1850,25 @@ function mountLottie(tile, s){
     container: slot, renderer: 'svg', loop: false, autoplay: false,
     path: 'anim/sym-' + s.id.slice(4) + '.json'
   });
+  // own cycle flag: lottie's isPaused goes stale after goToAndStop inside 'complete'
+  let cycling = false;
+  const startCycle = () => {
+    if (cycling) return;             // mid-cycle: continue from the current point
+    cycling = true;
+    anim.goToAndPlay(0, true);       // at rest, frame 0 == the visible state: seamless
+  };
   anim.addEventListener('DOMLoaded', () => {
     tile.classList.add('lottie-live');
-    // assemble in sync with the tile's own entrance
-    setTimeout(() => anim.play(), (parseFloat(tile.style.animationDelay) || 0) + 200);
+    // one hello-breathe in sync with the tile's own entrance
+    setTimeout(startCycle, (parseFloat(tile.style.animationDelay) || 0) + 200);
   });
-  tile.addEventListener('mouseenter', () => anim.goToAndPlay(0, true));
+  tile.addEventListener('mouseenter', startCycle);
+  anim.addEventListener('complete', () => {
+    cycling = false;
+    anim.goToAndStop(0, true);       // frame 0 == final frame, so this is invisible
+    if (tile.matches(':hover')) tile.classList.add('annot-ready'); // now the annotations may draft in
+  });
+  tile.addEventListener('mouseleave', () => tile.classList.remove('annot-ready'));
   gridAnims.push(anim);
 }
 
