@@ -23,9 +23,11 @@ for working on it.
 - con       construction layer: class="guide" dashed, class="pt" points,
             plain <line pathLength="1"> = solid dims (draw-on), <text> = corner notes
 - blurb     description shown in drawer (empty on 016+)
-- year / industry / status   001–015: 2025 / Mental Health / Killed; 016+ "—"
+- year / industry / status   001–015: 2025 / Mental Health; 001–014 "Killed",
+  015 + 022 "Adopted"; the rest "—"
 - attachment  "High" | "Medium" | "Low"; 001–015 "High", optional elsewhere
-  (drawer falls back to "—"). Status colors: Revived green, Killed red #f87171.
+  (drawer falls back to "—"). Status colors: Adopted (or legacy Revived) =
+  green #4ade80 + green dot on the tile .idx and drawer meta; Killed = red #f87171.
 - explode   'auto' | [[dx,dy],...] | null. auto derives vectors from part bboxes
 - spin      true on SYM-001..004: parts rotate 360° while exploding
 

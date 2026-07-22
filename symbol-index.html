@@ -855,7 +855,7 @@ const S = [
   "explode": "auto",
   "year": "2025",
   "industry": "Mental Health",
-  "status": "Killed",
+  "status": "Adopted",
   "attachment": "High"
  },
  {
@@ -947,7 +947,7 @@ const S = [
   "year": "—",
   "industry": "—",
   "explode": "auto",
-  "status": "—"
+  "status": "Adopted"
  },
  {
   "id": "SYM-023",
@@ -1896,7 +1896,7 @@ function renderGrid(filter){
     t.dataset.id = s.id;
     t.style.animationDelay = `${delay}ms`;
     t.innerHTML = `
-      <span class="idx">${s.id}${s.status === 'Revived' ? '<span class="status-dot"></span>' : ''}</span>
+      <span class="idx">${s.id}${(s.status === 'Adopted' || s.status === 'Revived') ? '<span class="status-dot"></span>' : ''}</span>
       ${notes(s)}
       ${svg(s)}
       <div class="meta">
@@ -2191,7 +2191,7 @@ function fillDrawer(s){
     };
   }
 
-  document.getElementById('d-meta').innerHTML = s.id + (s.status === 'Revived' ? '<span class="status-dot"></span>' : '');
+  document.getElementById('d-meta').innerHTML = s.id + ((s.status === 'Adopted' || s.status === 'Revived') ? '<span class="status-dot"></span>' : '');
   document.getElementById('d-name').textContent = s.name;
   document.getElementById('d-blurb').textContent = s.blurb || '';
   document.getElementById('d-category').textContent = s.cat || '—';
@@ -2199,7 +2199,7 @@ function fillDrawer(s){
   document.getElementById('d-industry').textContent = s.industry || '—';
   const st = document.getElementById('d-status');
   st.textContent = s.status || '—';
-  st.classList.toggle('revived', s.status === 'Revived');
+  st.classList.toggle('revived', s.status === 'Adopted' || s.status === 'Revived');
   st.classList.toggle('killed', s.status === 'Killed');
   document.getElementById('d-attachment').textContent = s.attachment || '—';
   resetRevive();
