@@ -6,7 +6,7 @@ for working on it.
 
 ## Structure
 
-- One HTML file. All CSS in `<style>`, all JS inline, all 68 marks inline as SVG
+- One HTML file. All CSS in `<style>`, all JS inline, all 67 marks inline as SVG
   strings in `const S = [...]` (the only data structure that matters).
 - rem base is 62.5% (1rem = 10px). Konpo tokens: bg #000, tile #141414,
   purple #9680ff (construction), green #4ade80 (status: Revived),
@@ -15,9 +15,9 @@ for working on it.
 
 ## Data schema (per entry in S)
 
-- id        "SYM-001"..."SYM-087" with gaps — removed from the index: 003,
+- id        "SYM-001"..."SYM-086" with gaps — removed from the index: 003,
   008, 009, 025, 031, 032, 033, 034, 036, 037, 047, 051, 054, 057, 060, 063, 066,
-  070, 071, 088 (ids keep their numbers; 68 marks remain). SYM-026 sits in
+  070, 071, 087, 088 (ids keep their numbers; 67 marks remain). SYM-026 sits in
   003's old grid position and SYM-050 in 008/009's (array order, not renumbered).
 - name      SYM-001..015 named; 016+ are "Untitled" pending real names
 - cat       category; 016+ are "Uncatalogued"
