@@ -356,6 +356,15 @@
   }
   #drawer .stage .construction { opacity: 1; }
 
+  /* Play (lottie test): slot sits under the static svg so construction stays on top */
+  #drawer .stage .lottie-slot {
+    position: absolute; inset: 0; pointer-events: none;
+    opacity: 0;
+    transition: transform .7s cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+  #drawer .stage.lottie-live .lottie-slot { opacity: 1; }
+  #drawer .stage.lottie-live > svg .mark { opacity: 0; }
+
   #drawer .stage .mark > * {
     transform-box: fill-box; transform-origin: center;
     transition: transform 1.4s cubic-bezier(0.165, 0.84, 0.44, 1);
@@ -2059,12 +2068,14 @@ const Sound = (() => {
 
 /* ---------- Side drawer ---------- */
 let openId = null;
+let drawerAnim = null;
 const drawer = document.getElementById('drawer');
 const scrim  = document.getElementById('scrim');
 
 function fillDrawer(s){
   const stage = drawer.querySelector('.stage');
-  stage.classList.remove('exploded');
+  if (drawerAnim) { drawerAnim.destroy(); drawerAnim = null; }
+  stage.classList.remove('exploded', 'lottie-live');
   stage.classList.add('hide-annot');
   stage.innerHTML = notes(s) + svg(s, false);
   drawer.querySelector('.ramp-slot').innerHTML = ramp(s);
@@ -2079,7 +2090,7 @@ function fillDrawer(s){
   controls.appendChild(aBtn);
   let annotOn = false;
   aBtn.onclick = () => {
-    const svgEl = stage.querySelector('svg');
+    const svgEl = stage.querySelector(':scope > svg'); // the static svg, not the lottie one
     const notesEl = stage.querySelector('.notes');
     if (stage.classList.contains('exploded')) {
       const xBtn = [...controls.querySelectorAll('button')].find(b => b.textContent === 'Assemble');
@@ -2111,7 +2122,8 @@ function fillDrawer(s){
   let angle = 0;
   tBtn.onclick = () => {
     angle += 90;
-    stage.querySelector('svg').style.transform = `rotate(${angle}deg)`;
+    // rotate the static svg and the lottie slot together
+    stage.querySelectorAll(':scope > svg, :scope > .lottie-slot').forEach(el => el.style.transform = `rotate(${angle}deg)`);
     drawer.querySelectorAll('.ramp .step svg').forEach(el => el.style.transform = `rotate(${angle}deg)`);
   };
 
@@ -2132,6 +2144,7 @@ function fillDrawer(s){
     if (!vectors.some(v => v && Math.hypot(v[0], v[1]) > 1)) { btn.remove(); }
     else btn.onclick = () => {
       if (!stage.classList.contains('exploded') && annotOn) aBtn.click();
+      stage.classList.remove('lottie-live'); // hand the stage back to the static mark
       const on = stage.classList.toggle('exploded');
       parts.forEach((el, i) => {
         const [dx, dy] = vectors[i] || [0, 0];
@@ -2139,6 +2152,42 @@ function fillDrawer(s){
         el.style.transform = on ? `translate(${dx}px, ${dy}px)${rot}` : '';
       });
       btn.textContent = on ? 'Assemble' : 'Explode';
+    };
+  }
+
+  // Play: run the mark's breathe cycle on the stage (lottie test, SYM-001..004)
+  if (/^SYM-00[1-4]$/.test(s.id) && window.lottie && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const pBtn = document.createElement('button');
+    pBtn.textContent = 'Play';
+    controls.appendChild(pBtn);
+    let cycling = false;
+    const ensureMounted = () => {
+      if (drawerAnim) return drawerAnim;
+      const slot = document.createElement('div');
+      slot.className = 'lottie-slot';
+      const svgEl = stage.querySelector(':scope > svg');
+      slot.style.transform = svgEl.style.transform; // inherit any Turn rotation
+      stage.insertBefore(slot, svgEl);              // under the svg: construction stays on top
+      drawerAnim = lottie.loadAnimation({
+        container: slot, renderer: 'svg', loop: false, autoplay: false,
+        path: 'anim/sym-' + s.id.slice(4) + '.json'
+      });
+      drawerAnim.addEventListener('complete', () => {
+        cycling = false;
+        drawerAnim.goToAndStop(0, true); // frame 0 == final frame: invisible reset
+        pBtn.classList.remove('active');
+      });
+      return drawerAnim;
+    };
+    pBtn.onclick = () => {
+      if (cycling) return; // mid-cycle: let it finish
+      const xBtn = [...controls.querySelectorAll('button')].find(b => b.textContent === 'Assemble');
+      if (xBtn) xBtn.click(); // assemble before playing
+      const anim = ensureMounted();
+      stage.classList.add('lottie-live');
+      cycling = true;
+      pBtn.classList.add('active');
+      anim.goToAndPlay(0, true);
     };
   }
 
