@@ -6,7 +6,7 @@ for working on it.
 
 ## Structure
 
-- One HTML file. All CSS in `<style>`, all JS inline, all 79 marks inline as SVG
+- One HTML file. All CSS in `<style>`, all JS inline, all 69 marks inline as SVG
   strings in `const S = [...]` (the only data structure that matters).
 - rem base is 62.5% (1rem = 10px). Konpo tokens: bg #000, tile #141414,
   purple #9680ff (construction), green #4ade80 (status: Revived),
@@ -15,8 +15,10 @@ for working on it.
 
 ## Data schema (per entry in S)
 
-- id        "SYM-001"..."SYM-087" with gaps — 032, 036, 037, 051, 054,
-  060, 066, 070, 088 were removed from the index (ids keep their numbers)
+- id        "SYM-001"..."SYM-087" with gaps — removed from the index: 003,
+  009, 025, 031, 032, 033, 034, 036, 037, 047, 051, 054, 057, 060, 063, 066,
+  070, 071, 088 (ids keep their numbers; 69 marks remain). SYM-026 sits in
+  003's old grid position (array order, not renumbered).
 - name      SYM-001..015 named; 016+ are "Untitled" pending real names
 - cat       category; 016+ are "Uncatalogued"
 - spec      mono construction one-liner
@@ -32,7 +34,7 @@ for working on it.
   (drawer falls back to "—"). Status colors: Adopted (or legacy Revived) =
   green #4ade80 + green dot on the tile .idx and drawer meta; Rejected = red #f87171.
 - explode   'auto' | [[dx,dy],...] | null. auto derives vectors from part bboxes
-- spin      true on SYM-001..004: parts rotate 360° while exploding
+- spin      true on SYM-001, 002, 004 (003 removed): parts rotate 360° while exploding
 
 `sym-file-map.txt` maps SYM-016+ to source SVG filenames.
 `keepers.json` has the cleaned glyphs + measured bboxes for those 73.
