@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Symbol Shelter — Konpo Studio</title>
+<title>Symbol Shelter — Konpo Studio</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cstyle%3Ecircle%7Bfill:%230a0a0a%7D@media(prefers-color-scheme:dark)%7Bcircle%7Bfill:%23fff%7D%7D%3C/style%3E%3Ccircle cx='50' cy='50' r='32'/%3E%3C/svg%3E">
 <script defer src="https://unpkg.com/lottie-web@5.12.2/build/player/lottie.min.js"></script>
 <style>
@@ -135,7 +135,7 @@
     margin-left: 0.7rem; vertical-align: 8%;
   }
   #drawer dd.revived { color: #4ade80; }
-  #drawer dd.killed { color: #f87171; }
+  #drawer dd.rejected { color: #f87171; }
 
   .tile svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 
@@ -553,7 +553,7 @@
       <span class="mono eyebrow">Konpo Studio</span>
       <div class="mono readout">updated 07.2026</div>
     </div>
-    <h1><span>The Symbol Shelter</span></h1>
+    <h1><span>Symbol Shelter</span></h1>
   </header>
 
   <div class="grid" id="grid"></div>
@@ -618,7 +618,7 @@ const S = [
   "spin": true,
   "year": "2025",
   "industry": "Mental Health",
-  "status": "Killed",
+  "status": "Rejected",
   "attachment": "High"
  },
  {
@@ -633,7 +633,7 @@ const S = [
   "spin": true,
   "year": "2025",
   "industry": "Mental Health",
-  "status": "Killed",
+  "status": "Rejected",
   "attachment": "High"
  },
  {
@@ -669,7 +669,7 @@ const S = [
   "spin": true,
   "year": "2025",
   "industry": "Mental Health",
-  "status": "Killed",
+  "status": "Rejected",
   "attachment": "High"
  },
  {
@@ -701,7 +701,7 @@ const S = [
   "spin": true,
   "year": "2025",
   "industry": "Mental Health",
-  "status": "Killed",
+  "status": "Rejected",
   "attachment": "High"
  },
  {
@@ -715,7 +715,7 @@ const S = [
   "explode": null,
   "year": "2025",
   "industry": "Mental Health",
-  "status": "Killed",
+  "status": "Rejected",
   "attachment": "High"
  },
  {
@@ -729,7 +729,7 @@ const S = [
   "explode": "auto",
   "year": "2025",
   "industry": "Mental Health",
-  "status": "Killed",
+  "status": "Rejected",
   "attachment": "High"
  },
  {
@@ -743,7 +743,7 @@ const S = [
   "explode": "auto",
   "year": "2025",
   "industry": "Mental Health",
-  "status": "Killed",
+  "status": "Rejected",
   "attachment": "High"
  },
  {
@@ -757,7 +757,7 @@ const S = [
   "explode": "auto",
   "year": "2025",
   "industry": "Mental Health",
-  "status": "Killed",
+  "status": "Rejected",
   "attachment": "High"
  },
  {
@@ -771,7 +771,7 @@ const S = [
   "explode": "auto",
   "year": "2025",
   "industry": "Mental Health",
-  "status": "Killed",
+  "status": "Rejected",
   "attachment": "High"
  },
  {
@@ -785,7 +785,7 @@ const S = [
   "explode": "auto",
   "year": "2025",
   "industry": "Mental Health",
-  "status": "Killed",
+  "status": "Rejected",
   "attachment": "High"
  },
  {
@@ -799,7 +799,7 @@ const S = [
   "explode": "auto",
   "year": "2025",
   "industry": "Mental Health",
-  "status": "Killed",
+  "status": "Rejected",
   "attachment": "High"
  },
  {
@@ -813,7 +813,7 @@ const S = [
   "explode": "auto",
   "year": "2025",
   "industry": "Mental Health",
-  "status": "Killed",
+  "status": "Rejected",
   "attachment": "High"
  },
  {
@@ -827,7 +827,7 @@ const S = [
   "explode": "auto",
   "year": "2025",
   "industry": "Mental Health",
-  "status": "Killed",
+  "status": "Rejected",
   "attachment": "High"
  },
  {
@@ -841,7 +841,7 @@ const S = [
   "explode": "auto",
   "year": "2025",
   "industry": "Mental Health",
-  "status": "Killed",
+  "status": "Rejected",
   "attachment": "High"
  },
  {
@@ -2200,9 +2200,10 @@ function fillDrawer(s){
   const st = document.getElementById('d-status');
   st.textContent = s.status || '—';
   st.classList.toggle('revived', s.status === 'Adopted' || s.status === 'Revived');
-  st.classList.toggle('killed', s.status === 'Killed');
+  st.classList.toggle('rejected', s.status === 'Rejected');
   document.getElementById('d-attachment').textContent = s.attachment || '—';
   resetRevive();
+  reviveToggle.textContent = 'Adopt ' + (s.name && s.name !== 'Untitled' ? s.name : s.id);
 }
 
 function closeDetail(){
@@ -2269,7 +2270,7 @@ document.getElementById('revive-send').onclick = () => {
   if (!why) { reviveText.focus(); return; }
   Sound.play('action.send');
   location.href = 'mailto:hey@konpo.studio'
-    + '?subject=' + encodeURIComponent('Revive ' + openId)
+    + '?subject=' + encodeURIComponent('Adopt ' + openId)
     + '&body=' + encodeURIComponent(why);
   reviveSent.hidden = false;
 };

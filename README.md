@@ -23,11 +23,11 @@ for working on it.
 - con       construction layer: class="guide" dashed, class="pt" points,
             plain <line pathLength="1"> = solid dims (draw-on), <text> = corner notes
 - blurb     description shown in drawer (empty on 016+)
-- year / industry / status   001–015: 2025 / Mental Health; 001–014 "Killed",
+- year / industry / status   001–015: 2025 / Mental Health; 001–014 "Rejected",
   015 + 022 "Adopted"; the rest "—"
 - attachment  "High" | "Medium" | "Low"; 001–015 "High", optional elsewhere
   (drawer falls back to "—"). Status colors: Adopted (or legacy Revived) =
-  green #4ade80 + green dot on the tile .idx and drawer meta; Killed = red #f87171.
+  green #4ade80 + green dot on the tile .idx and drawer meta; Rejected = red #f87171.
 - explode   'auto' | [[dx,dy],...] | null. auto derives vectors from part bboxes
 - spin      true on SYM-001..004: parts rotate 360° while exploding
 
@@ -61,9 +61,9 @@ for working on it.
   (auto-vectors, forces annotations off, 1.4s, spin group rotates 360°).
   Explode button suppressed when a mark is a single compound path (e.g. G Mark).
 - Scale ramp: 96/64/44/28/16px, bottom-aligned, under the stage.
-- Revive request: "Want to revive it?" button at the drawer bottom expands a
-  textarea + gatekeeping copy; Send drafts a mailto to hey@konpo.studio with
-  subject "Revive SYM-0XX". State resets on symbol switch/close.
+- Adopt request: "Adopt <name>" button at the drawer bottom (id fallback for
+  Untitled marks) expands a textarea + gatekeeping copy; Send drafts a mailto
+  to hey@konpo.studio with subject "Adopt SYM-0XX". State resets on symbol switch/close.
 - Right-click on any mark (tiles, drawer stage, scale ramp) is blocked: shows a
   "© Konpo — not up for grabs" toast at the cursor + state.error sound.
   Deterrent only — the SVGs are still inline in the page source.
