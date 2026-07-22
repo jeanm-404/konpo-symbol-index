@@ -64,9 +64,12 @@ for working on it.
   (auto-vectors, forces annotations off, 1.4s, spin group rotates 360°).
   Explode button suppressed when a mark is a single compound path (e.g. G Mark).
 - Scale ramp: 96/64/44/28/16px, bottom-aligned, under the stage.
-- Adopt request: "Adopt <name>" button at the drawer bottom (id fallback for
-  Untitled marks) expands a textarea + gatekeeping copy; Send drafts a mailto
-  to hey@konpo.studio with subject "Adopt SYM-0XX". State resets on symbol switch/close.
+- Adopt request: "Adopt <name>" full-bleed band at the drawer bottom (id
+  fallback for Untitled marks). Clicking pushes the drawer left and slides in a
+  second equal-width panel (#adopt) with Name / Organization / Email / Make
+  your case + Submit Application -> mailto to hey@konpo.studio, subject
+  "Adopt SYM-0XX — Application". Esc closes the form first, drawer second;
+  form clears when the symbol changes.
 - Right-click on any mark (tiles, drawer stage, scale ramp) is blocked: shows a
   "© Konpo — not up for grabs" toast at the cursor + state.error sound.
   Deterrent only — the SVGs are still inline in the page source.

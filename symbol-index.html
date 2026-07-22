@@ -335,8 +335,38 @@
     overflow-y: auto;
   }
   #drawer.open { transform: translateX(0); }
+  #drawer.pushed { transform: translateX(-100%); } /* adopt panel takes its place */
 
-  #drawer .close {
+  /* ---------- Adopt application panel: same width and dress as the drawer ---------- */
+  #adopt {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 11;
+    width: min(48rem, 100vw);
+    background: var(--tile);
+    border-left: 1px solid var(--line);
+    transform: translateX(100%);
+    transition: transform .5s cubic-bezier(0.165, 0.84, 0.44, 1);
+    display: flex; flex-direction: column;
+    overflow-y: auto; scrollbar-width: none;
+  }
+  #adopt::-webkit-scrollbar { display: none; }
+  #adopt.open { transform: translateX(0); }
+  #adopt .field { display: grid; gap: 0.8rem; }
+  #adopt .field label {
+    font-family: var(--mono); font-size: 1.2rem; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--fade);
+  }
+  #adopt .field input, #adopt .field textarea {
+    width: 100%; font-family: var(--sans); font-size: 1.4rem; line-height: 1.5;
+    color: var(--white); background: rgba(255,255,255,0.04);
+    border: 1px solid var(--line); border-radius: 1.2rem;
+    padding: 1.2rem 1.4rem; outline: none;
+    transition: border-color .3s;
+  }
+  #adopt .field textarea { min-height: 12rem; resize: vertical; }
+  #adopt .field input:focus, #adopt .field textarea:focus { border-color: rgba(150,128,255,0.40); }
+  #adopt .field input::placeholder, #adopt .field textarea::placeholder { color: var(--fade); }
+
+  #drawer .close, #adopt .close {
     position: absolute; top: 2rem; left: 2rem; z-index: 3;
     font-family: var(--mono); font-size: 1.2rem; letter-spacing: 0.08em;
     text-transform: uppercase; color: var(--fade);
@@ -344,7 +374,7 @@
     border-radius: 200rem; padding: 0.8rem 1.6rem; cursor: pointer;
     transition: color .3s, border-color .3s;
   }
-  #drawer .close:hover { color: var(--white); border-color: rgba(255,255,255,0.3); }
+  #drawer .close:hover, #adopt .close:hover { color: var(--white); border-color: rgba(255,255,255,0.3); }
 
   #drawer .stage {
     position: relative; flex: 0 0 auto;
@@ -403,12 +433,13 @@
     letter-spacing: 0.08em; color: rgba(255,255,255,0.22);
   }
 
-  #drawer .info {
+  #drawer .info, #adopt .info {
     padding: 3.2rem 3.2rem 4rem;
     display: flex; flex-direction: column; gap: 2.4rem;
   }
-  #drawer .info h2 { font-size: 3.2rem; font-weight: 400; color: var(--white); line-height: 1.1; }
-  #drawer .info p { font-size: 1.5rem; color: var(--body); max-width: 48ch; }
+  #adopt .info { padding-top: 7rem; } /* clearance for the Back pill */
+  #drawer .info h2, #adopt .info h2 { font-size: 3.2rem; font-weight: 400; color: var(--white); line-height: 1.1; }
+  #drawer .info p, #adopt .info p { font-size: 1.5rem; color: var(--body); max-width: 48ch; }
   #drawer dl { display: grid; grid-template-columns: 11rem 1fr; row-gap: 1.2rem; column-gap: 2rem; }
   #drawer dt { font-family: var(--mono); font-size: 1.2rem; letter-spacing: 0.08em;
     text-transform: uppercase; color: var(--fade); }
@@ -457,24 +488,7 @@
   }
   .revive-btn:hover { background: var(--tile-raise); }
   .revive-btn.on { color: var(--purple-vivid); }
-  .revive-panel {
-    display: grid; gap: 1.4rem;
-    padding: 2.4rem 3.2rem 4rem;
-    opacity: 0; transform: translateY(0.8rem);
-    animation: reveal .45s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
-  }
-  .revive-panel[hidden] { display: none; }
   .revive-note { font-size: 1.4rem; line-height: 1.6; color: var(--body); }
-  .revive-panel textarea {
-    width: 100%; min-height: 12rem; resize: vertical;
-    font-family: var(--sans); font-size: 1.4rem; line-height: 1.5;
-    color: var(--white); background: rgba(255,255,255,0.04);
-    border: 1px solid var(--line); border-radius: 1.2rem;
-    padding: 1.2rem 1.4rem; outline: none;
-    transition: border-color .3s;
-  }
-  .revive-panel textarea:focus { border-color: rgba(150,128,255,0.40); }
-  .revive-panel textarea::placeholder { color: var(--fade); }
   .revive-send {
     justify-self: start;
     font-family: var(--mono); font-size: 1.2rem; font-weight: 300;
@@ -588,14 +602,37 @@
         </dl>
         <div class="revive">
           <button class="revive-btn" id="revive-toggle">Want to revive it?</button>
-          <div class="revive-panel" id="revive-panel" hidden>
-            <p class="revive-note">Make your case — in detail. What's the project, who's behind it, and where would this mark live? We only release these to companies and people with genuinely interesting projects.</p>
-            <textarea id="revive-text" placeholder="Why this mark, and why you…"></textarea>
-            <button class="revive-send" id="revive-send">Send request</button>
-            <p class="revive-sent mono" id="revive-sent" hidden>Request drafted — send it from your mail app.</p>
-          </div>
         </div>
       </div>
+    </div>
+  </aside>
+
+  <aside id="adopt" aria-hidden="true">
+    <button class="close" aria-label="Back">Back</button>
+    <div class="info">
+      <div>
+        <span class="mono" id="a-meta" style="display:block;margin-bottom:1.2rem"></span>
+        <h2 id="a-title"></h2>
+      </div>
+      <p class="revive-note">Make your case — in detail. What's the project, who's behind it, and where would this mark live? We only release these to companies and people with genuinely interesting projects.</p>
+      <div class="field">
+        <label for="a-name">Name</label>
+        <input id="a-name" type="text" autocomplete="name">
+      </div>
+      <div class="field">
+        <label for="a-org">Organization</label>
+        <input id="a-org" type="text" autocomplete="organization">
+      </div>
+      <div class="field">
+        <label for="a-email">Email</label>
+        <input id="a-email" type="email" autocomplete="email">
+      </div>
+      <div class="field">
+        <label for="a-case">Make your case</label>
+        <textarea id="a-case" placeholder="Why this mark, and why you…"></textarea>
+      </div>
+      <button class="revive-send" id="a-submit">Submit Application</button>
+      <p class="revive-sent mono" id="a-sent" hidden>Application drafted — send it from your mail app.</p>
     </div>
   </aside>
 
@@ -2092,12 +2129,13 @@ function fillDrawer(s){
   st.classList.toggle('revived', s.status === 'Adopted' || s.status === 'Revived');
   st.classList.toggle('rejected', s.status === 'Rejected');
   document.getElementById('d-attachment').textContent = s.attachment || '—';
-  resetRevive();
+  closeAdopt(true);
   reviveToggle.textContent = 'Adopt ' + (s.name && s.name !== 'Untitled' ? s.name : s.id);
 }
 
 function closeDetail(){
   if (!openId) return;
+  closeAdopt(true); // one exit sound covers both panels
   Sound.play('drawer.close');
   openId = null;
   drawer.classList.remove('open');
@@ -2132,37 +2170,57 @@ function openDetail(tile, s){
 
 drawer.querySelector('.close').onclick = closeDetail;
 scrim.onclick = closeDetail;
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetail(); });
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (document.getElementById('adopt').classList.contains('open')) closeAdopt();
+  else closeDetail();
+});
 
-/* ---------- Revive request ---------- */
+/* ---------- Adopt application panel (pushes the drawer left) ---------- */
 const reviveToggle = document.getElementById('revive-toggle');
-const revivePanel  = document.getElementById('revive-panel');
-const reviveText   = document.getElementById('revive-text');
-const reviveSent   = document.getElementById('revive-sent');
+const adoptPanel = document.getElementById('adopt');
+let adoptSymId = null;
 
-function resetRevive(){
-  revivePanel.hidden = true;
-  reviveToggle.classList.remove('on');
-  reviveSent.hidden = true;
-  reviveText.value = '';
+function openAdopt(){
+  if (adoptSymId !== openId) { // fresh symbol: clear the form
+    ['a-name', 'a-org', 'a-email', 'a-case'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('a-sent').hidden = true;
+  }
+  adoptSymId = openId;
+  document.getElementById('a-meta').textContent = openId;
+  document.getElementById('a-title').textContent = reviveToggle.textContent;
+  Sound.play('drawer.open');
+  reviveToggle.classList.add('on');
+  drawer.classList.add('pushed');
+  adoptPanel.classList.add('open');
+  adoptPanel.setAttribute('aria-hidden', 'false');
 }
 
-reviveToggle.onclick = () => {
-  const opening = revivePanel.hidden;
-  revivePanel.hidden = !opening;
-  reviveToggle.classList.toggle('on', opening);
-  Sound.play(opening ? 'toggle.on' : 'toggle.off');
-  if (opening) reviveText.focus();
-};
+function closeAdopt(quiet){
+  if (!adoptPanel.classList.contains('open')) return;
+  if (!quiet) Sound.play('drawer.close');
+  reviveToggle.classList.remove('on');
+  adoptPanel.classList.remove('open');
+  adoptPanel.setAttribute('aria-hidden', 'true');
+  drawer.classList.remove('pushed');
+}
 
-document.getElementById('revive-send').onclick = () => {
-  const why = reviveText.value.trim();
-  if (!why) { reviveText.focus(); return; }
+reviveToggle.onclick = openAdopt;
+adoptPanel.querySelector('.close').onclick = () => closeAdopt();
+
+document.getElementById('a-submit').onclick = () => {
+  const val = id => document.getElementById(id).value.trim();
+  const missing = ['a-name', 'a-email', 'a-case'].find(id => !val(id));
+  if (missing) { document.getElementById(missing).focus(); return; }
   Sound.play('action.send');
+  const body = 'Name: ' + val('a-name')
+    + '\nOrganization: ' + (val('a-org') || '—')
+    + '\nEmail: ' + val('a-email')
+    + '\n\n' + val('a-case');
   location.href = 'mailto:hey@konpo.studio'
-    + '?subject=' + encodeURIComponent('Adopt ' + openId)
-    + '&body=' + encodeURIComponent(why);
-  reviveSent.hidden = false;
+    + '?subject=' + encodeURIComponent('Adopt ' + adoptSymId + ' — Application')
+    + '&body=' + encodeURIComponent(body);
+  document.getElementById('a-sent').hidden = false;
 };
 
 /* ---------- Right-click guard: the marks aren't up for grabs ---------- */
@@ -2198,11 +2256,10 @@ document.getElementById('toast-case').onclick = () => {
     if (!tile) return;
     openDetail(tile, s);
   }
-  // expand the revive panel once the drawer content has settled (crossfade resets it at 200ms)
+  // open the application panel once the drawer content has settled (crossfade resets it at 200ms)
   setTimeout(() => {
-    if (revivePanel.hidden) reviveToggle.click();
-    document.querySelector('.revive').scrollIntoView({ behavior: 'smooth', block: 'end' });
-  }, 250);
+    if (!adoptPanel.classList.contains('open')) reviveToggle.click();
+  }, 300);
 };
 
 /* ---------- Full-bleed title: scale type until it spans the wrap ---------- */
