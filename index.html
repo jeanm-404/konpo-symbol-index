@@ -625,14 +625,6 @@
           <h2 id="d-name"></h2>
         </div>
         <p id="d-blurb"></p>
-        <div class="adopted-by" id="adopted-by" hidden>
-          <span class="mono ab-label">Adopted by</span>
-          <p class="ab-case" id="ab-case"></p>
-          <div class="ab-meta">
-            <span class="ab-name" id="ab-name"></span>
-            <a id="ab-link" target="_blank" rel="noopener"></a>
-          </div>
-        </div>
         <dl>
           <dt>Status</dt><dd id="d-status"></dd>
           <dt>Reason</dt><dd id="d-reason"></dd>
@@ -640,6 +632,14 @@
           <dt>Intake</dt><dd id="d-year"></dd>
           <dt>Attachment</dt><dd id="d-attachment"></dd>
         </dl>
+        <div class="adopted-by" id="adopted-by" hidden>
+          <span class="mono ab-label">Adopted by</span>
+          <div class="ab-meta">
+            <span class="ab-name" id="ab-name"></span>
+            <a id="ab-link" target="_blank" rel="noopener"></a>
+          </div>
+          <p class="ab-case" id="ab-case"></p>
+        </div>
         <div class="revive">
           <button class="revive-btn" id="revive-toggle">Want to revive it?</button>
         </div>
@@ -2093,9 +2093,10 @@ function fillDrawer(s){
   st.classList.toggle('revived', s.status === 'Adopted' || s.status === 'Revived');
   st.classList.toggle('rejected', s.status === 'Rejected');
   document.getElementById('d-attachment').textContent = s.attachment || '—';
-  // adopted marks get their own section: how they introduced themselves, who, and the new home
+  // adopted marks get their own section: who they are, then how they introduced themselves
   const adopted = s.status === 'Adopted' && s.adopter;
   document.getElementById('adopted-by').hidden = !adopted;
+  drawer.querySelector('.revive').hidden = adopted; // no CTA on a mark that already has a home
   if (adopted) {
     const caseEl = document.getElementById('ab-case');
     caseEl.hidden = !s.adopterCase;
@@ -2239,6 +2240,7 @@ document.getElementById('toast-case').onclick = () => {
   }
   // open the application panel once the drawer content has settled (crossfade resets it at 200ms)
   setTimeout(() => {
+    if (drawer.querySelector('.revive').hidden) return; // already adopted: nothing to apply for
     if (!adoptPanel.classList.contains('open')) reviveToggle.click();
   }, 300);
 };
