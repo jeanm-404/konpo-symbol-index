@@ -28,7 +28,9 @@ for working on it.
 - blurb     description shown in drawer (empty on 016+)
 - year / status   001–015: 2025; 001–014 "Rejected", 015 + 022 "Adopted";
   the rest "—". (industry still in data but no longer shown in the drawer)
-- reason    why it was rejected; drawer shows "Unknown" when absent.
+- reason    why it was rejected — quirky two-word "Too ___" vocabulary
+  (Too Circular, Too Clever, Too Timeless…), set on the 13 catalogued marks,
+  matched to each mark's character; drawer shows "Unknown" when absent.
   Drawer field order: Status, Reason, Category, Year, Attachment.
 - attachment  "High" | "Medium" | "Low"; 001–015 "High", optional elsewhere
   (drawer falls back to "—"). Status colors: Adopted (or legacy Revived) =
