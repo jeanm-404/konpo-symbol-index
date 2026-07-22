@@ -296,6 +296,7 @@
   }
   #intro .line.show .w { opacity: 1; filter: blur(0); }
   #intro .line.gone { opacity: 0; filter: blur(8px); }
+  #intro .line .r { color: #f87171; }
   /* staged page reveal: title first, from the left */
   header h1 {
     /* blur scales with the fitted type size so the blur-in reads at any viewport */
@@ -438,21 +439,26 @@
   }
   #copyright-toast a:hover { color: var(--purple-vivid); }
 
-  /* ---------- Revive request ---------- */
-  .revive { margin-top: 3.2rem; padding-top: 2.4rem; border-top: 1px solid var(--line); }
+  /* ---------- Adopt request: a full-bleed section at the drawer's end ---------- */
+  .revive {
+    /* cancel the .info padding so the divider and button run edge-to-edge */
+    margin: 1.6rem -3.2rem -4rem;
+    border-top: 1px solid var(--line);
+  }
   .revive-btn {
-    width: 100%;
+    display: block; width: 100%;
     font-family: var(--mono); font-size: 1.2rem; font-weight: 300;
     text-transform: uppercase; letter-spacing: 0.08em;
     color: var(--white); background: transparent;
-    border: 1px solid var(--line); border-radius: 200rem;
-    padding: 1.4rem 2rem; cursor: pointer;
-    transition: color .3s, border-color .3s;
+    border: 0; border-radius: 0;
+    padding: 2.6rem 3.2rem; cursor: pointer;
+    transition: background-color .3s, color .3s;
   }
-  .revive-btn:hover { border-color: rgba(255,255,255,0.30); }
-  .revive-btn.on { color: var(--purple-vivid); border-color: rgba(150,128,255,0.40); }
+  .revive-btn:hover { background: var(--tile-raise); }
+  .revive-btn.on { color: var(--purple-vivid); border-bottom: 1px solid var(--line); }
   .revive-panel {
-    display: grid; gap: 1.4rem; margin-top: 1.8rem;
+    display: grid; gap: 1.4rem;
+    padding: 2.4rem 3.2rem 4rem;
     opacity: 0; transform: translateY(0.8rem);
     animation: reveal .45s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
   }
@@ -542,7 +548,7 @@
 <div id="intro" aria-hidden="true">
   <div class="line" id="il1"><span class="w" style="--wd:0.00s">Every</span> <span class="w" style="--wd:0.11s">logo</span> <span class="w" style="--wd:0.22s">takes</span> <span class="w" style="--wd:0.33s">hundreds</span> <span class="w" style="--wd:0.44s">of</span> <span class="w" style="--wd:0.55s">proposals.</span><br><span class="w" style="--wd:0.66s">Only</span> <span class="w" style="--wd:0.77s">one</span> <span class="w" style="--wd:0.88s">gets</span> <span class="w" style="--wd:0.99s">picked.</span></div>
   <div class="line" id="il2"><span class="w" style="--wd:0.00s">The</span> <span class="w" style="--wd:0.11s">rejections</span> <span class="w" style="--wd:0.22s">deserve</span> <span class="w" style="--wd:0.33s">better</span> <span class="w" style="--wd:0.44s">than</span> <span class="w" style="--wd:0.55s">a</span> <span class="w" style="--wd:0.66s">folder</span> <span class="w" style="--wd:0.77s">called</span> <span class="w" style="--wd:0.88s">&ldquo;old.&rdquo;</span></div>
-  <div class="line" id="il3"><span class="w" style="--wd:0.00s">This</span> <span class="w" style="--wd:0.11s">is</span> <span class="w" style="--wd:0.22s">the</span> <span class="w" style="--wd:0.33s">home</span> <span class="w" style="--wd:0.44s">of</span> <span class="w" style="--wd:0.55s">those</span> <span class="w" style="--wd:0.66s">no&rsquo;s.</span><br><span class="w" style="--wd:0.77s">Everyone</span> <span class="w" style="--wd:0.88s">here</span> <span class="w" style="--wd:0.99s">is</span> <span class="w" style="--wd:1.10s">up</span> <span class="w" style="--wd:1.21s">for</span> <span class="w" style="--wd:1.32s">adoption.</span></div>
+  <div class="line" id="il3"><span class="w" style="--wd:0.00s">This</span> <span class="w" style="--wd:0.11s">is</span> <span class="w" style="--wd:0.22s">the</span> <span class="w" style="--wd:0.33s">home</span> <span class="w" style="--wd:0.44s">of</span> <span class="w" style="--wd:0.55s">those</span> <span class="w r" style="--wd:0.66s">rejections.</span><br><span class="w" style="--wd:0.77s">Everyone</span> <span class="w" style="--wd:0.88s">here</span> <span class="w" style="--wd:0.99s">is</span> <span class="w" style="--wd:1.10s">up</span> <span class="w" style="--wd:1.21s">for</span> <span class="w" style="--wd:1.32s">adoption.</span></div>
   <div class="skip">Click to skip</div>
 </div>
 
