@@ -464,11 +464,27 @@
   #drawer dd { font-family: var(--mono); font-size: 1.2rem; letter-spacing: 0.06em;
     text-transform: uppercase; color: var(--body); }
   #drawer .tag { color: var(--purple); }
-  #drawer dd a {
+  #drawer dd a, #drawer .adopted-by a {
     color: var(--white); text-decoration: underline;
     text-underline-offset: 0.3em; transition: color .3s;
   }
-  #drawer dd a:hover { color: var(--purple-vivid); }
+  #drawer dd a:hover, #drawer .adopted-by a:hover { color: var(--purple-vivid); }
+
+  /* adopted marks: the new-home section, divided full-bleed under the description */
+  #drawer .adopted-by {
+    margin: 0 -3.2rem;
+    padding: 2.4rem 3.2rem 0;
+    border-top: 1px solid var(--line);
+    display: flex; flex-direction: column; gap: 1.4rem;
+  }
+  #drawer .adopted-by[hidden] { display: none; }
+  #drawer .adopted-by .ab-case { font-size: 1.5rem; color: var(--body); max-width: 48ch; }
+  #drawer .adopted-by .ab-meta {
+    display: flex; align-items: baseline; gap: 1.6rem;
+    font-family: var(--mono); font-size: 1.2rem; letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  #drawer .adopted-by .ab-name { color: var(--white); }
 
   #drawer .content { transition: opacity .2s; }
   #drawer .content.swapping { opacity: 0; }
@@ -609,14 +625,20 @@
           <h2 id="d-name"></h2>
         </div>
         <p id="d-blurb"></p>
+        <div class="adopted-by" id="adopted-by" hidden>
+          <span class="mono ab-label">Adopted by</span>
+          <p class="ab-case" id="ab-case"></p>
+          <div class="ab-meta">
+            <span class="ab-name" id="ab-name"></span>
+            <a id="ab-link" target="_blank" rel="noopener"></a>
+          </div>
+        </div>
         <dl>
           <dt>Status</dt><dd id="d-status"></dd>
           <dt>Reason</dt><dd id="d-reason"></dd>
           <dt>Category</dt><dd id="d-category"></dd>
           <dt>Intake</dt><dd id="d-year"></dd>
           <dt>Attachment</dt><dd id="d-attachment"></dd>
-          <dt id="dt-adopter" hidden>Adopted by</dt><dd id="d-adopter" hidden></dd>
-          <dt id="dt-home" hidden>New home</dt><dd id="d-home" hidden><a id="d-home-link" target="_blank" rel="noopener"></a></dd>
         </dl>
         <div class="revive">
           <button class="revive-btn" id="revive-toggle">Want to revive it?</button>
@@ -895,6 +917,7 @@ const S = [
   "adopter": "Lena Vogel",
   "adopterOrg": "Softgrid",
   "adopterUrl": "https://softgrid.studio",
+  "adopterCase": "We build modular care software, and a tile that repeats cleanly is our whole product story. We had been sketching worse versions of it for a year.",
   "attachment": "High"
  },
  {
@@ -990,7 +1013,8 @@ const S = [
   "reason": "Too Timeless",
   "adopter": "Tomás Rivera",
   "adopterOrg": "Hivemind Systems",
-  "adopterUrl": "https://hivemind.systems"
+  "adopterUrl": "https://hivemind.systems",
+  "adopterCase": "Seven dots and no hierarchy is exactly how our research collective runs. It was rejected for being too timeless. We intend to test that."
  },
  {
   "id": "SYM-023",
@@ -2069,13 +2093,16 @@ function fillDrawer(s){
   st.classList.toggle('revived', s.status === 'Adopted' || s.status === 'Revived');
   st.classList.toggle('rejected', s.status === 'Rejected');
   document.getElementById('d-attachment').textContent = s.attachment || '—';
-  // adopted marks credit their adopter and link to the new home
+  // adopted marks get their own section: how they introduced themselves, who, and the new home
   const adopted = s.status === 'Adopted' && s.adopter;
-  ['dt-adopter', 'd-adopter', 'dt-home', 'd-home'].forEach(id => document.getElementById(id).hidden = !adopted);
+  document.getElementById('adopted-by').hidden = !adopted;
   if (adopted) {
-    document.getElementById('d-adopter').textContent = s.adopter;
-    const link = document.getElementById('d-home-link');
-    link.textContent = s.adopterOrg || s.adopterUrl.replace(/^https?:\/\//, '');
+    const caseEl = document.getElementById('ab-case');
+    caseEl.hidden = !s.adopterCase;
+    caseEl.textContent = s.adopterCase ? '“' + s.adopterCase + '”' : '';
+    document.getElementById('ab-name').textContent = s.adopter;
+    const link = document.getElementById('ab-link');
+    link.textContent = (s.adopterOrg || (s.adopterUrl || '').replace(/^https?:\/\//, '')) + ' ↗';
     link.href = s.adopterUrl || '#';
   }
   closeAdopt(true);

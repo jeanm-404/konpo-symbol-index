@@ -31,8 +31,9 @@ for working on it.
   ~3 lines at the drawer's 48ch measure
 - year / status   every mark is "Rejected" except 015 + 022 "Adopted";
   year 2025 on 001–015, "—" elsewhere. (industry still in data, not shown)
-- adopter / adopterOrg / adopterUrl   set on Adopted marks; the drawer shows
-  "Adopted by" + a "New home" link only when status is Adopted.
+- adopter / adopterOrg / adopterUrl / adopterCase   set on Adopted marks; the
+  drawer shows an "Adopted by" section under the description (full-bleed
+  divider): their quoted introduction, name, and org linked to the new home.
 - reason    why it was rejected — quirky two-word "Too ___" vocabulary
   (Too Circular, Too Clever, Too Timeless…), set on the 13 catalogued marks,
   matched to each mark's character; drawer shows "Unknown" when absent.
