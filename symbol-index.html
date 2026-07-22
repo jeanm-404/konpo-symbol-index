@@ -350,21 +350,39 @@
   }
   #adopt::-webkit-scrollbar { display: none; }
   #adopt.open { transform: translateX(0); }
-  #adopt .field { display: grid; gap: 0.8rem; }
-  #adopt .field label {
+  /* fields and buttons are full-bleed sections, same philosophy as the Adopt band */
+  #adopt .afield {
+    border-top: 1px solid var(--line);
+    padding: 2rem 3.2rem 2.4rem;
+    display: grid; gap: 1rem;
+    cursor: text;
+    transition: background-color .3s;
+  }
+  #adopt .afield:focus-within { background: var(--tile-raise); }
+  #adopt .afield label {
     font-family: var(--mono); font-size: 1.2rem; letter-spacing: 0.08em;
     text-transform: uppercase; color: var(--fade);
+    cursor: text; transition: color .3s;
   }
-  #adopt .field input, #adopt .field textarea {
-    width: 100%; font-family: var(--sans); font-size: 1.4rem; line-height: 1.5;
-    color: var(--white); background: rgba(255,255,255,0.04);
-    border: 1px solid var(--line); border-radius: 1.2rem;
-    padding: 1.2rem 1.4rem; outline: none;
-    transition: border-color .3s;
+  #adopt .afield:focus-within label { color: var(--purple-vivid); }
+  #adopt .afield input, #adopt .afield textarea {
+    width: 100%; font-family: var(--sans); font-size: 1.5rem; line-height: 1.5;
+    color: var(--white); background: transparent;
+    border: 0; outline: none; padding: 0;
   }
-  #adopt .field textarea { min-height: 12rem; resize: vertical; }
-  #adopt .field input:focus, #adopt .field textarea:focus { border-color: rgba(150,128,255,0.40); }
-  #adopt .field input::placeholder, #adopt .field textarea::placeholder { color: var(--fade); }
+  #adopt .afield textarea { min-height: 12rem; resize: vertical; }
+  #adopt .afield input::placeholder, #adopt .afield textarea::placeholder { color: var(--fade); opacity: 0.6; }
+  #adopt .aband {
+    display: block; width: 100%;
+    border: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    border-radius: 0; background: transparent;
+    font-family: var(--mono); font-size: 1.2rem; font-weight: 300;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--white);
+    padding: 2.6rem 3.2rem; cursor: pointer;
+    transition: background-color .3s;
+  }
+  #adopt .aband:hover { background: var(--tile-raise); }
+  #adopt .asent { padding: 2rem 3.2rem 4rem; color: var(--purple-vivid); }
 
   #drawer .close, #adopt .close {
     position: absolute; top: 2rem; left: 2rem; z-index: 3;
@@ -489,17 +507,10 @@
   .revive-btn:hover { background: var(--tile-raise); }
   .revive-btn.on { color: var(--purple-vivid); }
   .revive-note { font-size: 1.4rem; line-height: 1.6; color: var(--body); }
-  .revive-send {
-    justify-self: start;
-    font-family: var(--mono); font-size: 1.2rem; font-weight: 300;
-    text-transform: uppercase; letter-spacing: 0.08em;
-    color: #191919; background: var(--white);
-    border: 0; border-radius: 200rem;
-    padding: 1.2rem 2.4rem; cursor: pointer;
-    transition: opacity .3s;
-  }
-  .revive-send:hover { opacity: 0.85; }
-  .revive-sent { color: var(--purple-vivid); }
+  /* the shelter's own tile: Konpo logomark, accent purple, links home */
+  .tile.konpo { cursor: pointer; }
+  .tile.konpo .mark path { fill: var(--purple-vivid); }
+  .tile.konpo .idx, .tile.konpo .meta .name { color: var(--purple-vivid); }
 
   @media (prefers-reduced-motion: reduce) {
     #drawer, #scrim { transition: none !important; }
@@ -615,25 +626,25 @@
         <h2 id="a-title"></h2>
       </div>
       <p class="revive-note">Make your case — in detail. What's the project, who's behind it, and where would this mark live? We only release these to companies and people with genuinely interesting projects.</p>
-      <div class="field">
-        <label for="a-name">Name</label>
-        <input id="a-name" type="text" autocomplete="name">
-      </div>
-      <div class="field">
-        <label for="a-org">Organization</label>
-        <input id="a-org" type="text" autocomplete="organization">
-      </div>
-      <div class="field">
-        <label for="a-email">Email</label>
-        <input id="a-email" type="email" autocomplete="email">
-      </div>
-      <div class="field">
-        <label for="a-case">Make your case</label>
-        <textarea id="a-case" placeholder="Why this mark, and why you…"></textarea>
-      </div>
-      <button class="revive-send" id="a-submit">Submit Application</button>
-      <p class="revive-sent mono" id="a-sent" hidden>Application drafted — send it from your mail app.</p>
     </div>
+    <div class="afield">
+      <label for="a-name">Name</label>
+      <input id="a-name" type="text" autocomplete="name" placeholder="Your name">
+    </div>
+    <div class="afield">
+      <label for="a-org">Organization</label>
+      <input id="a-org" type="text" autocomplete="organization" placeholder="Studio, company, or just you">
+    </div>
+    <div class="afield">
+      <label for="a-email">Email</label>
+      <input id="a-email" type="email" autocomplete="email" placeholder="you@example.com">
+    </div>
+    <div class="afield">
+      <label for="a-case">Make your case</label>
+      <textarea id="a-case" placeholder="Why this mark, and why you…"></textarea>
+    </div>
+    <button class="aband" id="a-submit">Submit Application</button>
+    <p class="asent mono" id="a-sent" hidden>Application drafted — send it from your mail app.</p>
   </aside>
 
   <div class="wrap">
@@ -1681,7 +1692,26 @@ function renderGrid(filter){
     // one-by-one above the fold, then a quicker cascade so deep scrolls don't hit empty tiles
     delay += shown <= 12 ? 130 : 45;
   });
+
+  // the last card is ours: the Konpo logomark, in the accent purple, linking home
+  const k = document.createElement('div');
+  k.className = 'tile konpo';
+  k.style.animationDelay = `${delay}ms`;
+  k.innerHTML = `
+    <span class="idx">KONPO</span>
+    <svg viewBox="-28 -28 256 256" aria-hidden="true">
+      <g class="mark"><g transform="translate(60 60) scale(1.29)">${KONPO_MARK}</g></g>
+    </svg>
+    <div class="meta">
+      <span class="name">Konpo Studio</span>
+      <span class="sub">konpo.studio</span>
+    </div>`;
+  k.onclick = () => window.open('https://konpo.studio', '_blank', 'noopener');
+  grid.appendChild(k);
 }
+
+/* Konpo logomark (four-dot symbol), 62x62 */
+const KONPO_MARK = '<path d="M13.5752 33.9356C21.0719 33.9356 27.1493 40.0131 27.1494 47.5098C27.1494 55.0066 21.072 61.084 13.5752 61.084C6.07832 61.084 0.000976562 55.0067 0.000976562 47.5098C0.00114046 40.0131 6.07843 33.9356 13.5752 33.9356ZM37.9141 37.9112C43.213 32.609 51.8074 32.612 57.1094 37.9112C62.4114 43.2105 62.4112 51.8059 57.1094 57.1084C51.8104 62.411 43.2161 62.4078 37.9141 57.1084C32.612 51.809 32.612 43.2137 37.9141 37.9112ZM13.5742 3.8115e-05C20.6616 3.8115e-05 26.4782 5.43181 27.0928 12.3594C21.0431 13.8702 16.5617 19.3408 16.5615 25.8584C16.5615 26.1783 16.5725 26.4961 16.5938 26.8106C15.6226 27.0312 14.6121 27.1485 13.5742 27.1485C6.07738 27.1484 0 21.0711 0 13.5743C3.55627e-05 6.07744 6.0774 7.36788e-05 13.5742 3.8115e-05ZM37.9131 3.97562C43.212 -1.32673 51.8064 -1.32368 57.1084 3.97562C62.4105 9.27503 62.4105 17.8704 57.1084 23.1729C53.6507 26.6329 48.7901 27.8329 44.3564 26.7774C44.3762 26.4737 44.3887 26.1671 44.3887 25.8584C44.3885 19.388 39.9714 13.9493 33.9883 12.3926C34.2552 9.32257 35.5632 6.32569 37.9131 3.97562Z"/>';
 
 /* ------------------------------------------------------------------
    Velvet sound engine — ported from velvet-ui (24h.studio), velvet
@@ -2067,6 +2097,11 @@ function closeAdopt(quiet){
 
 reviveToggle.onclick = openAdopt;
 adoptPanel.querySelector('.close').onclick = () => closeAdopt();
+
+// the whole field section is the input: click anywhere in it to type
+adoptPanel.querySelectorAll('.afield').forEach(f => {
+  f.addEventListener('click', () => f.querySelector('input, textarea').focus());
+});
 
 document.getElementById('a-submit').onclick = () => {
   const val = id => document.getElementById(id).value.trim();

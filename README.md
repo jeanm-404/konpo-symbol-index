@@ -68,10 +68,13 @@ for working on it.
   (auto-vectors, forces annotations off, 1.4s, spin group rotates 360°).
   Explode button suppressed when a mark is a single compound path (e.g. G Mark).
 - Scale ramp: 96/64/44/28/16px, bottom-aligned, under the stage.
+- Last grid card is the Konpo logomark in accent purple (KONPO / Konpo Studio /
+  konpo.studio), opens https://konpo.studio in a new tab.
 - Adopt request: "Adopt <name>" full-bleed band at the drawer bottom (id
   fallback for Untitled marks). Clicking pushes the drawer left and slides in a
-  second equal-width panel (#adopt) with Name / Organization / Email / Make
-  your case + Submit Application -> mailto to hey@konpo.studio, subject
+  second equal-width panel (#adopt) whose fields and button are full-bleed
+  hairline sections (click anywhere in a section to type; focus = raised bg +
+  purple label): Name / Organization / Email / Make your case + Submit Application -> mailto to hey@konpo.studio, subject
   "Adopt SYM-0XX — Application". Esc closes the form first, drawer second;
   form clears when the symbol changes.
 - Right-click on any mark (tiles, drawer stage, scale ramp) is blocked: shows a
