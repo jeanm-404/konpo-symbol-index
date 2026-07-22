@@ -71,3 +71,8 @@ SYM-085  Layer_1INDEX — -6.svg
 SYM-086  Layer_1INDEX — -7.svg
 SYM-087  Layer_1INDEX — .svg
 SYM-088  Progressive BlurINDEX — .svgSYM-089  Group 427320964.svg
+SYM-090  Group 482222.svg
+SYM-091  Group 482219.svg
+SYM-092  Group 482220.svg
+SYM-093  Materials.svg
+SYM-094  Vector.svg
