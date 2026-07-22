@@ -6,7 +6,7 @@ for working on it.
 
 ## Structure
 
-- One HTML file. All CSS in `<style>`, all JS inline, all 73 marks inline as SVG
+- One HTML file. All CSS in `<style>`, all JS inline, all 70 marks inline as SVG
   strings in `const S = [...]` (the only data structure that matters).
 - rem base is 62.5% (1rem = 10px). Konpo tokens: bg #000, tile #141414,
   purple #9680ff (construction), green #4ade80 (status: Revived),
@@ -15,9 +15,9 @@ for working on it.
 
 ## Data schema (per entry in S)
 
-- id        "SYM-001"..."SYM-094" with gaps (089–094 are 2026 intakes) — removed from the index: 003,
+- id        "SYM-001"..."SYM-094" with gaps (089, 090, 093, 094 are 2026 intakes) — removed from the index: 003,
   008, 009, 025, 031, 032, 033, 034, 036, 037, 047, 051, 054, 057, 060, 063, 066,
-  070, 071, 087, 088 (ids keep their numbers; 73 marks remain). SYM-026 sits in
+  070, 071, 076, 087, 088, 091, 092 (ids keep their numbers; 70 marks remain). SYM-026 sits in
   003's old grid position and SYM-050 in 008/009's (array order, not renumbered).
 - name      SYM-001..015 named; 016+ are "Untitled" pending real names
 - cat       category; 016+ are "Uncatalogued"
@@ -70,10 +70,11 @@ for working on it.
   Explode button suppressed when a mark is a single compound path (e.g. G Mark).
 - Scale ramp: 96/64/44/28/16px, bottom-aligned, under the stage.
 - Last grid card is the Konpo logomark in accent purple (KONPO / Konpo Studio /
-  konpo.studio), opens https://konpo.studio in a new tab. It breathes on a
-  continuous lottie loop (anim/konpo.json, four dots drifting 3.5u, seamless
-  seam, purple markColor slot); static purple mark is the reduced-motion/CDN
-  fallback.
+  konpo.studio), opens https://konpo.studio in a new tab. It plays the Konpo Notes
+  widget's four-dot dance on a continuous loop (anim/konpo.json, extracted
+  from konpo-comments/konpo-lottie.json: white disc dropped, dots recolored to
+  the accent purple, precomp-wrapped so the resting cluster sits in the 80u
+  mark box); static purple mark is the reduced-motion/CDN fallback.
 - Adopt request: "Adopt <name>" full-bleed band at the drawer bottom (id
   fallback for Untitled marks). Clicking pushes the drawer left and slides in a
   second equal-width panel (#adopt) whose fields and button are full-bleed
