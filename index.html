@@ -1708,6 +1708,18 @@ function renderGrid(filter){
     </div>`;
   k.onclick = () => window.open('https://konpo.studio', '_blank', 'noopener');
   grid.appendChild(k);
+  // the logomark breathes on a continuous loop, in the accent purple
+  if (window.lottie && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const slot = document.createElement('div');
+    slot.className = 'lottie-slot';
+    k.appendChild(slot);
+    const anim = lottie.loadAnimation({
+      container: slot, renderer: 'svg', loop: true, autoplay: true,
+      path: 'anim/konpo.json'
+    });
+    anim.addEventListener('DOMLoaded', () => k.classList.add('lottie-live'));
+    gridAnims.push(anim);
+  }
 }
 
 /* Konpo logomark (four-dot symbol), 62x62 */

@@ -69,7 +69,10 @@ for working on it.
   Explode button suppressed when a mark is a single compound path (e.g. G Mark).
 - Scale ramp: 96/64/44/28/16px, bottom-aligned, under the stage.
 - Last grid card is the Konpo logomark in accent purple (KONPO / Konpo Studio /
-  konpo.studio), opens https://konpo.studio in a new tab.
+  konpo.studio), opens https://konpo.studio in a new tab. It breathes on a
+  continuous lottie loop (anim/konpo.json, four dots drifting 3.5u, seamless
+  seam, purple markColor slot); static purple mark is the reduced-motion/CDN
+  fallback.
 - Adopt request: "Adopt <name>" full-bleed band at the drawer bottom (id
   fallback for Untitled marks). Clicking pushes the drawer left and slides in a
   second equal-width panel (#adopt) whose fields and button are full-bleed
