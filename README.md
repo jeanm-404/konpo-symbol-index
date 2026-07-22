@@ -27,7 +27,8 @@ for working on it.
   optionally with inline style="stroke-width:X" to keep a source's weight)
 - con       construction layer: class="guide" dashed, class="pt" points,
             plain <line pathLength="1"> = solid dims (draw-on), <text> = corner notes
-- blurb     description shown in drawer (all marks have one)
+- blurb     description shown in drawer — every mark has one, written to run
+  ~3 lines at the drawer's 48ch measure
 - year / status   001–015: 2025; 001–014 "Rejected", 015 + 022 "Adopted";
   the rest "—". (industry still in data but no longer shown in the drawer)
 - reason    why it was rejected — quirky two-word "Too ___" vocabulary
