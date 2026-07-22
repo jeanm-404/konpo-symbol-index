@@ -1842,6 +1842,7 @@ function fillDrawer(s){
   const controls = document.createElement('div');
   controls.className = 'stage-controls';
   stage.appendChild(controls);
+  let stageBusyUntil = 0; // when the stage's explode/turn transitions land
 
   // annotations toggle (always available; label stays static)
   const aBtn = document.createElement('button');
@@ -1881,6 +1882,7 @@ function fillDrawer(s){
   let angle = 0;
   tBtn.onclick = () => {
     angle += 90;
+    stageBusyUntil = Math.max(stageBusyUntil, Date.now() + 750); // turn eases .7s
     // rotate the static svg and the lottie slot together
     stage.querySelectorAll(':scope > svg, :scope > .lottie-slot').forEach(el => el.style.transform = `rotate(${angle}deg)`);
     drawer.querySelectorAll('.ramp .step svg').forEach(el => el.style.transform = `rotate(${angle}deg)`);
@@ -1904,6 +1906,7 @@ function fillDrawer(s){
     else btn.onclick = () => {
       if (!stage.classList.contains('exploded') && annotOn) aBtn.click();
       stage.classList.remove('lottie-live'); // hand the stage back to the static mark
+      stageBusyUntil = Math.max(stageBusyUntil, Date.now() + 1450); // parts travel 1.4s
       const on = stage.classList.toggle('exploded');
       parts.forEach((el, i) => {
         const [dx, dy] = vectors[i] || [0, 0];
@@ -1938,15 +1941,27 @@ function fillDrawer(s){
       });
       return drawerAnim;
     };
-    pBtn.onclick = () => {
-      if (cycling) return; // mid-cycle: let it finish
-      const xBtn = [...controls.querySelectorAll('button')].find(b => b.textContent === 'Assemble');
-      if (xBtn) xBtn.click(); // assemble before playing
+    let pendingPlay = false;
+    const startPlay = () => {
+      // stage picked up new motion (or got re-exploded) while we waited: wait again
+      if (Date.now() < stageBusyUntil || stage.classList.contains('exploded')) {
+        setTimeout(startPlay, Math.max(60, stageBusyUntil - Date.now() + 60));
+        return;
+      }
+      pendingPlay = false;
       const anim = ensureMounted();
       stage.classList.add('lottie-live');
       cycling = true;
-      pBtn.classList.add('active');
       anim.goToAndPlay(0, true);
+    };
+    pBtn.onclick = () => {
+      if (cycling || pendingPlay) return; // mid-cycle or queued: let it finish
+      const xBtn = [...controls.querySelectorAll('button')].find(b => b.textContent === 'Assemble');
+      if (xBtn) xBtn.click(); // reassemble first; the wait below covers the travel
+      pBtn.classList.add('active');
+      const delay = Math.max(0, stageBusyUntil - Date.now());
+      if (delay > 0) { pendingPlay = true; setTimeout(startPlay, delay + 60); }
+      else startPlay();
     };
   }
 
