@@ -118,9 +118,17 @@ UI sounds are synthesized live in WebAudio — no audio files.
   at 2s, grid + footer at 3s.
 - Tile hover: sibling tiles + header/footer blur (CSS :has), construction
   drafts in element-by-element, corner notes type in. On the fifteen animated
-  marks (001, 002, 004 + the curated twelve — bespoke lottie loops generated
-  from their own path data by scripts in the repo history), hover plays the
-  motion cycle first; annotations wait for it.
+  marks (001, 002, 004 + the curated twelve), hover plays the motion cycle
+  first; annotations wait for it. Each loop is generated from the mark's own
+  path data by `scripts/build_lottie.py`, and each of the twelve has its own
+  motion verb rooted in what the mark is: the Link tugs taut, the Pentad is
+  counted disc by disc, the Tessera tiles are pressed in corner to corner,
+  the Swarm hovers on incoherent bearings, the Corolla spiral-closes, Bloom's
+  moons orbit a true (seamless) quarter-revolution, the Clover spins a
+  seamless quarter on its four-fold symmetry, a gust travels the Garland,
+  the Dahlia counter-twists like an aperture, Latitude turns like a globe,
+  the Cradle rocks itself to sleep on a damped pendulum, and the Turbine
+  spools through a seamless half revolution on its two-fold symmetry.
 - Click tile → right drawer (fixed, 48rem). Stage controls: Notes (annotations), Turn
   (cumulative 90°), Explode (auto-vectors; suppressed for single-compound or
   centered-part marks), Play on the animated marks (waits for explode/turn
