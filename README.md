@@ -15,10 +15,11 @@ for working on it.
 
 ## Data schema (per entry in S)
 
-- id        "SYM-001"..."SYM-094" with gaps (089, 090, 093, 094, 095 are 2026 intakes) — removed from the index: 003,
+- id        "SYM-001"..."SYM-094" with gaps (089, 090, 093–096 are 2026 intakes) — removed from the index: 003,
   008, 009, 025, 031, 032, 033, 034, 036, 037, 047, 051, 054, 057, 060, 063, 066,
-  064, 070, 071, 076, 087, 088, 091, 092 (ids keep their numbers; 70 marks
-  remain). SYM-095 sits in 064's old slot.. SYM-026 sits in
+  064, 065, 070, 071, 076, 087, 088, 091, 092 (ids keep their numbers; 70
+  marks remain). SYM-095 sits in 064's old slot, SYM-096 "Lantern" in 065's
+  (it inherits the retired 065's name — the same idea, drawn better).. SYM-026 sits in
   003's old grid position and SYM-050 in 008/009's (array order, not renumbered).
 - name      every mark is named (distinct across the set)
 - cat       category: Monogram / Geometric / Abstract / Pictorial
