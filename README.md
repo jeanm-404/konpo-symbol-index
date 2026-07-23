@@ -50,9 +50,10 @@ UI sounds are synthesized live in WebAudio — no audio files.
 - id        "SYM-001"…"SYM-096" with gaps. Removed from the index: 003, 008,
   009, 025, 031, 032, 033, 034, 036, 037, 047, 051, 054, 057, 060, 063, 064,
   065, 066, 070, 071, 076, 087, 088, 091, 092. Ids keep their numbers — a
-  retired number is never reused. Movers keep their ids: 026 sits in 003's old
-  slot, 050 in 008/009's, 095 "Turbine" in 064's, 096 "Lantern" in 065's.
-  089, 090, 093–096 are 2026 intakes.
+  retired number is never reused. Array order is curated, not chronological: the twelve
+  best marks lead (089, 050, 010, 012, 015, 026, 024, 022, 038, 048, 095,
+  086 — they get the slow one-by-one reveal), the rest follow in catalogue
+  order. Ids never change. 089, 090, 093–096 are 2026 intakes.
 - name      every mark is named; names are distinct across the set
 - cat       Monogram / Geometric / Abstract / Pictorial
 - spec      mono construction one-liner ("80 × 80u · 6 parts")
