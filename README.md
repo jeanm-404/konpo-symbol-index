@@ -121,14 +121,14 @@ UI sounds are synthesized live in WebAudio — no audio files.
   marks (001, 002, 004 + the curated twelve), hover plays the motion cycle
   first; annotations wait for it. Each loop is generated from the mark's own
   path data by `scripts/build_lottie.py`, and each of the twelve has its own
-  motion verb rooted in what the mark is: the Link tugs taut, the Pentad is
-  counted disc by disc, the Tessera tiles are pressed in corner to corner,
-  the Swarm hovers on incoherent bearings, the Corolla spiral-closes, Bloom's
-  moons orbit a true (seamless) quarter-revolution, the Clover spins a
-  seamless quarter on its four-fold symmetry, a gust travels the Garland,
-  the Dahlia counter-twists like an aperture, Latitude turns like a globe,
-  the Cradle rocks itself to sleep on a damped pendulum, and the Turbine
-  spools through a seamless half revolution on its two-fold symmetry.
+  motion verb rooted in what the mark is: the Link tugs taut, the Pentad
+  chases a notch around its dial, the Tessera tiles are pressed in corner to
+  corner, the Swarm hovers on incoherent bearings, the Corolla spiral-closes,
+  Bloom's moons orbit a true (seamless) quarter-revolution, the Clover spins
+  a seamless quarter on its four-fold symmetry, a gust travels the Garland,
+  the Dahlia blooms petal by petal, Latitude turns like a globe, the Cradle's
+  dome lifts and touches back down, and the Turbine spools through a seamless
+  half revolution on its two-fold symmetry.
 - Click tile → right drawer (fixed, 48rem). Stage controls: Notes (annotations), Turn
   (cumulative 90°), Explode (auto-vectors; suppressed for single-compound or
   centered-part marks), Play on the animated marks (waits for explode/turn

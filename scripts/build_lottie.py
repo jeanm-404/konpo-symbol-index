@@ -235,13 +235,10 @@ def choreograph(sym_id, meta):
                       (72, rest, None)])
             out.append({'p': p, 'r': {'a': 0, 'k': 0}, 'a': rest})
     elif sym_id == 'SYM-012':
-        # ROLL CALL — the pentad is counted: each disc pops once, in strict
-        # order around the dial. Pure scale, nothing travels.
+        # the pentad rotates one notch, thinks better of it — units chase around the dial
         rank = ang_rank(meta)
         for k, m in enumerate(meta):
-            t0 = 8 + rank[k] * 7
-            out.append(scale_pulse(m['c'], [(t0, 100, POP), (t0+7, 86, POP),
-                                            (t0+14, 107, SOFT), (t0+22, 100, None)]))
+            out.append(orbiter(8 + rank[k] * 3, 11.0))
     elif sym_id == 'SYM-015':
         # SETTING THE TILES — a press sweeps the mosaic corner to corner,
         # tamping each tessera into the mortar as it passes.
@@ -313,16 +310,10 @@ def choreograph(sym_id, meta):
             r = prop([(t0, [0.0], GLIDE), (t0+12, [7.0], SOFT), (t0+26, [0.0], None)])
             out.append({'p': p, 'r': r, 'a': rest})
     elif sym_id == 'SYM-050':
-        # THE APERTURE — the dahlia's two interleaved quads counter-twist about
-        # the heart (cardinals clockwise, diagonals counter), breathe at the
-        # extreme, and cross home through a degree and a half.
-        for m in meta:
-            c = m['c']
-            ang = math.degrees(math.atan2(c[0]-CX, -(c[1]-CY))) % 360
-            sign = 1 if round(ang / 45) % 2 == 0 else -1
-            out.append(pivot_rot(CENTER, [(8, [0.0], GLIDE), (34, [sign*10.0], HOLD),
-                                          (40, [sign*10.0], GLIDE), (62, [-sign*1.5], SOFT),
-                                          (72, [0.0], None)]))
+        # the dahlia blooms clockwise, petal by petal, and folds back in
+        rank = ang_rank(meta)
+        for k, m in enumerate(meta):
+            out.append(radial(m['c'], 4.0, 8 + rank[k] * 3))
     elif sym_id == 'SYM-086':
         # THE TURN OF THE GLOBE — all four latitudes slide east together, rigid
         # as a sphere, the equator pair travelling farthest, and swing back west
@@ -337,13 +328,19 @@ def choreograph(sym_id, meta):
                       (66, off(c, -amp*0.08, 0), SOFT), (74, rest, None)])
             out.append({'p': p, 'r': {'a': 0, 'k': 0}, 'a': rest})
     elif sym_id == 'SYM-089':
-        # THE ROCK — the whole cradle sways about a point beneath its base and
-        # swings itself to sleep: a true damped pendulum, every pass smaller.
-        pivot = (CX, 170.0)
-        seq = [(6, [0.0], SINE), (26, [3.2], SINE), (46, [-2.4], SINE), (64, [1.6], SINE),
-               (80, [-0.8], SINE), (94, [0.3], SINE), (108, [0.0], None)]
-        for m in meta:
-            out.append(pivot_rot(pivot, seq))
+        # the cradle: the dome lifts off its rim, hangs, and touches back down
+        for k, m in enumerate(meta):
+            c = m['c']
+            if m['h'] > 45:                     # the dome
+                out.append({'p': slide(c, 0, -1, 6.0, t0=8), 'r': {'a': 0, 'k': 0}, 'a': off(c, 0, 0)})
+            elif m['w'] > 55:                   # the bowl holds the moment
+                out.append(still(c))
+            elif m['w'] > 20:                   # base curves press down and out
+                sx = 1 if c[0] > CX else -1
+                out.append({'p': slide(c, sx * 0.4, 1, 2.2, t0=12), 'r': {'a': 0, 'k': 0}, 'a': off(c, 0, 0)})
+            else:                               # side nubs flare
+                sx = 1 if c[0] > CX else -1
+                out.append({'p': slide(c, sx, 0, 2.5, t0=12), 'r': {'a': 0, 'k': 0}, 'a': off(c, 0, 0)})
     elif sym_id == 'SYM-095':
         # THE REVOLUTION — the rotor is two-fold (rot-180 error 0.25u), so it
         # spools up, swings a full half turn counterclockwise, and lands exactly
