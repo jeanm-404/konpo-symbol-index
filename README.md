@@ -38,8 +38,8 @@ animated marks; static marks are the fallback, so nothing breaks without it.
 UI sounds are synthesized live in WebAudio — no audio files.
 
 - rem base is 62.5% (1rem = 10px). Konpo tokens: bg #000, tile #141414,
-  purple #9680ff (construction), purple-vivid #ad9cff (accent), green #4ade80
-  (Adopted), red #f87171 (Rejected), fade #6c6c6c, line rgba(255,255,255,0.10).
+  purple #9680ff (construction; adopted marks annotate in green instead),
+  purple-vivid #ad9cff (accent), green #4ade80 (Adopted), red #f87171 (Rejected), fade #6c6c6c, line rgba(255,255,255,0.10).
   Sans: Neue Haas Display Pro stack, weight 400 only. Mono: ui-monospace
   stack, weight 300 for labels.
 - All marks live inline as SVG strings in `const S = [...]` — the only data

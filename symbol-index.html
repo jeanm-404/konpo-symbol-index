@@ -166,6 +166,13 @@
   }
   .construction .guide { stroke-dasharray: 4 3; }
   .construction .pt { fill: var(--purple); stroke: none; }
+
+  /* adopted marks annotate in the adopted green instead of construction purple */
+  .adopted-mark .construction path, .adopted-mark .construction circle,
+  .adopted-mark .construction rect, .adopted-mark .construction ellipse,
+  .adopted-mark .construction line { stroke: #4ade80; }
+  .adopted-mark .construction .pt { fill: #4ade80; }
+  .adopted-mark .notes { color: #4ade80; }
   /* --- construction plots in element by element --- */
   /* solid dimension lines: true draw-on (opacity-gated so dash rounding can't leak).
      vector-effect none here: non-scaling-stroke computes dashes in screen px in
@@ -1764,6 +1771,7 @@ function renderGrid(filter){
     shown++;
     const t = document.createElement('div');
     t.className = 'tile';
+    if (s.status === 'Adopted') t.classList.add('adopted-mark');
     t.dataset.id = s.id;
     t.style.animationDelay = `${delay}ms`;
     t.innerHTML = `
@@ -1980,6 +1988,7 @@ function fillDrawer(s){
   const stage = drawer.querySelector('.stage');
   if (drawerAnim) { drawerAnim.destroy(); drawerAnim = null; }
   stage.classList.remove('exploded', 'lottie-live');
+  stage.classList.toggle('adopted-mark', s.status === 'Adopted');
   stage.classList.add('hide-annot');
   stage.innerHTML = notes(s) + svg(s, false);
   drawer.querySelector('.ramp-slot').innerHTML = ramp(s);
