@@ -68,9 +68,9 @@ UI sounds are synthesized live in WebAudio — no audio files.
   Too Clever, Too Timeless…); drawer shows "Unknown" when absent
 - attachment  "High" | "Medium" | "Low" (drawer falls back to "—")
 - adopter / adopterOrg / adopterUrl / adopterCase / adopterStatus /
-  adopterReason   set on Adopted marks. The drawer shows an "Adopted by"
+  adopterReason / adopterDate   set on Adopted marks. The drawer shows an "Adopted by"
   section after the metadata (full-bleed divider): name (h2), their quoted
-  introduction, adopter stats (Status "Rescued" in green + Reason), then the
+  introduction, adopter stats (Status "Rescued" in green, Reason, Date), then the
   org linked to the new home. The mark's own Status row shows "Rejected"
   struck through in the neutral color. Adopted marks show no Adopt CTA.
 - explode   'auto' | [[dx,dy],…] | null — auto derives vectors from part
@@ -104,7 +104,7 @@ UI sounds are synthesized live in WebAudio — no audio files.
   drafts in element-by-element, corner notes type in. On the three animated
   marks (001, 002, 004 — bespoke lottie loops generated from their own path
   data), hover plays the motion cycle first; annotations wait for it.
-- Click tile → right drawer (fixed, 48rem). Stage controls: Annotations, Turn
+- Click tile → right drawer (fixed, 48rem). Stage controls: Notes (annotations), Turn
   (cumulative 90°), Explode (auto-vectors; suppressed for single-compound or
   centered-part marks), Play on the animated marks (waits for explode/turn
   transitions to settle before taking over). Scale ramp: 96/64/44/28/16px.

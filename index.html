@@ -638,6 +638,7 @@
           <dl class="ab-stats">
             <dt>Status</dt><dd class="revived" id="ab-status"></dd>
             <dt>Reason</dt><dd id="ab-reason"></dd>
+            <dt>Date</dt><dd id="ab-date"></dd>
           </dl>
           <a id="ab-link" target="_blank" rel="noopener"></a>
         </div>
@@ -921,6 +922,7 @@ const S = [
   "adopterCase": "We build modular care software, and a tile that repeats cleanly is our whole product story. We had been sketching worse versions of it for a year.",
   "adopterStatus": "Rescued",
   "adopterReason": "love itttttt!",
+  "adopterDate": "05.2026",
   "attachment": "High"
  },
  {
@@ -1019,7 +1021,8 @@ const S = [
   "adopterUrl": "https://hivemind.systems",
   "adopterCase": "Seven dots and no hierarchy is exactly how our research collective runs. It was rejected for being too timeless. We intend to test that.",
   "adopterStatus": "Rescued",
-  "adopterReason": "love itttttt!"
+  "adopterReason": "love itttttt!",
+  "adopterDate": "06.2026"
  },
  {
   "id": "SYM-023",
@@ -1968,7 +1971,7 @@ function fillDrawer(s){
 
   // annotations toggle (always available; label stays static)
   const aBtn = document.createElement('button');
-  aBtn.textContent = 'Annotations';
+  aBtn.textContent = 'Notes';
   controls.appendChild(aBtn);
   let annotOn = false;
   aBtn.onclick = () => {
@@ -2116,6 +2119,7 @@ function fillDrawer(s){
     document.getElementById('ab-name').textContent = s.adopter;
     document.getElementById('ab-status').textContent = s.adopterStatus || 'Rescued';
     document.getElementById('ab-reason').textContent = s.adopterReason || '—';
+    document.getElementById('ab-date').textContent = s.adopterDate || '—';
     const link = document.getElementById('ab-link');
     link.textContent = (s.adopterOrg || (s.adopterUrl || '').replace(/^https?:\/\//, '')) + ' ↗';
     link.href = s.adopterUrl || '#';
