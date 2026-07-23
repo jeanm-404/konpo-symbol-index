@@ -32,9 +32,12 @@ for working on it.
   ~3 lines at the drawer's 48ch measure
 - year / status   every mark is "Rejected" except 015 + 022 "Adopted";
   year 2025 on 001–015, "—" elsewhere. (industry still in data, not shown)
-- adopter / adopterOrg / adopterUrl / adopterCase   set on Adopted marks; the
+- adopter / adopterOrg / adopterUrl / adopterCase / adopterStatus /
+  adopterReason   set on Adopted marks; the
   drawer shows an "Adopted by" section after the metadata list (full-bleed
-  divider): name + org linked to the new home, then their quoted introduction.
+  divider): name (h2), their quoted introduction, adopter stats (Status
+  "Rescued" in green, Reason), then the org linked to the new home. The mark's
+  own Status row shows "Rejected" struck through in the neutral color.
   Adopted marks show no Adopt CTA (band hidden; toast link skips the panel).
 - reason    why it was rejected — quirky two-word "Too ___" vocabulary
   (Too Circular, Too Clever, Too Timeless…), set on the 13 catalogued marks,

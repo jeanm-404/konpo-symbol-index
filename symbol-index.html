@@ -136,6 +136,7 @@
   }
   #drawer dd.revived { color: #4ade80; }
   #drawer dd.rejected { color: #f87171; }
+  #drawer dd.struck { text-decoration: line-through; }
 
   .tile svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 
@@ -635,6 +636,10 @@
           <span class="mono ab-label">Adopted by</span>
           <h2 class="ab-name" id="ab-name"></h2>
           <p class="ab-case" id="ab-case"></p>
+          <dl class="ab-stats">
+            <dt>Status</dt><dd class="revived" id="ab-status"></dd>
+            <dt>Reason</dt><dd id="ab-reason"></dd>
+          </dl>
           <a id="ab-link" target="_blank" rel="noopener"></a>
         </div>
         <div class="revive">
@@ -915,6 +920,8 @@ const S = [
   "adopterOrg": "Softgrid",
   "adopterUrl": "https://softgrid.studio",
   "adopterCase": "We build modular care software, and a tile that repeats cleanly is our whole product story. We had been sketching worse versions of it for a year.",
+  "adopterStatus": "Rescued",
+  "adopterReason": "love itttttt!",
   "attachment": "High"
  },
  {
@@ -1011,7 +1018,9 @@ const S = [
   "adopter": "Tomás Rivera",
   "adopterOrg": "Hivemind Systems",
   "adopterUrl": "https://hivemind.systems",
-  "adopterCase": "Seven dots and no hierarchy is exactly how our research collective runs. It was rejected for being too timeless. We intend to test that."
+  "adopterCase": "Seven dots and no hierarchy is exactly how our research collective runs. It was rejected for being too timeless. We intend to test that.",
+  "adopterStatus": "Rescued",
+  "adopterReason": "love itttttt!"
  },
  {
   "id": "SYM-023",
@@ -2085,13 +2094,20 @@ function fillDrawer(s){
   document.getElementById('d-category').textContent = s.cat || '—';
   document.getElementById('d-year').textContent = s.year || '—';
   document.getElementById('d-reason').textContent = s.reason || 'Unknown';
+  const adopted = s.status === 'Adopted' && s.adopter;
   const st = document.getElementById('d-status');
-  st.textContent = s.status || '—';
-  st.classList.toggle('revived', s.status === 'Adopted' || s.status === 'Revived');
-  st.classList.toggle('rejected', s.status === 'Rejected');
+  st.classList.remove('revived', 'rejected', 'struck');
+  if (adopted) {
+    // the original fate, crossed out — the adopter section below answers it
+    st.textContent = 'Rejected';
+    st.classList.add('struck');
+  } else {
+    st.textContent = s.status || '—';
+    st.classList.toggle('revived', s.status === 'Adopted' || s.status === 'Revived');
+    st.classList.toggle('rejected', s.status === 'Rejected');
+  }
   document.getElementById('d-attachment').textContent = s.attachment || '—';
   // adopted marks get their own section: who they are, then how they introduced themselves
-  const adopted = s.status === 'Adopted' && s.adopter;
   document.getElementById('adopted-by').hidden = !adopted;
   drawer.querySelector('.revive').hidden = adopted; // no CTA on a mark that already has a home
   if (adopted) {
@@ -2099,6 +2115,8 @@ function fillDrawer(s){
     caseEl.hidden = !s.adopterCase;
     caseEl.textContent = s.adopterCase ? '“' + s.adopterCase + '”' : '';
     document.getElementById('ab-name').textContent = s.adopter;
+    document.getElementById('ab-status').textContent = s.adopterStatus || 'Rescued';
+    document.getElementById('ab-reason').textContent = s.adopterReason || '—';
     const link = document.getElementById('ab-link');
     link.textContent = (s.adopterOrg || (s.adopterUrl || '').replace(/^https?:\/\//, '')) + ' ↗';
     link.href = s.adopterUrl || '#';
