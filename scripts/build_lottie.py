@@ -315,18 +315,12 @@ def choreograph(sym_id, meta):
         for k, m in enumerate(meta):
             out.append(radial(m['c'], 4.0, 8 + rank[k] * 3))
     elif sym_id == 'SYM-086':
-        # THE TURN OF THE GLOBE — all four latitudes slide east together, rigid
-        # as a sphere, the equator pair travelling farthest, and swing back west
-        # through a sliver of overshoot. The meridian ring holds.
+        # THE SPIN — the whole globe rotates: the mark is two-fold (rot-180
+        # error 0.09u), so ring and latitudes together spool up, swing a full
+        # half turn, overshoot three degrees, and land exactly on themselves.
+        seq = [(8, [0.0], GLIDE), (22, [-3.0], INERTIA), (86, [183.0], SOFT), (98, [180.0], None)]
         for m in meta:
-            c = m['c']
-            if m['w'] > 80:
-                out.append(still(c)); continue
-            amp = 5.0 - 0.14 * abs(c[1]-CY)
-            rest = off(c, 0, 0)
-            p = prop([(8, rest, GLIDE), (34, off(c, amp, 0), HOLD), (42, off(c, amp, 0), GLIDE),
-                      (66, off(c, -amp*0.08, 0), SOFT), (74, rest, None)])
-            out.append({'p': p, 'r': {'a': 0, 'k': 0}, 'a': rest})
+            out.append(pivot_rot(CENTER, seq))
     elif sym_id == 'SYM-089':
         # the cradle: the dome lifts off its rim, hangs, and touches back down
         for k, m in enumerate(meta):
@@ -342,12 +336,14 @@ def choreograph(sym_id, meta):
                 sx = 1 if c[0] > CX else -1
                 out.append({'p': slide(c, sx, 0, 2.5, t0=12), 'r': {'a': 0, 'k': 0}, 'a': off(c, 0, 0)})
     elif sym_id == 'SYM-095':
-        # THE REVOLUTION — the rotor is two-fold (rot-180 error 0.25u), so it
-        # spools up, swings a full half turn counterclockwise, and lands exactly
-        # on itself. Slow to start, heavy to stop.
-        seq = [(8, [0.0], GLIDE), (24, [4.0], INERTIA), (88, [-184.0], SOFT), (102, [-180.0], None)]
-        for m in meta:
-            out.append(pivot_rot(CENTER, seq))
+        # the turbine turns a notch: hemispheres shear past each other, the core holds
+        for k, m in enumerate(meta):
+            c = m['c']
+            if m['h'] > 70:
+                sign = -1 if c[0] < CX else 1
+                out.append({'p': slide(c, 0, sign, 4.5, t0=8), 'r': {'a': 0, 'k': 0}, 'a': off(c, 0, 0)})
+            else:
+                out.append(still(c))
     return out
 
 def build(sym_id, name, mark):
@@ -367,9 +363,8 @@ def build(sym_id, name, mark):
         m = motion[k]
         p_prop, r_prop, anchor = m['p'], m['r'], m['a']
         s_prop = m.get('s', {'a': 0, 'k': [100, 100, 100]})
-        if s_prop.get('a') == 1:
-            last_end = max(last_end, s_prop['k'][-1]['t'])
-        for pr in (p_prop, r_prop):
+        o_prop = m.get('o', {'a': 0, 'k': 100})
+        for pr in (p_prop, r_prop, s_prop, o_prop):
             if pr.get('a') == 1:
                 last_end = max(last_end, pr['k'][-1]['t'])
         group_items = [{'ty': 'sh', 'ks': {'a': 0, 'k': {'v': s['v'], 'o': s['o'], 'i': s['i'], 'c': s['c']}}} for s in subs]
@@ -379,7 +374,7 @@ def build(sym_id, name, mark):
         shape_items = [{'ty': 'gr', 'nm': f'part-{k+1}-shapes', 'it': group_items}]
         layers.append({
             'ddd': 0, 'ind': k+1, 'ty': 4, 'nm': f'part-{k+1}',
-            'ks': {'o': {'a': 0, 'k': 100}, 'r': r_prop,
+            'ks': {'o': o_prop, 'r': r_prop,
                    'p': p_prop, 'a': {'a': 0, 'k': anchor},
                    's': s_prop},
             'ip': 0, 'op': 999, 'st': 0, 'shapes': shape_items})

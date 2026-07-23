@@ -126,9 +126,10 @@ UI sounds are synthesized live in WebAudio — no audio files.
   corner, the Swarm hovers on incoherent bearings, the Corolla spiral-closes,
   Bloom's moons orbit a true (seamless) quarter-revolution, the Clover spins
   a seamless quarter on its four-fold symmetry, a gust travels the Garland,
-  the Dahlia blooms petal by petal, Latitude turns like a globe, the Cradle's
-  dome lifts and touches back down, and the Turbine spools through a seamless
-  half revolution on its two-fold symmetry.
+  the Dahlia blooms petal by petal, Latitude spins whole — the mark is
+  two-fold, so its half turn lands exactly on itself — the Cradle's dome
+  lifts and touches back down, and the Turbine's hemispheres shear past
+  each other.
 - Click tile → right drawer (fixed, 48rem). Stage controls: Notes (annotations), Turn
   (cumulative 90°), Explode (auto-vectors; suppressed for single-compound or
   centered-part marks), Play on the animated marks (waits for explode/turn
