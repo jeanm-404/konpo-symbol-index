@@ -117,9 +117,10 @@ UI sounds are synthesized live in WebAudio — no audio files.
   Enter skips too. Then the staged reveal: fit-to-width h1 blurs in at 400ms, chrome
   at 2s, grid + footer at 3s.
 - Tile hover: sibling tiles + header/footer blur (CSS :has), construction
-  drafts in element-by-element, corner notes type in. On the three animated
-  marks (001, 002, 004 — bespoke lottie loops generated from their own path
-  data), hover plays the motion cycle first; annotations wait for it.
+  drafts in element-by-element, corner notes type in. On the fifteen animated
+  marks (001, 002, 004 + the curated twelve — bespoke lottie loops generated
+  from their own path data by scripts in the repo history), hover plays the
+  motion cycle first; annotations wait for it.
 - Click tile → right drawer (fixed, 48rem). Stage controls: Notes (annotations), Turn
   (cumulative 90°), Explode (auto-vectors; suppressed for single-compound or
   centered-part marks), Play on the animated marks (waits for explode/turn
@@ -148,8 +149,9 @@ UI sounds are synthesized live in WebAudio — no audio files.
 ## Known state / pending
 
 - Rich per-mark construction geometry (orbits, radii, pitches) exists for
-  001–015; later marks carry baseline auto-annotations (bbox frame, axes,
-  center, dims, part count).
+  001–015 and the curated twelve (022, 024, 026, 038, 048, 050, 086, 089, 095
+  were derived from measured anatomy); other marks carry baseline
+  auto-annotations (bbox frame, axes, center, dims, part count).
 - Rejection reasons are set on the 13 originally-catalogued marks; the rest
   read "Unknown" pending their paperwork.
 - Current adopters (Tessera, Swarm) are placeholder fiction pending real ones.
