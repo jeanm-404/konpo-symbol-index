@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Symbol Shelter — Konpo Studio</title>
+<meta name="description" content="70 rejected logo marks by Konpo Studio, catalogued with construction geometry. Everyone here is up for adoption.">
+<meta property="og:title" content="Symbol Shelter — Konpo Studio">
+<meta property="og:description" content="A logo takes hundreds of proposals. Only one gets picked. This is the shelter for those who didn't make it — everyone here is up for adoption.">
+<meta property="og:image" content="https://konpo-symbol-index.vercel.app/og/root.png">
+<meta property="og:url" content="https://konpo-symbol-index.vercel.app/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Symbol Shelter">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" type="application/rss+xml" title="Symbol Shelter" href="/feed.xml">
+<link rel="alternate" type="application/feed+json" title="Symbol Shelter" href="/feed.json">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cstyle%3Ecircle%7Bfill:%230a0a0a%7D@media(prefers-color-scheme:dark)%7Bcircle%7Bfill:%23fff%7D%7D%3C/style%3E%3Ccircle cx='50' cy='50' r='32'/%3E%3C/svg%3E">
 <script defer src="https://unpkg.com/lottie-web@5.12.2/build/player/lottie.min.js"></script>
 <style>
@@ -2136,6 +2146,7 @@ function closeDetail(){
   document.body.style.overflow = '';
   document.querySelectorAll('.tile.active').forEach(t => t.classList.remove('active'));
   document.body.classList.remove('page-blur');
+  history.replaceState(null, '', '/');
 }
 
 function openDetail(tile, s){
@@ -2158,7 +2169,21 @@ function openDetail(tile, s){
     document.body.classList.add('page-blur');
   }
   openId = s.id;
+  // the address always shows the shareable stub path (crawlers get real OG tags there)
+  history.replaceState(null, '', '/s/' + s.id.toLowerCase());
 }
+
+/* ---------- Permalinks: #SYM-0XX (or a /s/ stub redirect) opens the drawer ---------- */
+function openFromHash(){
+  const m = location.hash.match(/^#(sym-\d+)$/i);
+  if (!m) return;
+  const id = m[1].toUpperCase();
+  if (openId === id) return;
+  const tile = document.querySelector(`.tile[data-id="${id}"]`);
+  const s = S.find(x => x.id === id);
+  if (tile && s) { tile.scrollIntoView({ block: 'center' }); openDetail(tile, s); }
+}
+window.addEventListener('hashchange', openFromHash);
 
 drawer.querySelector('.close').onclick = closeDetail;
 scrim.onclick = closeDetail;
@@ -2283,21 +2308,26 @@ if (document.fonts) document.fonts.ready.then(fitTitle);
   const timers = [];
   const at = (ms, fn) => timers.push(setTimeout(fn, ms));
   let finished = false;
+  const deepLink = /^#sym-\d+$/i.test(location.hash);
+  const seenIntro = (() => { try { return !!localStorage.getItem('shelter.intro.v1'); } catch (e) { return false; } })();
 
   function finish(){
     if (finished) return;
     finished = true;
+    try { localStorage.setItem('shelter.intro.v1', '1'); } catch (e) {}
     timers.forEach(clearTimeout);
     el.classList.add('done');
     setTimeout(() => el.remove(), 1600);
-    // staged reveal: black-on-black handover, so the title blurring in is the first visible event
-    const rm = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 1;
-    setTimeout(() => document.body.classList.add('t1'), 400 * rm);  // the title arrives first
-    setTimeout(() => document.body.classList.add('t2'), 2000 * rm); // then the rest of the chrome
-    setTimeout(() => { renderGrid('All'); document.body.classList.add('t3'); }, 3000 * rm); // a beat on the chrome, then the index + footer
+    // staged reveal: black-on-black handover, so the title blurring in is the first
+    // visible event. Deep links land straight on their mark: no staging at all.
+    const m = (matchMedia('(prefers-reduced-motion: reduce)').matches || deepLink) ? 0 : 1;
+    setTimeout(() => document.body.classList.add('t1'), 400 * m);  // the title arrives first
+    setTimeout(() => document.body.classList.add('t2'), 2000 * m); // then the rest of the chrome
+    setTimeout(() => { renderGrid('All'); document.body.classList.add('t3'); openFromHash(); }, 3000 * m); // then the index + footer
   }
 
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { finish(); return; }
+  // the intro types once per browser; permalinks and reduced motion skip it entirely
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches || deepLink || seenIntro) { finish(); return; }
 
   // two screens: the count, then the shelter. 1.1s beat between screen 1's
   // rows (baked into the word delays above), 1.1s of black between screens
