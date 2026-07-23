@@ -55,10 +55,10 @@ function ogSvg(s) {
   <rect width="1200" height="630" fill="#000"/>
   <rect x="80" y="85" width="460" height="460" rx="32" fill="#141414"/>
   <svg x="80" y="85" width="460" height="460" viewBox="-28 -28 256 256"><g class="mark">${s.mark}</g></svg>
-  <text x="620" y="208" font-family="Menlo, monospace" font-size="26" letter-spacing="3" fill="#6c6c6c">${esc(s.id)} — ${esc(s.cat.toUpperCase())}</text>
-  <text x="620" y="298" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="78" fill="#fff">${esc(s.name)}</text>
-  <text x="620" y="366" font-family="Menlo, monospace" font-size="26" letter-spacing="2" fill="${st.color}">${esc(st.text)}</text>
-  <text x="620" y="545" font-family="Menlo, monospace" font-size="23" letter-spacing="3" fill="#6c6c6c">SYMBOL SHELTER — KONPO STUDIO</text>
+  <text x="620" y="106" font-family="Menlo, monospace" font-size="26" letter-spacing="3" fill="#6c6c6c">${esc(s.id)}</text>
+  <text x="620" y="196" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="78" fill="#fff">${esc(s.name)}</text>
+  <text x="620" y="264" font-family="Menlo, monospace" font-size="26" letter-spacing="2" fill="${st.color}">${esc(st.text)}</text>
+  <text x="620" y="545" font-family="Menlo, monospace" font-size="23" letter-spacing="3" fill="#6c6c6c">SYMBOL SHELTER</text>
 </svg>`;
 }
 

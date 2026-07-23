@@ -1709,9 +1709,20 @@ const notes = (s) => { if (!s._t) s._t = typeset(s.con); return `<div class="not
    Scenes generated from the marks' own path data (text-to-lottie workflow).
    The static mark stays as the fallback until the animation actually mounts. */
 let gridAnims = [];
+// lottie-web loads deferred from a CDN; when the intro is skipped (returning
+// visitors, deep links) the grid can render before it executes — wait for it
+function whenLottie(cb){
+  if (window.lottie) { cb(); return; }
+  const t = setInterval(() => { if (window.lottie) { clearInterval(t); cb(); } }, 100);
+  setTimeout(() => clearInterval(t), 15000); // CDN never came: static marks stand
+}
 function mountLottie(tile, s){
   if (!/^SYM-00[1-4]$/.test(s.id)) return;
-  if (!window.lottie || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  whenLottie(() => mountLottieNow(tile, s));
+}
+function mountLottieNow(tile, s){
+  if (!tile.isConnected) return; // grid re-rendered while we waited
   const slot = document.createElement('div');
   slot.className = 'lottie-slot';
   tile.appendChild(slot);
@@ -1784,17 +1795,20 @@ function renderGrid(filter){
     </div>`;
   k.onclick = () => window.open('https://konpo.studio', '_blank', 'noopener');
   grid.appendChild(k);
-  // the logomark breathes on a continuous loop, in the accent purple
-  if (window.lottie && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const slot = document.createElement('div');
-    slot.className = 'lottie-slot';
-    k.appendChild(slot);
-    const anim = lottie.loadAnimation({
-      container: slot, renderer: 'svg', loop: true, autoplay: true,
-      path: 'anim/konpo.json'
+  // the logomark dances on a continuous loop, in the accent purple
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    whenLottie(() => {
+      if (!k.isConnected) return;
+      const slot = document.createElement('div');
+      slot.className = 'lottie-slot';
+      k.appendChild(slot);
+      const anim = lottie.loadAnimation({
+        container: slot, renderer: 'svg', loop: true, autoplay: true,
+        path: 'anim/konpo.json'
+      });
+      anim.addEventListener('DOMLoaded', () => k.classList.add('lottie-live'));
+      gridAnims.push(anim);
     });
-    anim.addEventListener('DOMLoaded', () => k.classList.add('lottie-live'));
-    gridAnims.push(anim);
   }
 }
 
