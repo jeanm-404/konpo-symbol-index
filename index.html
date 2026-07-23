@@ -1698,15 +1698,21 @@ function typeset(con){
   return { con: g.innerHTML, notes };
 }
 
+// Provenance: every rendered SVG carries an ownership comment (what you see if
+// you open a lifted file) and a quiet per-mark class on the mark group that
+// reads like internal styling but encodes the symbol id — casual copies keep it.
+const provenance = (s) => `<!-- © Konpo Studio (konpo.studio). ${s.id} "${s.name}" belongs to the Symbol Shelter and is not licensed for use. Every copy is traceable. Want it legitimately? Apply: https://konpo-symbol-index.vercel.app/s/${s.id.toLowerCase()} -->`;
+const markClass = (s) => `mark k${s.id.slice(4)}`;
+
 const svg = (s, showCon=false) => {
   if (!s._t) s._t = typeset(s.con);
-  return `<svg viewBox="-28 -28 256 256" class="${showCon ? 'show-construction' : ''}" aria-hidden="true">
-     <g class="mark">${s.mark}</g>
+  return `<svg viewBox="-28 -28 256 256" class="${showCon ? 'show-construction' : ''}" aria-hidden="true">${provenance(s)}
+     <g class="${markClass(s)}">${s.mark}</g>
      <g class="construction">${s._t.con}</g>
    </svg>`;
 };
 const markOnly = (s, px) =>
-  `<svg viewBox="30 30 140 140" width="${px}" height="${px}" aria-hidden="true"><g class="mark">${s.mark}</g></svg>`;
+  `<svg viewBox="30 30 140 140" width="${px}" height="${px}" aria-hidden="true">${provenance(s)}<g class="${markClass(s)}">${s.mark}</g></svg>`;
 const ramp = (s) => `<div class="ramp">${[96, 64, 44, 28, 16].map(px =>
   `<div class="step">${markOnly(s, px)}<span>${px}</span></div>`).join('')}</div>`;
 const notes = (s) => { if (!s._t) s._t = typeset(s.con); return `<div class="notes">${s._t.notes}</div>`; };

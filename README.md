@@ -132,6 +132,10 @@ UI sounds are synthesized live in WebAudio — no audio files.
 - Last grid card is the Konpo logomark in accent purple, playing the Konpo
   Notes four-dot dance on loop (anim/konpo.json — the fifth, center circle is
   tile-colored so it reads as cutting the dots). Links to konpo.studio.
+- Provenance: every rendered SVG embeds an ownership comment (© Konpo, the
+  mark's id + name, and its adoption URL) plus a quiet per-mark class on the
+  mark group (`k042`) that reads like styling but encodes the id — lifted
+  copies stay traceable unless deliberately laundered.
 - Right-click on any mark is blocked: "© Konpo — not up for grabs" toast at
   the cursor with a "Want it? Make your case." link into the adopt flow, plus
   the velvet state.error sound. Deterrent only — SVGs are inline in source.
