@@ -70,8 +70,8 @@ UI sounds are synthesized live in WebAudio — no audio files.
 - adopter / adopterOrg / adopterUrl / adopterCase / adopterStatus /
   adopterReason / adopterDate   set on Adopted marks. The drawer shows an "Adopted by"
   section after the metadata (full-bleed divider): name (h2), their quoted
-  introduction, adopter stats (Status "Rescued" in green, Reason, Date), then the
-  org linked to the new home. The mark's own Status row shows "Rejected"
+  introduction, adopter stats (Status "Rescued" in green, Reason,
+  Date, Organization, and Home — the domain linked out). The mark's own Status row shows "Rejected"
   struck through in the neutral color. Adopted marks show no Adopt CTA.
 - explode   'auto' | [[dx,dy],…] | null — auto derives vectors from part
   bboxes around the mark center (100,100)

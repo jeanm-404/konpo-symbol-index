@@ -480,11 +480,6 @@
   }
   #drawer .adopted-by[hidden] { display: none; }
   #drawer .adopted-by .ab-case { font-size: 1.5rem; color: var(--body); max-width: 48ch; }
-  #drawer .adopted-by a {
-    align-self: flex-start;
-    font-family: var(--mono); font-size: 1.2rem; font-weight: 300;
-    letter-spacing: 0.06em; text-transform: uppercase;
-  }
 
   #drawer .content { transition: opacity .2s; }
   #drawer .content.swapping { opacity: 0; }
@@ -639,8 +634,9 @@
             <dt>Status</dt><dd class="revived" id="ab-status"></dd>
             <dt>Reason</dt><dd id="ab-reason"></dd>
             <dt>Date</dt><dd id="ab-date"></dd>
+            <dt>Organization</dt><dd id="ab-org"></dd>
+            <dt>Home</dt><dd><a id="ab-link" target="_blank" rel="noopener"></a></dd>
           </dl>
-          <a id="ab-link" target="_blank" rel="noopener"></a>
         </div>
         <div class="revive">
           <button class="revive-btn" id="revive-toggle">Want to revive it?</button>
@@ -2120,8 +2116,9 @@ function fillDrawer(s){
     document.getElementById('ab-status').textContent = s.adopterStatus || 'Rescued';
     document.getElementById('ab-reason').textContent = s.adopterReason || '—';
     document.getElementById('ab-date').textContent = s.adopterDate || '—';
+    document.getElementById('ab-org').textContent = s.adopterOrg || '—';
     const link = document.getElementById('ab-link');
-    link.textContent = (s.adopterOrg || (s.adopterUrl || '').replace(/^https?:\/\//, '')) + ' ↗';
+    link.textContent = (s.adopterUrl || '').replace(/^https?:\/\//, '').replace(/\/$/, '') + ' ↗';
     link.href = s.adopterUrl || '#';
   }
   closeAdopt(true);
