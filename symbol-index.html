@@ -120,14 +120,7 @@
   body.view-list .view-toggle .ic-list { display: block; }
   /* zoomed-out view: smaller tiles, more of the shelter on screen */
   body.view-zoom .tile:not(.expanded) { width: 24rem; height: 24rem; }
-  /* the expanded card spans two zoom cells, same contract as the grid view */
-  body.view-zoom .tile.expanded {
-    width: min(48.4rem, calc(100vw - 2.4rem));
-    height: min(48.4rem, calc(100vh - 4.8rem));
-    height: min(48.4rem, calc(100dvh - 4.8rem));
-  }
-  body.view-zoom .tile.expanded .xc-stage svg { width: min(30rem, 70vw); height: min(30rem, 70vw); }
-  body.view-zoom .tile.expanded .xc-stage .lottie-slot { width: min(30rem, 70vw); height: min(30rem, 70vw); }
+
   .filter { position: relative; }
   .filter-btn { padding: 1.2rem 1.6rem; }
   .filter-btn .chev { display: flex; width: 1.6rem; height: 1.6rem; transition: transform .3s; }
@@ -2910,16 +2903,18 @@ function expandTile(tile, s){
     applyGridTransform();
   }
   canvas.classList.add('reflowing');
-  // Hole-free 2×2: the row ABOVE stays put. The clicked row (R) and the row
-  // below (R+1) push their right side one cell right (so nothing hides under the
-  // card's right column); the clicked column (C) pushes everything below it down
-  // one cell (so nothing hides under the card's bottom-left). No gaps left behind.
+  // Hole-free reflow: the row ABOVE stays put. The card spans `span` cells at
+  // this view's density (2 in grid, 3 zoomed out); its rows push their right
+  // side clear of the card, and the clicked column pushes everything below it
+  // down by the same amount. No gaps left behind.
+  const span = Math.ceil(716 / cell);
+  const shift = (span - 1) * cell;
   for (const t of canvas.children){
     if (t === tile) continue;
     const tx = +t.dataset.x, ty = +t.dataset.y;
     let ox = 0, oy = 0;
-    if ((Math.abs(ty - cy) < T || Math.abs(ty - (cy + cell)) < T) && tx > cx + T) ox = cell;
-    else if (Math.abs(tx - cx) < T && ty > cy + T) oy = cell;
+    if (ty > cy - T && ty < cy + (span - 1) * cell + T && tx > cx + T) ox = shift;
+    else if (Math.abs(tx - cx) < T && ty > cy + T) oy = shift;
     t.style.translate = `${tx + ox}px ${ty + oy}px`;
   }
 
