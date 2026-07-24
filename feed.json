@@ -1,0 +1,569 @@
+{
+  "version": "https://jsonfeed.org/version/1.1",
+  "title": "Symbol Shelter — Konpo Studio",
+  "home_page_url": "https://konpo-symbol-index.vercel.app/",
+  "feed_url": "https://konpo-symbol-index.vercel.app/feed.json",
+  "description": "Rejected logo marks by Konpo Studio, catalogued and up for adoption.",
+  "items": [
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-096",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-096",
+      "title": "SYM-096 — Lantern",
+      "content_text": "Pictorial · REJECTED — Nested meridians swelling to a sphere, drawn twice and mirrored. Every rib shares the poles. A wireframe globe that reads at any size.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-096.png",
+      "date_published": "2026-07-22T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-095",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-095",
+      "title": "SYM-095 — Turbine",
+      "content_text": "Abstract · REJECTED — A sliced orb with fins stepping off both hemispheres. Spin implied, warranty void. The steps descend in even increments toward the poles.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-095.png",
+      "date_published": "2026-07-22T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-094",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-094",
+      "title": "SYM-094 — Marigold",
+      "content_text": "Pictorial · REJECTED — Eight lobes and a core cut from one piece. The stamp version of a garden. Ink it and press — it holds at any size.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-094.png",
+      "date_published": "2026-07-22T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-093",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-093",
+      "title": "SYM-093 — Anemone",
+      "content_text": "Pictorial · REJECTED — Eight petals drawn in one heavy contour. The flower with outdoor durability. The stroke never varies; the corners carry the character.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-093.png",
+      "date_published": "2026-07-22T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-090",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-090",
+      "title": "SYM-090 — Warp",
+      "content_text": "Geometric · REJECTED — Two strokes woven into peaks, over-under-over. The loom’s first opinion. Line weight stays constant through every crossing.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-090.png",
+      "date_published": "2026-07-22T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-089",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-089",
+      "title": "SYM-089 — Cradle",
+      "content_text": "Pictorial · REJECTED — A dome coming to rest in its rim. Touchdown held one frame before contact. The gap between mass and cradle is the entire drama.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-089.png",
+      "date_published": "2026-07-22T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-086",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-086",
+      "title": "SYM-086 — Latitude",
+      "content_text": "Geometric · REJECTED — Horizontal ellipses stacked into a globe. Meridian’s level-headed sibling. The rings compress toward the poles at true projection.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-086.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-085",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-085",
+      "title": "SYM-085 — Tally",
+      "content_text": "Pictorial · REJECTED — Counters in framed cells — the score kept honest. The frame divides before the dots decide. A game where the grid always wins.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-085.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-084",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-084",
+      "title": "SYM-084 — Waveform",
+      "content_text": "Abstract · REJECTED — Vertical strokes swelling to an ellipse. Sound pressure, set in type. The envelope is symmetric; the noise is disciplined.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-084.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-083",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-083",
+      "title": "SYM-083 — Aperture",
+      "content_text": "Pictorial · REJECTED — A ring, a lid, a pupil. The lens mid-blink. The bar sits exactly on the horizontal axis — the calm before the shutter.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-083.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-082",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-082",
+      "title": "SYM-082 — Ripple",
+      "content_text": "Abstract · REJECTED — Rings inside rings, weighted low in the frame. A drop landed and the mark kept the evidence. Amplitude decays outward, as physics asks.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-082.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-081",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-081",
+      "title": "SYM-081 — Lune",
+      "content_text": "Geometric · REJECTED — Crescent slivers nested inside an O. Geometry’s name for a moon-shape; the client said banana. The moons win on paper.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-081.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-080",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-080",
+      "title": "SYM-080 — Windrose",
+      "content_text": "Geometric · REJECTED — Spokes tipped with direction markers, set at true intervals. A compass that lost its map. North is wherever you hang it.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-080.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-079",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-079",
+      "title": "SYM-079 — Daisy",
+      "content_text": "Pictorial · REJECTED — Six outline petals around an open eye. The lawn-variety flower, drafted properly. Petal roots share one circle; nothing droops.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-079.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-078",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-078",
+      "title": "SYM-078 — Helm",
+      "content_text": "Pictorial · REJECTED — A dome strapped with a low band and side curls. Part helmet, part kettle — the debate was never settled. The strap holds either story on.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-078.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-077",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-077",
+      "title": "SYM-077 — Louver",
+      "content_text": "Geometric · REJECTED — Horizontal slats filling a softened square. Ventilation for a brand. The slat gap equals the slat height, which is why it hums.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-077.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-075",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-075",
+      "title": "SYM-075 — Dune",
+      "content_text": "Pictorial · REJECTED — A solid dome settling past its baseline. Weather did the styling. The flat is not a crop — it is where the mass came to rest.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-075.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-074",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-074",
+      "title": "SYM-074 — Knot",
+      "content_text": "Abstract · REJECTED — One continuous line looping through four lobes. No start, no end, no slack. Trace it with a finger; you arrive where you began.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-074.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-073",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-073",
+      "title": "SYM-073 — Quartet",
+      "content_text": "Geometric · REJECTED — Four dashed rings, tangent in a 2×2. Ensemble playing; nobody solos. The dashes sync at every meeting point — that took an afternoon.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-073.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-072",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-072",
+      "title": "SYM-072 — Coil",
+      "content_text": "Abstract · REJECTED — Nested arcs wound into a sphere with a twist at the equator. A spring at rest, drawn under tension. The line spacing is the energy diagram.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-072.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-069",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-069",
+      "title": "SYM-069 — Phases",
+      "content_text": "Abstract · REJECTED — Crescents overlapping left to right — a moon month compressed into one lockup. Each phase eclipses the last. Time reads as thickness.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-069.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-068",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-068",
+      "title": "SYM-068 — Cloister",
+      "content_text": "Geometric · REJECTED — Four corner arcs enclosing a courtyard of air. The frame is the building. Close the gaps and it dies; the openings are the architecture.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-068.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-067",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-067",
+      "title": "SYM-067 — Barcode",
+      "content_text": "Abstract · REJECTED — Vertical bars packed into an ellipse. Scans as an orb; scans as nothing else. The bar rhythm stays even — the silhouette does the bending.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-067.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-062",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-062",
+      "title": "SYM-062 — Stitch",
+      "content_text": "Geometric · REJECTED — A cross assembled from square counters on a strict grid. Embroidery logic, machine confidence. Zoom in and it never gets smoother.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-062.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-061",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-061",
+      "title": "SYM-061 — Union",
+      "content_text": "Abstract · REJECTED — Two open rings joined at the seam. The merger that actually closed. Their gaps face away from each other — nobody’s exiting.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-061.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-059",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-059",
+      "title": "SYM-059 — Whorl",
+      "content_text": "Abstract · REJECTED — Concentric ellipses packed until they vibrate. Stare responsibly. The spacing is optically corrected, which only makes it worse.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-059.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-058",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-058",
+      "title": "SYM-058 — Venn",
+      "content_text": "Geometric · REJECTED — Two circles, one intersection, no labels. Every strategy deck, distilled. The overlap is set at exactly one third — someone measured.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-058.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-056",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-056",
+      "title": "SYM-056 — Orbit",
+      "content_text": "Abstract · REJECTED — Three ellipses sharing a nucleus, drawn with a loose wrist. The atom before the standards manual arrived. Charmingly out of tolerance.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-056.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-055",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-055",
+      "title": "SYM-055 — Visor",
+      "content_text": "Pictorial · REJECTED — An orb with two smile-lines low on the face. Reads as a helmet from across the room, a kettle up close. Nobody would arbitrate.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-055.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-053",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-053",
+      "title": "SYM-053 — Tether",
+      "content_text": "Abstract · REJECTED — Two C-forms locked wrist to wrist. The chain link that wanted a serif. Pull either end and the counters only close tighter.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-053.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-052",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-052",
+      "title": "SYM-052 — Meridian",
+      "content_text": "Geometric · REJECTED — A sphere sliced by longitudes, solid where it matters. Globe logic without the map. The slices thin toward the poles, as they should.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-052.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-050",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-050",
+      "title": "SYM-050 — Dahlia",
+      "content_text": "Pictorial · REJECTED — Eight solid petals around a core dot, press-fit with no overlaps. The flower reduced to stamping-die parts. Would survive a keychain.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-050.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-049",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-049",
+      "title": "SYM-049 — Argyle",
+      "content_text": "Geometric · REJECTED — A lens filled with diagonal checkers — forty-five degrees of knitwear geometry. The counters shrink toward the tips. Grandfather-approved.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-049.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-048",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-048",
+      "title": "SYM-048 — Garland",
+      "content_text": "Abstract · REJECTED — Six small rings strung around a seventh. A molecule dressed for a party. Every bond is a shared tangent, checked twice.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-048.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-046",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-046",
+      "title": "SYM-046 — Synapse",
+      "content_text": "Abstract · REJECTED — Four pill-forms firing toward a center that isn’t drawn. The gap carries the charge. Symmetry keeps the voltage even.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-046.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-045",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-045",
+      "title": "SYM-045 — Duplex",
+      "content_text": "Geometric · REJECTED — Half square, half circle, one silhouette. The two tenants never met; the party wall is dead straight. A duplex with excellent zoning.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-045.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-044",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-044",
+      "title": "SYM-044 — Gyre",
+      "content_text": "Abstract · REJECTED — Two comma-forms chasing each other around a still center. Motion with the brakes on. The eye completes a rotation the geometry only implies.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-044.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-043",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-043",
+      "title": "SYM-043 — Tangent",
+      "content_text": "Geometric · REJECTED — A square and a circle meeting at exactly one point of agreement. Neither yields. The overlap is small enough to be a decision, not an accident.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-043.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-042",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-042",
+      "title": "SYM-042 — Medallion",
+      "content_text": "Pictorial · REJECTED — Rings, petals and a rounded frame in strict concentricity. The ceremonial one — built for embossing. Every band shares the same center point.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-042.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-041",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-041",
+      "title": "SYM-041 — Parquet",
+      "content_text": "Geometric · REJECTED — Dot-and-tile pairs in a 2×2 rotation. Flooring logic at logo scale. Rotate any unit 90° and the pattern heals itself.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-041.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-040",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-040",
+      "title": "SYM-040 — Circuit",
+      "content_text": "Abstract · REJECTED — Paired dots and pills stepping up the diagonal. A circuit board that learned composition. Current flows corner to corner, or it would if it could.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-040.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-039",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-039",
+      "title": "SYM-039 — Relay",
+      "content_text": "Abstract · REJECTED — Two pointed nodes flanking a dot — a signal caught mid-pass. The taper sets the direction of travel. Read left to right, like everything else here.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-039.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-038",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-038",
+      "title": "SYM-038 — Clover",
+      "content_text": "Geometric · REJECTED — A disc split into four kissing petals. The negative cross does the work; the petals just hold their corners. Luck, engineered.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-038.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-035",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-035",
+      "title": "SYM-035 — Molecule",
+      "content_text": "Abstract · REJECTED — Dots and bonds laid on one axis — a compound diagrammed in plan view. Every interval is a multiple of the dot radius. Chemistry, house style.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-035.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-030",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-030",
+      "title": "SYM-030 — Socket",
+      "content_text": "Abstract · REJECTED — A disc with its core exposed and one channel out. Something used to plug in here. The absence is drawn more carefully than the presence.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-030.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-029",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-029",
+      "title": "SYM-029 — Rosette",
+      "content_text": "Geometric · REJECTED — Four rings pinched around a square heart. The dashes were load-bearing — remove one and the square dissolves. Ornament with a skeleton.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-029.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-028",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-028",
+      "title": "SYM-028 — Hexad",
+      "content_text": "Geometric · REJECTED — Six wedges locked into a hexagon, meeting at a pinpoint center. Cut, don’t draw. Rotational symmetry does the talking; the gaps do the counting.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-028.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-027",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-027",
+      "title": "SYM-027 — Casement",
+      "content_text": "Geometric · REJECTED — Four rounded panes split by a hairline mullion. A window with nothing behind it yet. The radii agree at every corner, which is the whole job.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-027.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-026",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-026",
+      "title": "SYM-026 — Bloom",
+      "content_text": "Pictorial · REJECTED — A ring of eight dots crowding a clustered core. Spacing tightens toward the middle like a real bouquet. The client called it too happy; it is.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-026.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-024",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-024",
+      "title": "SYM-024 — Corolla",
+      "content_text": "Pictorial · REJECTED — Five petal-rings around an open center, pitched at 72°. Each ring borrows its neighbor’s edge. Botany redrawn by compass and patience.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-024.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-023",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-023",
+      "title": "SYM-023 — Enso",
+      "content_text": "Pictorial · REJECTED — One stroke, almost closed, weight easing at the release. The gap is the point. The most hand-drawn thing in a catalogue of compasses.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-023.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-022",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-022",
+      "title": "SYM-022 — Swarm",
+      "content_text": "Abstract · ADOPTED · 06.2026 — Seven equal dots in loose hexagonal formation. Ordered enough to feel deliberate, loose enough to feel alive. Count them twice; the count holds.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-022.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-021",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-021",
+      "title": "SYM-021 — Domino",
+      "content_text": "Pictorial · REJECTED — Two upright tiles, four counters, one connecting bar. Game pieces posing as a system diagram. The pips align to the grid, not to luck.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-021.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-020",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-020",
+      "title": "SYM-020 — Binary",
+      "content_text": "Abstract · REJECTED — Two discs sharing one edge, drawn as a single mass. One reads full, the other clipped — a pair before parts. The seam is the signature.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-020.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-019",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-019",
+      "title": "SYM-019 — Asterisk",
+      "content_text": "Geometric · REJECTED — Six serifed spokes off a common hub, tips flared like type. The footnote that wanted to be the headline. Set at even intervals, no favorites.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-019.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-018",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-018",
+      "title": "SYM-018 — Iris",
+      "content_text": "Pictorial · REJECTED — A ring holding five vertical lenses, widest at the axis. Read it as an eye or an onion cross-section; both camps were loud. The ring keeps the peace.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-018.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-017",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-017",
+      "title": "SYM-017 — Facet",
+      "content_text": "Geometric · REJECTED — A ring milled into eight flats — no curves survive. The two halves stop just short of touching at the waist. Gem-cutter logic applied to an O.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-017.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-016",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-016",
+      "title": "SYM-016 — Duet",
+      "content_text": "Monogram · REJECTED — Two open rings, each broken exactly where the other passes through. Same radius, same weight, opposite entries. A handshake drawn in negative space.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-016.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-015",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-015",
+      "title": "SYM-015 — Tessera",
+      "content_text": "Pictorial · ADOPTED · 05.2026 — A circle-packing tile. One full circle at center, part-circles on every edge of the 90u frame, all sharing the same R 21.4. Repeat it and it tiles clean. The unit is the pattern.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-015.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-014",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-014",
+      "title": "SYM-014 — Trinode",
+      "content_text": "Abstract · REJECTED · TOO ABSTRACT — Three R 13.9 nodes joined by one continuous bond. The top pair sits 54.2u apart and the apex closes at exactly 90 degrees. A molecule that behaves like a monogram.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-014.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-013",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-013",
+      "title": "SYM-013 — Quatre",
+      "content_text": "Geometric · REJECTED · TOO EDGY — Four R 15 circles at 90 degrees, each with its own keyhole. Strict compass layout, loose personality.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-013.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-012",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-012",
+      "title": "SYM-012 — Pentad",
+      "content_text": "Abstract · REJECTED · TOO DECORATIVE — Five arms on a 72 degree pitch around a 25.6u orbit. Pentagonal symmetry, no pentagon in sight.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-012.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-011",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-011",
+      "title": "SYM-011 — G Mark",
+      "content_text": "Monogram · REJECTED · TOO LITERAL — One R 36 circle carries everything. The counter is its own 13.4 circle snapped inside the curve, and the terminal cuts flat against the frame edge.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-011.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-010",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-010",
+      "title": "SYM-010 — Link",
+      "content_text": "Abstract · REJECTED · TOO FRIENDLY — Two hooks, same R 19, rotated 180 degrees around the center point. Point symmetry doing the work of a whole mark.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-010.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-007",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-007",
+      "title": "SYM-007 — Rotor",
+      "content_text": "Abstract · REJECTED · TOO BUSY — Two rings and two squares rotated into a single rotor. The arcs resolve against R 40 and R 28.9 from one shared center, and the squares carry a deliberate 1 degree tilt at 180 degrees to each other. Nothing here exists outside those two radii.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-007.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-006",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-006",
+      "title": "SYM-006 — Dial",
+      "content_text": "Geometric · REJECTED · TOO FLOWERY — Four R 15 circles locked to the axes on a 30u pitch, each one hatched differently. An instrument panel disguised as a mark.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-006.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-005",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-005",
+      "title": "SYM-005 — Ribbon C",
+      "content_text": "Monogram · REJECTED · TOO CLEVER — One folded plane inside a 72 by 80 frame. The crease runs at 53 degrees and carries the whole gesture.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-005.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-004",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-004",
+      "title": "SYM-004 — Bracket",
+      "content_text": "Monogram · REJECTED · TOO SQUARE — Two 24u blocks and a hooked spine with a 12u radius. A letterform doing structural work.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-004.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-002",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-002",
+      "title": "SYM-002 — Junction",
+      "content_text": "Geometric · REJECTED · TOO SYMMETRICAL — Four quarter arcs, each anchored dead on a corner point. The bars split the middle at 6.7u. Reads like a road interchange because it's built like one.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-002.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    },
+    {
+      "id": "https://konpo-symbol-index.vercel.app/s/sym-001",
+      "url": "https://konpo-symbol-index.vercel.app/s/sym-001",
+      "title": "SYM-001 — CO Monogram",
+      "content_text": "Monogram · REJECTED · TOO CIRCULAR — Two letters, four radii. The C runs R 36 outside and R 24 inside, the O answers at 23 and 12, and the whole lockup shares one baseline. Nothing freehand about it.",
+      "image": "https://konpo-symbol-index.vercel.app/og/sym-001.png",
+      "date_published": "2026-07-21T12:00:00Z"
+    }
+  ]
+}
