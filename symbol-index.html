@@ -63,13 +63,42 @@
     padding: 4rem; pointer-events: none;
   }
   .topbar > * { pointer-events: auto; }
+  .about { position: relative; }
   .logo.wordmark {
-    display: flex; align-items: center; height: 4rem;
+    display: flex; align-items: center; gap: 0.8rem; height: 4rem;
+    background: transparent; border: 0; padding: 0; cursor: pointer;
     font-family: var(--sans); font-size: 1.8rem; font-weight: 400;
     letter-spacing: -0.01em; color: var(--white);
-    text-decoration: none; transition: color .3s;
   }
-  .logo.wordmark:hover { color: var(--purple-vivid); }
+  .logo.wordmark .chev {
+    display: flex; width: 1.6rem; height: 1.6rem; color: var(--fade);
+    transition: transform .3s, color .3s;
+  }
+  .logo.wordmark .chev svg { width: 100%; height: 100%; display: block; }
+  .logo.wordmark:hover .chev { color: var(--white); }
+  .about.open .logo.wordmark .chev { transform: rotate(180deg); color: var(--white); }
+  .about-menu {
+    position: absolute; top: calc(100% + 0.8rem); left: 0; width: 36rem;
+    max-width: calc(100vw - 4rem);
+    background: rgba(20,20,20,0.92);
+    -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+    border: 1px solid var(--line); border-radius: var(--radius-sm, 0.8rem);
+    padding: 2rem; z-index: 21;
+    display: flex; flex-direction: column; gap: 1.4rem;
+  }
+  .about-menu[hidden] { display: none; }
+  .about-menu p { font-size: 1.4rem; line-height: 1.6; color: var(--body); }
+  .about-menu p.k { color: var(--fade); }
+  .about-menu nav {
+    display: flex; flex-wrap: wrap; gap: 0.4rem 1.8rem;
+    border-top: 1px solid var(--line); padding-top: 1.4rem;
+  }
+  .about-menu nav a {
+    font-family: var(--mono); font-size: 1.1rem; font-weight: 300;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--fade); text-decoration: none; transition: color .2s;
+  }
+  .about-menu nav a:hover { color: var(--white); }
   .toolbar { display: flex; align-items: center; gap: 2.5rem; }
   .tbtn {
     display: flex; align-items: center; gap: 0.8rem;
@@ -783,8 +812,9 @@
     transition: background-color .3s;
   }
   footer:has(.cta:hover) { background: rgba(255,255,255,0.05); }
-  footer .cta { color: var(--fade); pointer-events: auto; cursor: pointer; transition: color .3s; }
-  footer .cta:hover { color: var(--white); }
+  footer .msg { color: var(--fade); }
+  footer .cta { color: var(--white); pointer-events: auto; cursor: pointer; transition: color .3s; }
+  footer .cta:hover { color: var(--purple-vivid); }
   footer .sub { display: none; align-items: center; gap: 1.2rem; pointer-events: auto; }
   footer.subscribing .msg { display: none; }
   footer.subscribing .sub { display: flex; }
@@ -942,7 +972,22 @@
 </div>
 
 <header class="topbar">
-    <a class="logo wordmark" href="https://konpo.studio" target="_blank" rel="noopener" aria-label="Konpo Symbol Shelter">Konpo Symbol Shelter</a>
+    <div class="about" id="about">
+      <button class="logo wordmark" id="aboutBtn" type="button" aria-haspopup="true" aria-expanded="false">
+        Symbol Shelter
+        <span class="chev"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M12 6L8 10L4 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <div class="about-menu" id="aboutMenu" hidden>
+        <p>The shelter for logos that didn&rsquo;t make it &mdash; real proposals from real engagements, catalogued with their construction geometry, every one up for adoption.</p>
+        <p class="k">Konpo is a full-stack design studio &mdash; a plug-and-play crew of seasoned designers.</p>
+        <nav>
+          <a href="https://www.instagram.com/konpo.studio" target="_blank" rel="noopener">Instagram</a>
+          <a href="https://x.com/konpostudio" target="_blank" rel="noopener">X</a>
+          <a href="https://konpo.substack.com" target="_blank" rel="noopener">Substack</a>
+          <a href="https://konpo.studio" target="_blank" rel="noopener">konpo.studio</a>
+        </nav>
+      </div>
+    </div>
     <div class="toolbar">
       <button class="tbtn view-toggle" id="viewToggle" type="button" aria-label="Cycle grid / zoomed-out / list view">
         <span class="ic-zoom"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="4.2" cy="4.2" r="1.5" fill="currentColor"/><circle cx="10" cy="4.2" r="1.5" fill="currentColor"/><circle cx="15.8" cy="4.2" r="1.5" fill="currentColor"/><circle cx="4.2" cy="10" r="1.5" fill="currentColor"/><circle cx="10" cy="10" r="1.5" fill="currentColor"/><circle cx="15.8" cy="10" r="1.5" fill="currentColor"/><circle cx="4.2" cy="15.8" r="1.5" fill="currentColor"/><circle cx="10" cy="15.8" r="1.5" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.5" fill="currentColor"/></svg></span>
@@ -1015,7 +1060,7 @@
 
   <div class="wrap">
     <footer class="mono" id="footer">
-      <span class="msg"><span class="cta" id="subOpen" role="button" tabindex="0">Get notified when we add more</span></span>
+      <span class="msg">We&rsquo;ll be adding more. <span class="cta" id="subOpen" role="button" tabindex="0">Get Notified.</span></span>
       <form class="sub" id="subForm" novalidate>
         <input id="subEmail" type="email" placeholder="your@email.com" autocomplete="email" spellcheck="false" aria-label="Email address">
         <button type="submit">Send&nbsp;&rarr;</button>
@@ -2505,6 +2550,28 @@ document.getElementById('filterMenu').addEventListener('click', e => {
 });
 document.addEventListener('click', e => { if (!filterEl.contains(e.target)) closeFilterMenu(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeFilterMenu(); });
+
+/* ---------- About dropdown under the wordmark ---------- */
+const aboutEl = document.getElementById('about');
+const aboutMenu = document.getElementById('aboutMenu');
+const aboutBtn = document.getElementById('aboutBtn');
+function closeAbout(){
+  if (aboutMenu.hidden) return;
+  aboutEl.classList.remove('open');
+  aboutMenu.hidden = true;
+  aboutBtn.setAttribute('aria-expanded', 'false');
+}
+aboutBtn.addEventListener('click', e => {
+  e.stopPropagation();
+  const opening = aboutMenu.hidden;
+  closeFilterMenu();
+  aboutEl.classList.toggle('open', opening);
+  aboutMenu.hidden = !opening;
+  aboutBtn.setAttribute('aria-expanded', String(opening));
+  Sound.play(opening ? 'toggle.on' : 'toggle.off');
+});
+document.addEventListener('click', e => { if (!aboutEl.contains(e.target)) closeAbout(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAbout(); });
 
 
 /* ---------- Search ---------- */
