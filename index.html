@@ -120,6 +120,12 @@
   body.view-list .view-toggle .ic-list { display: block; }
   /* zoomed-out view: smaller tiles, more of the shelter on screen */
   body.view-zoom .tile:not(.expanded) { width: 24rem; height: 24rem; }
+  /* the expanded card fills its 3-cell hole flush (3 x 25rem - 1rem gutter) */
+  body.view-zoom .tile.expanded {
+    width: min(74rem, calc(100vw - 2.4rem));
+    height: min(74rem, calc(100vh - 4.8rem));
+    height: min(74rem, calc(100dvh - 4.8rem));
+  }
 
   .filter { position: relative; }
   .filter-btn { padding: 1.2rem 1.6rem; }
@@ -2207,6 +2213,7 @@ function releaseTileAnim(t){
 function renderGrid(reveal){
   if (VIEW === 'list') { renderGrid._stale = true; return; }   // hidden: build on entry
   renderGrid._stale = false;
+  renderGrid._builtZoom = (VIEW === 'zoom');   // the density this canvas was laid out at
   const canvas = document.getElementById('canvas');
   gridAnims.forEach(a => a.destroy());
   gridAnims = [];
@@ -2507,7 +2514,6 @@ function rerender(reveal){
 const VIEWS = ['grid', 'zoom', 'list'];
 function setView(v, opts){
   if (!VIEWS.includes(v)) v = 'grid';
-  const zoomChange = (VIEW === 'zoom') !== (v === 'zoom');
   VIEW = v;
   document.getElementById('grid').hidden = (v === 'list');
   document.getElementById('list').hidden = (v !== 'list');
@@ -2516,7 +2522,8 @@ function setView(v, opts){
   document.body.classList.toggle('view-grid', v !== 'list');
   if (!(opts && opts.norender)) {
     if (v === 'list') { if (renderList._stale !== false) renderList(); }
-    else if (renderGrid._stale !== false || zoomChange) renderGrid();
+    // rebuild if never built, or if the canvas was laid out at the other density
+    else if (renderGrid._stale !== false || renderGrid._builtZoom !== (v === 'zoom')) renderGrid();
   }
   syncEmpty();
   try { localStorage.setItem('konpo-view', v); } catch (e) {}
@@ -2907,7 +2914,8 @@ function expandTile(tile, s){
   // this view's density (2 in grid, 3 zoomed out); its rows push their right
   // side clear of the card, and the clicked column pushes everything below it
   // down by the same amount. No gaps left behind.
-  const span = Math.ceil(716 / cell);
+  const cardPx = (VIEW === 'zoom') ? 740 : 716;   // both sit flush: span*cell - gutter
+  const span = Math.ceil(cardPx / cell);
   const shift = (span - 1) * cell;
   for (const t of canvas.children){
     if (t === tile) continue;
