@@ -96,10 +96,12 @@ UI sounds are synthesized live in WebAudio — no audio files.
 
 ## Share layer
 
-- Permalinks: every mark answers at `/#SYM-0XX` (opens its drawer) and at
+- Permalinks: every mark answers at `/#SYM-0XX`, `?sym=SYM-0XX`, and at
   `/s/sym-0xx` — a static stub carrying that mark's OG/Twitter tags, which
-  instantly redirects humans into the app. Opening a drawer rewrites the
-  address to the stub path, so whatever anyone copies unfurls correctly.
+  instantly redirects humans into the app. Opening a mark rewrites the
+  address to the stub path, so whatever anyone copies unfurls correctly;
+  filtered/searched states use the query-param form instead
+  (`?cat=…&q=…&view=…`), with pushState + back/forward support.
 - OG images: `og/sym-0xx.png` (1200×630 — black card, tile, white mark, mono
   label with status/reason) plus `og/root.png` for the homepage.
 - Feeds: `/feed.xml` (RSS) and `/feed.json` (JSON Feed), one item per mark,
@@ -111,38 +113,55 @@ UI sounds are synthesized live in WebAudio — no audio files.
 
 ## Interaction map
 
+The shell is the draggable-canvas redesign contributed in PR #1 (search,
+filters, view toggle, expand cards) carrying the Shelter's catalogue.
+
 - Intro: black screen, two lines typed in word-by-word (blur-in) — the count,
   then the shelter — ~10s total. It plays once per browser (localStorage);
   returning visitors, deep links, and reduced-motion all skip it. Click/Esc/
-  Enter skips too. Then the staged reveal: fit-to-width h1 blurs in at 400ms, chrome
-  at 2s, grid + footer at 3s.
-- Tile hover: sibling tiles + header/footer blur (CSS :has), construction
-  drafts in element-by-element, corner notes type in. On the fifteen animated
-  marks (001, 002, 004 + the curated twelve), hover plays the motion cycle
-  first; annotations wait for it. Each loop is generated from the mark's own
-  path data by `scripts/build_lottie.py`, and each of the twelve has its own
-  motion verb rooted in what the mark is: the Link tugs taut, the Pentad
-  chases a notch around its dial, the Tessera tiles are pressed in corner to
-  corner, the Swarm hovers on incoherent bearings, the Corolla spiral-closes,
-  Bloom's moons orbit a true (seamless) quarter-revolution, the Clover spins
-  a seamless quarter on its four-fold symmetry, a gust travels the Garland,
-  the Dahlia blooms petal by petal, Latitude spins whole — the mark is
-  two-fold, so its half turn lands exactly on itself — the Cradle's dome
-  lifts and touches back down, and the Turbine's hemispheres shear past
-  each other.
-- Click tile → right drawer (fixed, 48rem). Stage controls: Notes (annotations), Turn
-  (cumulative 90°), Explode (auto-vectors; suppressed for single-compound or
-  centered-part marks), Play on the animated marks (waits for explode/turn
-  transitions to settle before taking over). Scale ramp: 96/64/44/28/16px.
-- Adopt flow: full-bleed "Adopt <name>" band at the drawer bottom pushes the
-  drawer left and slides in an equal-width application panel — full-bleed
-  hairline field sections (click anywhere to type; focus = raise + purple
-  label): Name / Organization / Email / Make your case → Submit Application
-  drafts a mailto to hey@konpo.studio ("Adopt SYM-0XX — Application"). Esc
-  closes the form first, drawer second; the form clears on symbol change.
-- Last grid card is the Konpo logomark in accent purple, playing the Konpo
-  Notes four-dot dance on loop (anim/konpo.json — the fifth, center circle is
-  tile-colored so it reads as cutting the dots). Links to konpo.studio.
+  Enter skips too. Then the staged reveal: top bar, then canvas + footer.
+- The index is an infinite draggable canvas (pointer drag with momentum,
+  trackpad pan). The full set wallpapers endlessly; short result sets lay
+  out once, centred, with panning clamped. Top bar: Konpo logomark
+  (→ konpo.studio), grid/list view toggle, search (`/` focuses; matches id /
+  name / category / spec / reason / status), category filter whose label
+  counts what's actually on screen.
+- Tile hover: construction drafts in element-by-element, corner notes type
+  in. On the fifteen animated marks (001, 002, 004 + the curated twelve),
+  hover plays the motion cycle first; annotations wait for it. Each loop is
+  generated from the mark's own path data by `scripts/build_lottie.py`, and
+  each of the twelve has its own motion verb rooted in what the mark is: the
+  Link tugs taut, the Pentad chases a notch around its dial, the Tessera
+  tiles are pressed in corner to corner, the Swarm hovers on incoherent
+  bearings, the Corolla spiral-closes, Bloom's moons orbit a true (seamless)
+  quarter-revolution, the Clover spins a seamless quarter on its four-fold
+  symmetry, a gust travels the Garland, the Dahlia blooms petal by petal,
+  Latitude spins whole — the mark is two-fold, so its half turn lands exactly
+  on itself — the Cradle's dome lifts and touches back down, and the
+  Turbine's hemispheres shear past each other.
+- Click a tile → the card grows to 2×2 in place, pushing neighbours aside
+  hole-free. Controls: Turn (cumulative 90°), Explode (auto-vectors;
+  suppressed for single-compound or centered-part marks), Notes (annotation
+  replay), Play on the animated marks, and "Adopt <name>". A card collapses
+  via its close button or by opening another card; drags and empty-space
+  clicks leave it alone. The canvas still pans with a card open. Adopted
+  marks show Status "Rejected" struck through, the adopter in the meta grid
+  (name, date, organization, home link), their introduction quoted under the
+  description, green annotations, and no Adopt CTA.
+- Adopt flow: "Adopt <name>" flips the card 180° on Y to the application —
+  Name / Organization / Email / Make your case → Submit Application drafts a
+  mailto to hey@konpo.studio ("Adopt SYM-0XX — Application") and throws
+  ribbons from both side edges. Back/Esc flips it back.
+- List view: compact index table (glyph, id, name, category, spec, status);
+  a row opens the right drawer — Notes/Turn/Explode/Play stage, scale ramp
+  (96/64/44/28/16px), Status/Reason/Category/Intake/Attachment, the
+  "Adopted by" section on adopted marks, and the adopt panel.
+- The Konpo logomark card closes the untouched catalogue (accent purple,
+  playing the Konpo Notes four-dot dance on loop — anim/konpo.json; the
+  fifth, center circle is tile-colored so it reads as cutting the dots).
+  Links to konpo.studio. Searches and filters set it aside.
+- Footer: "Sign up for updates" opens an inline email field that drafts a
+  mail (no backend by design).
 - Provenance: every rendered SVG embeds an ownership comment (© Konpo, the
   mark's id + name, and its adoption URL) plus a quiet per-mark class on the
   mark group (`k042`) that reads like styling but encodes the id — lifted
