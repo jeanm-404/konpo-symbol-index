@@ -512,7 +512,7 @@
                 filter .5s cubic-bezier(0.4, 0, 0.2, 1);   /* keep the hover softening smooth mid-reflow */
   }
   .tile.expanded { width: 71.6rem; height: 71.6rem; z-index: 5; display: block; cursor: default; }
-  .xc-inner { position: absolute; inset: 0; opacity: 0; transition: opacity .35s cubic-bezier(0.165,0.84,0.44,1); }
+  .xc-inner { position: absolute; inset: 0; }
   .xc-stage { position: absolute; inset: 0; z-index: 1; display: flex; align-items: center; justify-content: center; }
   .xc-stage svg { width: 42rem; height: 42rem; transform-box: fill-box; transform-origin: center; transition: transform .7s cubic-bezier(0.165,0.84,0.44,1); }
   .xc-stage .mark > * { transform-box: fill-box; transform-origin: center; transition: transform 1.4s cubic-bezier(0.165,0.84,0.44,1); }
@@ -3115,8 +3115,20 @@ function fillTileDetail(tile, s){
         `<p class="xc-desc xc-case">&ldquo;${s.adopterCase}&rdquo; &mdash; ${s.adopter}</p>`);
   }
 
-  inner.style.opacity = '0';
-  requestAnimationFrame(() => { inner.style.opacity = '1'; });
+  // the mark never blinks: instead of crossfading the whole card in, the fresh
+  // stage svg starts at exactly the size the tile was rendering and grows with
+  // the card (its own .7s transform transition carries it)
+  const sv = stage.querySelector(':scope > svg');
+  const tileW = tile.getBoundingClientRect().width;
+  const svW = sv.getBoundingClientRect().width;
+  if (tileW && svW && svW > tileW) {
+    sv.style.transition = 'none';
+    sv.style.transform = `scale(${(tileW / svW).toFixed(4)})`;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      sv.style.transition = '';
+      sv.style.transform = '';
+    }));
+  }
 }
 
 /* ---------- Ribbons: thrown across the screen when an application goes out ---------- */
