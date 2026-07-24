@@ -511,7 +511,12 @@
                 height .55s cubic-bezier(0.66,0,0.34,1),
                 filter .5s cubic-bezier(0.4, 0, 0.2, 1);   /* keep the hover softening smooth mid-reflow */
   }
-  .tile.expanded { width: 71.6rem; height: 71.6rem; z-index: 5; display: block; cursor: default; }
+  .tile.expanded {
+    width: min(71.6rem, calc(100vw - 2.4rem));
+    height: min(71.6rem, calc(100vh - 4.8rem));
+    height: min(71.6rem, calc(100dvh - 4.8rem));
+    z-index: 5; display: block; cursor: default;
+  }
   .xc-inner { position: absolute; inset: 0; }
   .xc-stage { position: absolute; inset: 0; z-index: 1; display: flex; align-items: center; justify-content: center; }
   .xc-stage svg { width: 42rem; height: 42rem; transform-box: fill-box; transform-origin: center; transition: transform .7s cubic-bezier(0.165,0.84,0.44,1); }
@@ -902,11 +907,6 @@
 
   /* --- small screens: the card fits the viewport instead of its fixed 2×2 --- */
   @media (max-width: 780px) {
-    .tile.expanded {
-      width: calc(100vw - 2.4rem);
-      height: min(71.6rem, calc(100vh - 4.8rem));
-      height: min(71.6rem, calc(100dvh - 4.8rem));
-    }
     .xc-stage svg { width: min(42rem, 82vw); height: min(42rem, 82vw); }
     .xc-head { width: auto; }
   }
@@ -2214,6 +2214,7 @@ function renderGrid(reveal){
   if (VIEW === 'list') { renderGrid._stale = true; return; }   // hidden: build on entry
   renderGrid._stale = false;
   renderGrid._builtZoom = (VIEW === 'zoom');   // the density this canvas was laid out at
+  GRID.lock = null;
   const canvas = document.getElementById('canvas');
   gridAnims.forEach(a => a.destroy());
   gridAnims = [];
@@ -2335,8 +2336,16 @@ function applyGridTransform(){
     canvas.style.transform = `translate3d(${GRID.ox}px,${GRID.oy}px,0)`;
     return;
   }
-  const wx = ((GRID.ox % GRID.bW) + GRID.bW) % GRID.bW - GRID.bW;
-  const wy = ((GRID.oy % GRID.bH) + GRID.bH) % GRID.bH - GRID.bH;
+  // while a card is open, re-wrapping would teleport it to another copy of the
+  // field — pan continuously from the offset locked at expand time instead
+  let wx, wy;
+  if (GRID.lock) {
+    wx = GRID.lock.wx + (GRID.ox - GRID.lock.ox);
+    wy = GRID.lock.wy + (GRID.oy - GRID.lock.oy);
+  } else {
+    wx = ((GRID.ox % GRID.bW) + GRID.bW) % GRID.bW - GRID.bW;
+    wy = ((GRID.oy % GRID.bH) + GRID.bH) % GRID.bH - GRID.bH;
+  }
   canvas.style.transform = `translate3d(${wx}px,${wy}px,0)`;
 }
 
@@ -2403,8 +2412,8 @@ function applyGridTransform(){
   }
   grid.addEventListener('pointerup', endDrag);
   grid.addEventListener('pointercancel', endDrag);
-  grid.addEventListener('wheel', e => {                          // trackpad pan
-    if (e.target.closest('.tile.expanded')) return;              // let the card scroll its own content
+  grid.addEventListener('wheel', e => {                          // trackpad pan — including over an open card
+    if (e.target.closest('textarea, input')) return;             // form fields keep native scrolling
     e.preventDefault();
     GRID.ox -= e.deltaX; GRID.oy -= e.deltaY;
     applyGridTransform();
@@ -2900,16 +2909,28 @@ function expandTile(tile, s){
   const cell = GRID.cell, T = 1;
   const cx = +tile.dataset.x, cy = +tile.dataset.y;
 
-  // small screens: the card fills the viewport, so bring the tile to the top-left
-  // corner first — otherwise a right-edge tap grows the card off-screen
-  if (innerWidth <= 780) {
-    const r0 = tile.getBoundingClientRect();
-    GRID.ox += 12 - r0.left;
-    GRID.oy += Math.max(12, innerHeight * 0.06) - r0.top;
-    GRID.vx = GRID.vy = 0;
-    applyGridTransform();
-  }
   canvas.classList.add('reflowing');
+  if (GRID.tiling) {
+    GRID.lock = { ox: GRID.ox, oy: GRID.oy,
+      wx: ((GRID.ox % GRID.bW) + GRID.bW) % GRID.bW - GRID.bW,
+      wy: ((GRID.oy % GRID.bH) + GRID.bH) % GRID.bH - GRID.bH };
+  }
+  // pan so the grown card sits fully in view — a bottom/right-edge tile used to
+  // grow its card off-screen with no way to reach it. The pan eases on the
+  // .reflowing transition, matching the card's own growth curve.
+  {
+    const m = 24;
+    const cardPx = (VIEW === 'zoom') ? 740 : 716;
+    const cardW = Math.min(cardPx, innerWidth - 2 * m);
+    const cardH = Math.min(cardPx, innerHeight - 2 * m);
+    const r0 = tile.getBoundingClientRect();
+    let dx = 0, dy = 0;
+    if (r0.left + cardW > innerWidth - m) dx = (innerWidth - m) - (r0.left + cardW);
+    if (r0.left + dx < m) dx = m - r0.left;
+    if (r0.top + cardH > innerHeight - m) dy = (innerHeight - m) - (r0.top + cardH);
+    if (r0.top + dy < m) dy = m - r0.top;
+    if (dx || dy) { GRID.ox += dx; GRID.oy += dy; GRID.vx = GRID.vy = 0; applyGridTransform(); }
+  }
   // Hole-free reflow: the row ABOVE stays put. The card spans `span` cells at
   // this view's density (2 in grid, 3 zoomed out); its rows push their right
   // side clear of the card, and the clicked column pushes everything below it
@@ -2941,6 +2962,7 @@ function expandTile(tile, s){
 
 function collapseTile(immediate){
   if (!expandedTile) return;
+  GRID.lock = null;   // the wrap resumes (an exact multiple of the block: invisible)
   const wasOpen = expandedId;
   const canvas = document.getElementById('canvas');
   const tile = expandedTile;
