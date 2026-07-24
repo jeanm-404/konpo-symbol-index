@@ -102,6 +102,38 @@
   .filter-menu button.active { color: var(--white); }
   .filter-menu button .n { color: var(--fade); }
 
+  /* ---------- Search ---------- */
+  .search { padding: 1.2rem 1.6rem; cursor: text; }
+  .search .ic { display: flex; width: 1.4rem; height: 1.4rem; flex: none; }
+  .search .ic svg { width: 100%; height: 100%; display: block; }
+  .search input {
+    width: 9rem; background: transparent; border: 0; outline: 0; padding: 0;
+    color: var(--white);
+    font-family: var(--mono); font-size: 1.1rem; letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: width .3s;
+  }
+  .search input::placeholder { color: var(--fade); text-transform: uppercase; }
+  .search input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+  .search:focus-within { color: var(--white); background: rgba(255,255,255,0.05); }
+  .search:focus-within input, .search.has-q input { width: 16rem; }
+  .search .clear {
+    display: none; background: transparent; border: 0; padding: 0; cursor: pointer;
+    color: var(--fade); font-family: var(--mono); font-size: 1.4rem; line-height: 1;
+    transition: color .2s;
+  }
+  .search .clear:hover { color: var(--white); }
+  .search.has-q .clear { display: block; }
+
+  /* ---------- Empty state ---------- */
+  .empty {
+    position: fixed; inset: 0; z-index: 3;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 1.2rem; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--fade); pointer-events: none;
+  }
+  .empty[hidden] { display: none; }
+
   /* ---------- Filter row ---------- */
   .controls {
     display: flex; justify-content: space-between; align-items: center;
@@ -190,8 +222,11 @@
     position: fixed; inset: 0; z-index: 1;
     overflow: hidden; background: var(--bg);
     cursor: grab; touch-action: none;
+    -webkit-user-select: none; user-select: none;   /* dragging the canvas must not select tile labels */
   }
   .grid.dragging { cursor: grabbing; }
+  /* the expanded card is readable content again */
+  .grid .tile.expanded { -webkit-user-select: text; user-select: text; }
   .grid[hidden] { display: none; }
   .grid .canvas { position: absolute; top: 0; left: 0; will-change: transform; }
   body { overflow-x: hidden; }
@@ -208,10 +243,23 @@
     display: flex; align-items: center; justify-content: center;
   }
   .tile > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-  /* hover annotations are suppressed while dragging the canvas */
-  .grid.dragging .tile .construction,
-  .grid.dragging .tile .notes,
-  .grid.dragging .tile .meta { opacity: 0 !important; }
+
+  /* --- hovering one mark softens everything else ---
+     Held off while the canvas is being dragged, and while a card is expanded
+     (the card is the focus then, not whatever the cursor happens to be over). */
+  .tile { transition: filter .5s cubic-bezier(0.4, 0, 0.2, 1); }
+  .grid:not(.dragging) .canvas:not(:has(.tile.expanded)):has(.tile:hover) .tile:not(:hover) {
+    filter: blur(2px) brightness(0.65);
+  }
+  body:has(.grid:not(.dragging) .canvas:not(:has(.tile.expanded)) .tile:hover):not(.page-blur) .topbar,
+  body:has(.grid:not(.dragging) .canvas:not(:has(.tile.expanded)) .tile:hover):not(.page-blur) footer {
+    filter: blur(2px) brightness(0.65);
+  }
+  /* hover annotations are suppressed while dragging the canvas — but an open card
+     keeps its own, since the canvas can now be dragged with a card still open */
+  .grid.dragging .tile:not(.expanded) .construction,
+  .grid.dragging .tile:not(.expanded) .notes,
+  .grid.dragging .tile:not(.expanded) .meta { opacity: 0 !important; }
   @keyframes reveal { to { opacity: 1; transform: none; } }
 
   .tile .idx {
@@ -235,6 +283,32 @@
     fill: var(--white); stroke: none;
   }
   .mark .stroked { fill: none; stroke: var(--white); stroke-width: 2; }
+  /* --- hover: the mark assembles and settles, THEN the annotations draft in ---
+     Same choreography as the animated build on the live site, done in CSS off the
+     mark's own parts, so it works for all 88 without an external animation payload. */
+  .tile .mark > * { transform-box: fill-box; transform-origin: center; }
+  .tile:not(.expanded).mark-anim .mark > * {
+    animation: settle .46s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes settle {
+    0%   { transform: scale(0.78); opacity: 0.25; }
+    55%  { transform: scale(1.05); opacity: 1; }
+    100% { transform: none;        opacity: 1; }
+  }
+  .tile.mark-anim .mark > :nth-child(1 ) { animation-delay: 0s; }
+  .tile.mark-anim .mark > :nth-child(2 ) { animation-delay: .03s; }
+  .tile.mark-anim .mark > :nth-child(3 ) { animation-delay: .06s; }
+  .tile.mark-anim .mark > :nth-child(4 ) { animation-delay: .09s; }
+  .tile.mark-anim .mark > :nth-child(5 ) { animation-delay: .12s; }
+  .tile.mark-anim .mark > :nth-child(6 ) { animation-delay: .15s; }
+  .tile.mark-anim .mark > :nth-child(7 ) { animation-delay: .18s; }
+  .tile.mark-anim .mark > :nth-child(8 ) { animation-delay: .21s; }
+  .tile.mark-anim .mark > :nth-child(9 ) { animation-delay: .24s; }
+  .tile.mark-anim .mark > :nth-child(10) { animation-delay: .27s; }
+  .tile.mark-anim .mark > :nth-child(11) { animation-delay: .30s; }
+  .tile.mark-anim .mark > :nth-child(12) { animation-delay: .33s; }
+  .tile.mark-anim .mark > :nth-child(n+13) { animation-delay: .36s; }
+
   .construction { opacity: 1; }
   .construction path, .construction circle, .construction rect,
   .construction ellipse, .construction line {
@@ -273,32 +347,32 @@
   }
   .notes span { opacity: 0; transition: opacity 0s; }
 
-  .tile:not(.expanded):hover .construction line:not(.guide),
+  .tile:not(.expanded).annot-ready .construction line:not(.guide),
   .show-construction .construction line:not(.guide) { opacity: 1; stroke-dashoffset: 0; }
-  .tile:not(.expanded):hover .construction .guide,
+  .tile:not(.expanded).annot-ready .construction .guide,
   .show-construction .construction .guide { opacity: 1; stroke-dashoffset: 0; }
-  .tile:not(.expanded):hover .construction .pt,
+  .tile:not(.expanded).annot-ready .construction .pt,
   .show-construction .construction .pt { opacity: 1; }
-  .tile:not(.expanded):hover .notes span,
+  .tile:not(.expanded).annot-ready .notes span,
   .notes.on span { opacity: 1; transition-delay: var(--td, 0s); }
 
   /* one at a time: stagger by document order (delays only on the way in) */
-  .tile:not(.expanded):hover .construction > :nth-child(1),  .show-construction .construction > :nth-child(1)  { transition-delay: 0s; }
-  .tile:not(.expanded):hover .construction > :nth-child(2),  .show-construction .construction > :nth-child(2)  { transition-delay: .09s; }
-  .tile:not(.expanded):hover .construction > :nth-child(3),  .show-construction .construction > :nth-child(3)  { transition-delay: .18s; }
-  .tile:not(.expanded):hover .construction > :nth-child(4),  .show-construction .construction > :nth-child(4)  { transition-delay: .27s; }
-  .tile:not(.expanded):hover .construction > :nth-child(5),  .show-construction .construction > :nth-child(5)  { transition-delay: .36s; }
-  .tile:not(.expanded):hover .construction > :nth-child(6),  .show-construction .construction > :nth-child(6)  { transition-delay: .45s; }
-  .tile:not(.expanded):hover .construction > :nth-child(7),  .show-construction .construction > :nth-child(7)  { transition-delay: .54s; }
-  .tile:not(.expanded):hover .construction > :nth-child(8),  .show-construction .construction > :nth-child(8)  { transition-delay: .63s; }
-  .tile:not(.expanded):hover .construction > :nth-child(9),  .show-construction .construction > :nth-child(9)  { transition-delay: .72s; }
-  .tile:not(.expanded):hover .construction > :nth-child(10), .show-construction .construction > :nth-child(10) { transition-delay: .81s; }
-  .tile:not(.expanded):hover .construction > :nth-child(11), .show-construction .construction > :nth-child(11) { transition-delay: .9s; }
-  .tile:not(.expanded):hover .construction > :nth-child(12), .show-construction .construction > :nth-child(12) { transition-delay: .99s; }
-  .tile:not(.expanded):hover .construction > :nth-child(13), .show-construction .construction > :nth-child(13) { transition-delay: 1.08s; }
-  .tile:not(.expanded):hover .construction > :nth-child(14), .show-construction .construction > :nth-child(14) { transition-delay: 1.17s; }
-  .tile:not(.expanded):hover .construction > :nth-child(15), .show-construction .construction > :nth-child(15) { transition-delay: 1.26s; }
-  .tile:not(.expanded):hover .construction > :nth-child(16), .show-construction .construction > :nth-child(16) { transition-delay: 1.35s; }
+  .tile:not(.expanded).annot-ready .construction > :nth-child(1),  .show-construction .construction > :nth-child(1)  { transition-delay: 0s; }
+  .tile:not(.expanded).annot-ready .construction > :nth-child(2),  .show-construction .construction > :nth-child(2)  { transition-delay: .09s; }
+  .tile:not(.expanded).annot-ready .construction > :nth-child(3),  .show-construction .construction > :nth-child(3)  { transition-delay: .18s; }
+  .tile:not(.expanded).annot-ready .construction > :nth-child(4),  .show-construction .construction > :nth-child(4)  { transition-delay: .27s; }
+  .tile:not(.expanded).annot-ready .construction > :nth-child(5),  .show-construction .construction > :nth-child(5)  { transition-delay: .36s; }
+  .tile:not(.expanded).annot-ready .construction > :nth-child(6),  .show-construction .construction > :nth-child(6)  { transition-delay: .45s; }
+  .tile:not(.expanded).annot-ready .construction > :nth-child(7),  .show-construction .construction > :nth-child(7)  { transition-delay: .54s; }
+  .tile:not(.expanded).annot-ready .construction > :nth-child(8),  .show-construction .construction > :nth-child(8)  { transition-delay: .63s; }
+  .tile:not(.expanded).annot-ready .construction > :nth-child(9),  .show-construction .construction > :nth-child(9)  { transition-delay: .72s; }
+  .tile:not(.expanded).annot-ready .construction > :nth-child(10), .show-construction .construction > :nth-child(10) { transition-delay: .81s; }
+  .tile:not(.expanded).annot-ready .construction > :nth-child(11), .show-construction .construction > :nth-child(11) { transition-delay: .9s; }
+  .tile:not(.expanded).annot-ready .construction > :nth-child(12), .show-construction .construction > :nth-child(12) { transition-delay: .99s; }
+  .tile:not(.expanded).annot-ready .construction > :nth-child(13), .show-construction .construction > :nth-child(13) { transition-delay: 1.08s; }
+  .tile:not(.expanded).annot-ready .construction > :nth-child(14), .show-construction .construction > :nth-child(14) { transition-delay: 1.17s; }
+  .tile:not(.expanded).annot-ready .construction > :nth-child(15), .show-construction .construction > :nth-child(15) { transition-delay: 1.26s; }
+  .tile:not(.expanded).annot-ready .construction > :nth-child(16), .show-construction .construction > :nth-child(16) { transition-delay: 1.35s; }
 
   .tile .meta {
     position: absolute; left: 0; right: 0; bottom: 0;
@@ -388,7 +462,8 @@
   .canvas.reflowing .tile {
     transition: transform .55s cubic-bezier(0.66,0,0.34,1),
                 width .55s cubic-bezier(0.66,0,0.34,1),
-                height .55s cubic-bezier(0.66,0,0.34,1);
+                height .55s cubic-bezier(0.66,0,0.34,1),
+                filter .5s cubic-bezier(0.4, 0, 0.2, 1);   /* keep the hover softening smooth mid-reflow */
   }
   .tile.expanded { width: 71.6rem; height: 71.6rem; z-index: 5; display: block; cursor: default; }
   .xc-inner { position: absolute; inset: 0; opacity: 0; transition: opacity .35s cubic-bezier(0.165,0.84,0.44,1); }
@@ -418,22 +493,88 @@
   .xc-controls button.active { background: var(--white); color: #191919; border-color: var(--white); }
   .xc-controls button.revive { color: #191919; background: var(--white); border-color: var(--white); }
   .xc-controls button.revive:hover { opacity: 0.85; }
-  .xc-revive {
-    position: absolute; inset: 0; z-index: 3;
-    background: rgba(20,20,20,0.96);
-    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
-    padding: 3.2rem; display: flex; flex-direction: column; gap: 1.6rem;
+
+  /* --- close: the only way out of an expanded card --- */
+  .xc-close {
+    position: absolute; top: 2.4rem; right: 2.4rem; z-index: 4;
+    width: 4rem; height: 4rem; padding: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.06);
+    -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+    border: 0; border-radius: 50%; cursor: pointer;
+    color: var(--fade);
+    transition: color .3s, background-color .3s;
   }
-  .xc-revive[hidden] { display: none; }
-  .xc-revive .xc-textarea {
-    flex: 1; resize: none;
-    font-family: var(--sans); font-size: 1.5rem; line-height: 1.6; color: var(--white);
-    background: rgba(255,255,255,0.03); border: 1px solid var(--line); border-radius: 1.2rem;
-    padding: 1.6rem; outline: none;
+  .xc-close:hover { color: var(--white); background: rgba(255,255,255,0.12); }
+  .xc-close svg { display: block; width: 100%; height: 100%; }
+
+  /* --- clicking a tile fades its hover annotations out before the card grows --- */
+  .tile.annot-out .construction,
+  .tile.annot-out .notes { opacity: 0; transition: opacity .22s ease; }
+  /* --- the card turns over on its Y axis to show the adoption form --- */
+  .tile.expanded { perspective: 180rem; }
+  .xc-flip {
+    position: absolute; inset: 0;
+    transform-style: preserve-3d;
+    transition: transform .85s cubic-bezier(0.66, 0, 0.34, 1);
   }
-  .xc-revive .xc-textarea:focus { border-color: rgba(150,128,255,0.4); }
-  .xc-revive .xc-textarea::placeholder { color: var(--fade); }
-  .xc-revive-actions { display: flex; justify-content: space-between; align-items: center; }
+  .xc-flip.flipped { transform: rotateY(180deg); }
+  .xc-face {
+    position: absolute; inset: 0;
+    -webkit-backface-visibility: hidden; backface-visibility: hidden;
+    border-radius: 2rem; overflow: hidden;
+  }
+  .xc-face.back { transform: rotateY(180deg); background: var(--tile); }
+  /* only the face you're looking at takes the pointer, so tabbing and clicking
+     between the form's fields isn't intercepted by the face behind it */
+  .xc-face.back { pointer-events: none; }
+  .xc-flip.flipped .xc-face.back { pointer-events: auto; }
+  .xc-flip.flipped .xc-face.front { pointer-events: none; }
+
+  /* --- adoption form (the card's reverse) --- */
+  .xc-adopt {
+    position: absolute; inset: 0; overflow-y: auto;
+    display: flex; flex-direction: column;
+  }
+  .xc-adopt .ahead { padding: 3.2rem 3.2rem 2.4rem; display: flex; flex-direction: column; gap: 1.2rem; }
+  .xc-adopt .anote { font-size: 1.5rem; line-height: 1.5; color: var(--body); }
+  .afield {
+    display: flex; flex-direction: column; gap: 0.8rem;
+    padding: 2rem 3.2rem; border-top: 1px solid var(--line);
+  }
+  .afield label {
+    font-family: var(--mono); font-size: 1.2rem; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--fade);
+  }
+  .afield input, .afield textarea {
+    background: transparent; border: 0; outline: 0; padding: 0;
+    font-family: var(--sans); font-size: 1.6rem; line-height: 1.5; color: var(--white);
+  }
+  .afield textarea { resize: vertical; min-height: 9rem; }
+  .afield input::placeholder, .afield textarea::placeholder { color: var(--fade); }
+  .afield:focus-within label { color: var(--purple-vivid); }
+  .aband {
+    margin-top: auto;
+    font-family: var(--mono); font-size: 1.2rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--white); background: transparent;
+    border: 0; border-top: 1px solid var(--line);
+    padding: 2.4rem; cursor: pointer; transition: background-color .3s;
+  }
+  .aband:hover { background: var(--tile-raise); }
+  .xc-adopt .aback {
+    position: absolute; top: 3.2rem; right: 3.2rem; z-index: 2;
+    font-family: var(--mono); font-size: 1.1rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--fade); background: transparent; border: 1px solid var(--line);
+    border-radius: 200rem; padding: 0.8rem 1.6rem; cursor: pointer;
+    transition: color .3s, border-color .3s;
+  }
+  .xc-adopt .aback:hover { color: var(--white); border-color: rgba(255,255,255,0.3); }
+  .asent { font-family: var(--mono); font-size: 1.2rem; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--purple-vivid); padding: 0 3.2rem 2.4rem; }
+  .asent[hidden] { display: none; }
+
+  /* ribbons thrown when an application goes out */
+  #ribbons { position: fixed; inset: 0; z-index: 60; pointer-events: none; }
 
   /* ---------- Side drawer ---------- */
   #scrim {
@@ -607,6 +748,22 @@
     pointer-events: none; white-space: nowrap;
   }
   footer .cta { color: var(--white); pointer-events: auto; cursor: pointer; }
+  footer .cta:hover { color: var(--purple-vivid); }
+  footer .sub { display: none; align-items: center; gap: 1.2rem; pointer-events: auto; }
+  footer.subscribing .msg { display: none; }
+  footer.subscribing .sub { display: flex; }
+  footer .sub input {
+    width: 22rem; background: transparent; border: 0; outline: 0; padding: 0;
+    color: var(--white); font-family: var(--mono); font-size: inherit; letter-spacing: inherit;
+  }
+  footer .sub input::placeholder { color: var(--fade); }
+  footer .sub button {
+    background: transparent; border: 0; padding: 0; cursor: pointer;
+    color: var(--white); font-family: var(--mono); font-size: inherit; letter-spacing: inherit;
+    transition: color .2s;
+  }
+  footer .sub button:hover { color: var(--purple-vivid); }
+  footer .sub .cancel { color: var(--fade); }
 
   /* ---------- Responsive ---------- */
   @media (max-width: 991px) {
@@ -618,6 +775,11 @@
   @media (max-width: 767px) {
     .grid { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
     header { padding: 4rem 0 2rem; }
+    .topbar { padding: 2rem; }
+    .toolbar { gap: 1.2rem; }
+    .search input { width: 6rem; }
+    .search:focus-within input, .search.has-q input { width: 10rem; }
+    footer .sub input { width: 15rem; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -649,6 +811,11 @@
         <span class="ic-list"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M1.944 6.389H18.056" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.944 13.611H18.056" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         <span class="ic-grid"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5.833 3.333V8.333" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.333 5.833H3.333" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.167 3.333V8.333" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.667 5.833H11.667" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.833 11.667V16.667" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.333 14.167H3.333" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.167 11.667V16.667" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.667 14.167H11.667" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       </button>
+      <div class="tbtn search" id="search">
+        <span class="ic"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="4.75" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+        <input id="searchInput" type="search" placeholder="Search" autocomplete="off" spellcheck="false" aria-label="Search marks">
+        <button class="clear" id="searchClear" type="button" aria-label="Clear search">&times;</button>
+      </div>
       <div class="filter" id="filter">
         <button class="tbtn filter-btn" id="filterBtn" type="button" aria-haspopup="true" aria-expanded="false">
           <span id="filterLabel">All • 88</span>
@@ -661,6 +828,7 @@
 
   <div class="grid" id="grid"><div class="canvas" id="canvas"></div></div>
   <div class="list" id="list" hidden></div>
+  <div class="empty" id="empty" hidden>No marks match.</div>
 
 
   <div id="scrim"></div>
@@ -683,7 +851,7 @@
           <dt>Attachment</dt><dd id="d-attachment"></dd>
         </dl>
         <div class="revive">
-          <button class="revive-btn" id="revive-toggle">Want to revive it?</button>
+          <button class="revive-btn" id="revive-toggle">Adopt this mark</button>
           <div class="revive-panel" id="revive-panel" hidden>
             <p class="revive-note">Make your case — in detail. What's the project, who's behind it, and where would this mark live? We only release these to companies and people with genuinely interesting projects.</p>
             <textarea id="revive-text" placeholder="Why this mark, and why you…"></textarea>
@@ -696,8 +864,13 @@
   </aside>
 
   <div class="wrap">
-    <footer class="mono">
-      <span>More rejections coming. <span class="cta">Sign up for updates</span></span>
+    <footer class="mono" id="footer">
+      <span class="msg">More rejections coming. <span class="cta" id="subOpen" role="button" tabindex="0">Sign up for updates</span></span>
+      <form class="sub" id="subForm" novalidate>
+        <input id="subEmail" type="email" placeholder="your@email.com" autocomplete="email" spellcheck="false" aria-label="Email address">
+        <button type="submit">Send&nbsp;&rarr;</button>
+        <button type="button" class="cancel" id="subCancel">Esc</button>
+      </form>
     </footer>
   </div>
 
@@ -1948,49 +2121,81 @@ const ramp = (s) => `<div class="ramp">${[96, 64, 44, 28, 16].map(px =>
 const notes = (s) => { if (!s._t) s._t = typeset(s.con); return `<div class="notes">${s._t.notes}</div>`; };
 
 /* ---------- View + filter state ---------- */
-let FILTER = 'All', VIEW = 'grid';
+let FILTER = 'All', VIEW = 'grid', QUERY = '';
+
+// One place decides what's on screen: category filter AND the search query.
+// Searchable text = index, name, category, construction spec, industry.
+const searchBlob = s => (s._q || (s._q =
+  [s.id, s.name, s.cat, s.spec, s.industry].filter(Boolean).join(' ').toLowerCase()));
+function visibleItems(){
+  const q = QUERY.trim().toLowerCase();
+  return S.filter(s => (FILTER === 'All' || s.cat === FILTER) && (!q || searchBlob(s).includes(q)));
+}
+function syncEmpty(){ document.getElementById('empty').hidden = visibleItems().length > 0; }
 
 /* ---------- Infinite draggable grid (canvas) ---------- */
-const GRID = { cell: 366, bW: 1, bH: 1, ox: 0, oy: 0, vx: 0, vy: 0, raf: null };
-let expandedTile = null, expandedId = null, focused = false;   // expanded-card state
+const GRID = { cell: 366, bW: 1, bH: 1, ox: 0, oy: 0, vx: 0, vy: 0, raf: null, tiling: true };
+let expandedTile = null, expandedId = null, focused = false;   // focused = a card is open
 
 // resting tile content: index + mark(+hidden construction) + name/category (shown on hover)
 const tileInner = s =>
     `<span class="idx">${s.id}</span>${svg(s)}`
   + `<div class="meta"><span class="name">${s.name}</span><span class="sub">${s.cat}</span></div>`;
 
-function renderGrid(filter){
+function renderGrid(){
   const canvas = document.getElementById('canvas');
-  const items = S.filter(s => filter === 'All' || s.cat === filter);
+  const items = visibleItems();
   const N = items.length;
+  syncEmpty();
   if (!N) { canvas.innerHTML = ''; return; }
   const vpW = innerWidth || 1440, vpH = innerHeight || 900;
+  const cell = GRID.cell;
+  // Repeating the set to fill an endless canvas only reads as endless when there is
+  // enough of it — a search down to two marks would just wallpaper the same tile.
+  // Below two screenfuls the set lays out once, centred, and pans within its bounds.
+  const screenful = Math.ceil(vpW / cell) * Math.ceil(vpH / cell);
+  GRID.tiling = N >= screenful * 2;
+
   let COLS = Math.max(2, Math.round(Math.sqrt(N * (vpW / vpH))));
   COLS = Math.min(COLS, N);
   const ROWS = Math.ceil(N / COLS);
-  const SLOTS = COLS * ROWS;               // full rectangle — no empty cells
-  const cell = GRID.cell;
   const bW = COLS * cell, bH = ROWS * cell;
   GRID.bW = bW; GRID.bH = bH;
-  const copiesX = Math.ceil(vpW / bW) + 1;
-  const copiesY = Math.ceil(vpH / bH) + 1;
+
+  const tile = (s, x, y) =>
+    `<div class="tile" data-id="${s.id}" data-x="${x}" data-y="${y}" style="transform:translate3d(${x}px,${y}px,0)">`
+    + tileInner(s) + `</div>`;
+
   let html = '';
-  for (let cy = 0; cy < copiesY; cy++)
-    for (let cx = 0; cx < copiesX; cx++)
-      for (let j = 0; j < SLOTS; j++){
-        const s = items[j % N];            // wrap marks to fill every slot
-        const x = cx * bW + (j % COLS) * cell;
-        const y = cy * bH + Math.floor(j / COLS) * cell;
-        html += `<div class="tile" data-id="${s.id}" data-x="${x}" data-y="${y}" style="transform:translate3d(${x}px,${y}px,0)">`
-              + tileInner(s) + `</div>`;
-      }
+  if (GRID.tiling){
+    const SLOTS = COLS * ROWS;             // full rectangle — no empty cells
+    const copiesX = Math.ceil(vpW / bW) + 1;
+    const copiesY = Math.ceil(vpH / bH) + 1;
+    for (let cy = 0; cy < copiesY; cy++)
+      for (let cx = 0; cx < copiesX; cx++)
+        for (let j = 0; j < SLOTS; j++)     // wrap marks to fill every slot
+          html += tile(items[j % N], cx * bW + (j % COLS) * cell, cy * bH + Math.floor(j / COLS) * cell);
+  } else {
+    const startX = Math.round((vpW - bW) / 2), startY = Math.round((vpH - bH) / 2);
+    for (let j = 0; j < N; j++)
+      html += tile(items[j], startX + (j % COLS) * cell, startY + Math.floor(j / COLS) * cell);
+    GRID.ox = GRID.oy = 0; GRID.vx = GRID.vy = 0;
+  }
   canvas.innerHTML = html;
   applyGridTransform();
 }
 
 function applyGridTransform(){
   const canvas = document.getElementById('canvas');
-  if (!canvas || focused) return;                 // frozen while a card is focused
+  if (!canvas) return;
+  if (!GRID.tiling){                              // short set: pan, but never off its own edge
+    const slackX = Math.max(0, (GRID.bW - innerWidth)  / 2 + 40);
+    const slackY = Math.max(0, (GRID.bH - innerHeight) / 2 + 40);
+    GRID.ox = Math.max(-slackX, Math.min(slackX, GRID.ox));
+    GRID.oy = Math.max(-slackY, Math.min(slackY, GRID.oy));
+    canvas.style.transform = `translate3d(${GRID.ox}px,${GRID.oy}px,0)`;
+    return;
+  }
   const wx = ((GRID.ox % GRID.bW) + GRID.bW) % GRID.bW - GRID.bW;
   const wy = ((GRID.oy % GRID.bH) + GRID.bH) % GRID.bH - GRID.bH;
   canvas.style.transform = `translate3d(${wx}px,${wy}px,0)`;
@@ -2007,18 +2212,19 @@ function applyGridTransform(){
       GRID.raf = requestAnimationFrame(momentum);
     else GRID.raf = null;
   }
+  let downOutsideCard = false;
   grid.addEventListener('pointerdown', e => {
     if (e.button && e.button !== 0) return;
-    if (expandedTile) {                                  // a card is open
-      if (e.target.closest('.tile.expanded')) return;    // interacting with it — let it handle
-      collapseTile();                                    // click-away collapses; no drag this press
-      return;
-    }
+    // A card being open no longer pins the canvas: the press starts a drag either way.
+    // Only a press that ends without travel ("a click, not a drag") closes the card.
+    downOutsideCard = !!expandedTile && !e.target.closest('.tile.expanded');
+    if (expandedTile && !downOutsideCard) return;        // pressing the card itself — let it handle
     dragging = true; moved = 0; lastX = e.clientX; lastY = e.clientY;
     GRID.vx = GRID.vy = 0;
     const cv = document.getElementById('canvas');
     cv.classList.remove('reflowing');                                  // instant drag
-    cv.querySelectorAll('.notes').forEach(n => n.remove());            // clear hover notes
+    cv.querySelectorAll('.tile:not(.expanded) .notes').forEach(n => n.remove());  // clear hover notes
+    cv.querySelectorAll('.tile:not(.expanded)').forEach(t => t.classList.remove('mark-anim', 'annot-ready'));
     if (GRID.raf) { cancelAnimationFrame(GRID.raf); GRID.raf = null; }
     const t = e.target.closest('.tile');
     downId = t ? t.dataset.id : null;
@@ -2040,35 +2246,51 @@ function applyGridTransform(){
     dragging = false;
     grid.classList.remove('dragging');
     if (pid != null) { try { grid.releasePointerCapture(pid); } catch (_) {} pid = null; }
-    if (moved < 6 && downId && downTile){                       // a click, not a drag
+    const click = moved < 6;
+    // A click on any tile opens it — and if another card was open, expandTile
+    // collapses that one first. So the ways out are: the close button, or clicking
+    // a different card. A click on empty space, or any drag, leaves the card alone.
+    if (click && downId && downTile){                            // a click, not a drag
       const s = S.find(x => x.id === downId);
-      if (s) expandTile(downTile, s);                           // grow to 2×2, push neighbours
+      if (s) expandFromTile(downTile, s);                        // annotations fade, then it grows
     } else if (Math.abs(GRID.vx) > 0.5 || Math.abs(GRID.vy) > 0.5){
       GRID.raf = requestAnimationFrame(momentum);               // fling
     }
-    downId = null; downTile = null;
+    downId = null; downTile = null; downOutsideCard = false;
   }
   grid.addEventListener('pointerup', endDrag);
   grid.addEventListener('pointercancel', endDrag);
   grid.addEventListener('wheel', e => {                          // trackpad pan
-    if (focused) return;
+    if (e.target.closest('.tile.expanded')) return;              // let the card scroll its own content
     e.preventDefault();
     GRID.ox -= e.deltaX; GRID.oy -= e.deltaY;
     applyGridTransform();
   }, { passive: false });
 
-  // hover a tile → type its construction notes in (annotations play in via CSS)
+  // hover a tile → the mark settles first, then its construction drafts in
+  const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
   grid.addEventListener('mouseover', e => {
     if (dragging || focused) return;
     const t = e.target.closest('.tile');
     if (!t || t.classList.contains('expanded') || t.querySelector('.notes')) return;
     const s = S.find(x => x.id === t.dataset.id);
-    if (s) t.insertAdjacentHTML('afterbegin', notes(s));
+    if (!s) return;
+    t.insertAdjacentHTML('afterbegin', notes(s));       // notes stay hidden until annot-ready
+    if (REDUCED) { t.classList.add('annot-ready'); return; }
+    t.classList.add('mark-anim');
+    const parts = t.querySelectorAll('.mark > *').length;
+    const settled = 350 + Math.min(parts, 13) * 30;     // annotations overlap the last parts settling
+    clearTimeout(t._annotT);
+    t._annotT = setTimeout(() => {
+      if (t.isConnected && t.matches(':hover')) t.classList.add('annot-ready');
+    }, settled);
   });
   grid.addEventListener('mouseout', e => {
     const t = e.target.closest('.tile');
     if (!t || t.classList.contains('expanded')) return;
     if (t.contains(e.relatedTarget)) return;            // still inside the tile
+    clearTimeout(t._annotT);
+    t.classList.remove('mark-anim', 'annot-ready');
     const n = t.querySelector('.notes'); if (n) n.remove();
   });
 })();
@@ -2077,13 +2299,14 @@ let gridResizeT;
 addEventListener('resize', () => {
   if (VIEW !== 'grid' || focused) return;
   clearTimeout(gridResizeT);
-  gridResizeT = setTimeout(() => renderGrid(FILTER), 200);
+  gridResizeT = setTimeout(() => renderGrid(), 200);
 });
 
 /* ---------- List view (compact index table) ---------- */
-function renderList(filter){
+function renderList(){
   const list = document.getElementById('list');
-  const rows = S.filter(s => filter === 'All' || s.cat === filter);
+  const rows = visibleItems();
+  if (!rows.length) { list.innerHTML = ''; return; }
   const head =
     `<div class="lrow head">`
     + `<span></span><span>Index</span><span>Name</span>`
@@ -2106,7 +2329,10 @@ function renderList(filter){
 }
 
 /* ---------- Filter dropdown ---------- */
-function catCount(f){ return f === 'All' ? S.length : S.filter(s => s.cat === f).length; }
+// The label counts what's actually on screen, so it tracks the search too.
+function updateFilterLabel(){
+  document.getElementById('filterLabel').textContent = `${FILTER} • ${visibleItems().length}`;
+}
 function filterItems(){
   const counts = {};
   S.forEach(s => counts[s.cat] = (counts[s.cat] || 0) + 1);
@@ -2117,15 +2343,22 @@ function buildFilterMenu(){
     `<button type="button" data-cat="${c}"${c === FILTER ? ' class="active"' : ''}>${c}<span class="n">${n}</span></button>`
   ).join('');
 }
-function setFilter(f){
+function setFilter(f, opts){
   FILTER = f;
-  document.getElementById('filterLabel').textContent = `${f} • ${catCount(f)}`;
   document.querySelectorAll('#filterMenu button').forEach(b =>
     b.classList.toggle('active', b.dataset.cat === f));
   GRID.ox = GRID.oy = 0;
-  renderGrid(FILTER);
-  renderList(FILTER);
+  rerender();
   closeFilterMenu();
+  if (!(opts && opts.silent)) syncURL();
+}
+
+// Everything that changes what's visible funnels through here.
+function rerender(){
+  collapseTile(true);
+  updateFilterLabel();
+  renderGrid();
+  renderList();
 }
 
 /* ---------- View switching ---------- */
@@ -2136,7 +2369,8 @@ function setView(v){
   document.getElementById('list').hidden = (v !== 'list');
   document.body.classList.toggle('view-list', v === 'list');
   document.body.classList.toggle('view-grid', v === 'grid');
-  if (v === 'grid') renderGrid(FILTER);
+  if (v === 'grid') renderGrid();
+  syncEmpty();
   try { localStorage.setItem('konpo-view', v); } catch (e) {}
 }
 
@@ -2146,7 +2380,11 @@ function openFilterMenu(){ filterEl.classList.add('open'); document.getElementBy
 function closeFilterMenu(){ filterEl.classList.remove('open'); document.getElementById('filterMenu').hidden = true; document.getElementById('filterBtn').setAttribute('aria-expanded', 'false'); }
 
 buildFilterMenu();
-document.getElementById('viewToggle').addEventListener('click', () => setView(VIEW === 'grid' ? 'list' : 'grid'));
+document.getElementById('viewToggle').addEventListener('click', () => {
+  collapseTile(true); closeDetail();          // leave no card/drawer behind when the view flips
+  setView(VIEW === 'grid' ? 'list' : 'grid');
+  syncURL();
+});
 document.getElementById('filterBtn').addEventListener('click', e => {
   e.stopPropagation();
   filterEl.classList.contains('open') ? closeFilterMenu() : openFilterMenu();
@@ -2157,6 +2395,126 @@ document.getElementById('filterMenu').addEventListener('click', e => {
 });
 document.addEventListener('click', e => { if (!filterEl.contains(e.target)) closeFilterMenu(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeFilterMenu(); });
+
+/* ---------- Search ---------- */
+const searchEl    = document.getElementById('search');
+const searchInput = document.getElementById('searchInput');
+
+function setQuery(q, opts){
+  QUERY = q;
+  if (searchInput.value !== q) searchInput.value = q;
+  searchEl.classList.toggle('has-q', !!q.trim());
+  GRID.ox = GRID.oy = 0;
+  rerender();
+  if (!(opts && opts.silent)) syncURL();
+}
+
+let searchT;
+searchInput.addEventListener('input', () => {
+  clearTimeout(searchT);
+  searchT = setTimeout(() => setQuery(searchInput.value), 140);   // debounce: each keystroke re-lays the canvas
+});
+searchInput.addEventListener('keydown', e => {
+  e.stopPropagation();                                   // don't let Esc/typing reach the grid shortcuts
+  if (e.key === 'Escape') { clearTimeout(searchT); setQuery(''); searchInput.blur(); }
+});
+document.getElementById('searchClear').addEventListener('click', () => {
+  clearTimeout(searchT); setQuery(''); searchInput.focus();
+});
+// "/" focuses search, the way every index worth using does it
+document.addEventListener('keydown', e => {
+  if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
+  const t = e.target;
+  if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;
+  e.preventDefault();
+  searchInput.focus();
+  searchInput.select();
+});
+
+/* ---------- Shareable URLs: ?sym=SYM-001&cat=…&q=…&view=… ---------- */
+let URL_READY = false;                    // suppress history writes until the intro hands over
+
+function syncURL(replace){
+  if (!URL_READY) return;
+  const p = new URLSearchParams();
+  const sym = expandedId || openId;
+  if (sym) p.set('sym', sym);
+  if (FILTER !== 'All') p.set('cat', FILTER);
+  if (QUERY.trim()) p.set('q', QUERY.trim());
+  if (VIEW !== 'grid') p.set('view', VIEW);
+  const qs = p.toString();
+  const url = location.pathname + (qs ? '?' + qs : '') + location.hash;
+  if (url === location.pathname + location.search + location.hash) return;
+  history[replace ? 'replaceState' : 'pushState']({ sym: sym || null }, '', url);
+}
+
+// Bring a mark into view and open it, wherever it happens to sit on the infinite canvas.
+function focusSymbol(id){
+  const s = S.find(x => x.id === id);
+  if (!s) return false;
+  if (!visibleItems().some(x => x.id === id)) {   // filtered out — widen until it's reachable
+    QUERY = ''; searchInput.value = ''; searchEl.classList.remove('has-q');
+    if (FILTER !== 'All' && s.cat !== FILTER) FILTER = 'All';
+    document.querySelectorAll('#filterMenu button').forEach(b =>
+      b.classList.toggle('active', b.dataset.cat === FILTER));
+    updateFilterLabel();
+    renderGrid(); renderList();
+  }
+  if (VIEW === 'list'){
+    const row = document.querySelector(`.lrow[data-id="${id}"]`);
+    if (!row) return false;
+    row.scrollIntoView({ block: 'center', behavior: 'auto' });
+    openDetail(row, s);
+    return true;
+  }
+  const canvas = document.getElementById('canvas');
+  const any = canvas.querySelector(`.tile[data-id="${id}"]`);
+  if (!any) return false;
+  // The card grows 2×2 down-right from the tile, so park the tile up-left of centre.
+  const targetX = Math.max(24, innerWidth / 2 - GRID.cell);
+  const targetY = Math.max(24, innerHeight / 2 - GRID.cell);
+  GRID.ox = targetX - (+any.dataset.x);
+  GRID.oy = targetY - (+any.dataset.y);
+  GRID.vx = GRID.vy = 0;
+  applyGridTransform();
+  // the copy that actually landed nearest the target is the one to expand
+  let best = null, bestD = Infinity;
+  for (const t of canvas.querySelectorAll(`.tile[data-id="${id}"]`)){
+    const r = t.getBoundingClientRect();
+    const d = Math.hypot(r.left - targetX, r.top - targetY);
+    if (d < bestD) { bestD = d; best = t; }
+  }
+  if (!best) return false;
+  expandTile(best, s);
+  return true;
+}
+
+function applyURLState(){
+  const p = new URLSearchParams(location.search);
+  const cat = p.get('cat') || 'All';
+  const q   = p.get('q') || '';
+  const sym = p.get('sym');
+
+  collapseTile(true);
+  closeDetail();
+  // no ?view= means "leave the view alone" — the saved preference wins
+  if (p.has('view')) setView(p.get('view') === 'list' ? 'list' : 'grid');
+
+  FILTER = filterItems().some(([c]) => c === cat) ? cat : 'All';
+  QUERY = q;
+  searchInput.value = q;
+  searchEl.classList.toggle('has-q', !!q.trim());
+  document.querySelectorAll('#filterMenu button').forEach(b =>
+    b.classList.toggle('active', b.dataset.cat === FILTER));
+
+  GRID.ox = GRID.oy = 0;
+  updateFilterLabel();
+  renderGrid();
+  renderList();
+  if (sym) focusSymbol(sym);
+}
+
+addEventListener('popstate', applyURLState);
 
 document.body.classList.add('view-grid');
 try {
@@ -2325,6 +2683,19 @@ const drawer = document.getElementById('drawer');
 const scrim  = document.getElementById('scrim');
 
 /* ---------- Expanded card: the clicked tile grows to 2×2 and pushes its neighbours ---------- */
+// If the pointer lingered long enough for the hover annotations to draw in, let
+// them fade back out before the card takes over — the two shouldn't cross.
+function expandFromTile(tile, s){
+  const showing = tile.classList.contains('annot-ready');
+  clearTimeout(tile._annotT);
+  if (!showing) { tile.classList.remove('mark-anim'); expandTile(tile, s); return; }
+  tile.classList.add('annot-out');
+  setTimeout(() => {
+    tile.classList.remove('annot-out', 'annot-ready', 'mark-anim');
+    expandTile(tile, s);
+  }, 240);
+}
+
 function expandTile(tile, s){
   if (expandedId === s.id) { collapseTile(); return; }
   if (expandedTile) collapseTile(true);
@@ -2348,12 +2719,14 @@ function expandTile(tile, s){
 
   fillTileDetail(tile, s);
   tile.classList.add('expanded');
-  focused = true;                          // freeze browsing; the card grows in place
+  focused = true;                          // the canvas still pans; hover/reflow stand down
   expandedTile = tile; expandedId = s.id;
+  syncURL();                               // the open mark is the shareable thing
 }
 
 function collapseTile(immediate){
   if (!expandedTile) return;
+  const wasOpen = expandedId;
   const canvas = document.getElementById('canvas');
   const tile = expandedTile;
   const s = S.find(x => x.id === tile.dataset.id);
@@ -2368,23 +2741,37 @@ function collapseTile(immediate){
   };
   if (immediate) restore(); else setTimeout(restore, 560);
   expandedTile = null; expandedId = null;
-  focused = false;                     // browsing resumes from the focused offset (wrap is seamless)
+  focused = false;                     // hover annotations resume
+  if (wasOpen) syncURL(true);          // drop ?sym= without stacking a history entry
 }
+
+// xmark 1.svg, supplied with the design
+const X_MARK =
+    '<svg viewBox="0 0 20 20" fill="none" aria-hidden="true">'
+  +   '<path d="M15.5554 4.44434L4.44434 15.5554" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>'
+  +   '<path d="M4.44434 4.44434L15.5554 15.5554" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>'
+  + '</svg>';
 
 function fillTileDetail(tile, s){
   const statusCls = s.status === 'Killed' ? 'killed' : s.status === 'Revived' ? 'revived' : '';
   tile.innerHTML =
-      '<div class="xc-inner">'
-    +   '<div class="xc-stage"></div>'
-    +   '<div class="xc-head"><span class="xc-idx"></span><h2 class="xc-name"></h2><p class="xc-desc"></p></div>'
-    +   '<dl class="xc-meta"></dl>'
-    +   '<div class="xc-controls"></div>'
+      '<div class="xc-flip">'
+    +   '<div class="xc-face front">'
+    +     '<div class="xc-inner">'
+    +       '<div class="xc-stage"></div>'
+    +       '<div class="xc-head"><span class="xc-idx"></span><h2 class="xc-name"></h2><p class="xc-desc"></p></div>'
+    +       '<dl class="xc-meta"></dl>'
+    +       '<div class="xc-controls"></div>'
+    +       '<button class="xc-close" type="button" aria-label="Close">' + X_MARK + '</button>'
+    +     '</div>'
+    +   '</div>'
+    +   '<div class="xc-face back"></div>'
     + '</div>';
   const inner = tile.querySelector('.xc-inner');
   const stage = tile.querySelector('.xc-stage');
   stage.classList.remove('exploded', 'hide-annot');
-  stage.innerHTML = notes(s) + svg(s, true);
-  const notesEl = stage.querySelector('.notes'); if (notesEl) notesEl.classList.add('on');
+  stage.innerHTML = notes(s) + svg(s, false);   // a card opens clean — annotations are opt-in
+  tile.querySelector('.xc-close').onclick = () => collapseTile();
 
   const controls = tile.querySelector('.xc-controls');
 
@@ -2406,8 +2793,8 @@ function fillTileDetail(tile, s){
     };
   }
 
-  const aBtn = document.createElement('button'); aBtn.textContent = 'Annotations'; aBtn.classList.add('active'); controls.appendChild(aBtn);
-  let annotOn = true;
+  const aBtn = document.createElement('button'); aBtn.textContent = 'Annotations'; controls.appendChild(aBtn);
+  let annotOn = false;
   aBtn.onclick = () => {
     const svgEl = stage.querySelector('svg'), nEl = stage.querySelector('.notes');
     if (annotOn) {                                   // hide
@@ -2424,8 +2811,8 @@ function fillTileDetail(tile, s){
     }
   };
 
-  const rBtn = document.createElement('button'); rBtn.className = 'revive'; rBtn.textContent = 'Want to revive it?'; controls.appendChild(rBtn);
-  rBtn.onclick = () => openCardRevive(tile, s);
+  const rBtn = document.createElement('button'); rBtn.className = 'revive'; rBtn.textContent = adoptLabel(s); controls.appendChild(rBtn);
+  rBtn.onclick = () => flipToAdopt(tile, s);
 
   tile.querySelector('.xc-idx').textContent = s.id;
   tile.querySelector('.xc-name').textContent = s.name;
@@ -2440,23 +2827,160 @@ function fillTileDetail(tile, s){
   requestAnimationFrame(() => { inner.style.opacity = '1'; });
 }
 
-function openCardRevive(tile, s){
-  const inner = tile.querySelector('.xc-inner');
-  let ov = inner.querySelector('.xc-revive');
-  if (!ov) { ov = document.createElement('div'); ov.className = 'xc-revive'; inner.appendChild(ov); }
-  ov.hidden = false;
-  ov.innerHTML =
-      `<span class="xc-idx">${s.id}</span>`
-    + `<h2 class="xc-name">Revive ${s.name}</h2>`
-    + `<p class="xc-desc">Make your case — in detail. What's the project, who's behind it, and where would this mark live? We only release these to companies and people with genuinely interesting projects.</p>`
-    + `<textarea class="xc-textarea" placeholder="Why this mark, and why you…"></textarea>`
-    + `<div class="xc-revive-actions"><button class="xc-back">Back</button><button class="revive xc-send">Send request</button></div>`;
-  const ta = ov.querySelector('textarea'); ta.focus();
-  ov.querySelector('.xc-back').onclick = () => { ov.hidden = true; };
-  ov.querySelector('.xc-send').onclick = () => {
-    const why = ta.value.trim(); if (!why) { ta.focus(); return; }
-    location.href = 'mailto:hey@konpo.studio?subject=' + encodeURIComponent('Revive ' + s.id) + '&body=' + encodeURIComponent(why);
-  };
+/* ---------- Ribbons: thrown across the screen when an application goes out ---------- */
+const Ribbons = (() => {
+  const COLORS = ['#ffffff', '#9680ff', '#ad9cff', '#4ade80', '#6c6c6c'];
+  let cv = null, ctx = null, raf = null, parts = [];
+
+  function mount(){
+    cv = document.createElement('canvas');
+    cv.id = 'ribbons';
+    document.body.appendChild(cv);
+    ctx = cv.getContext('2d');
+    const d = Math.min(devicePixelRatio || 1, 2);
+    cv.width = innerWidth * d; cv.height = innerHeight * d;
+    cv.style.width = innerWidth + 'px'; cv.style.height = innerHeight + 'px';
+    ctx.setTransform(d, 0, 0, d, 0, 0);
+  }
+  function unmount(){
+    raf = null; parts = [];
+    if (cv) cv.remove();
+    cv = null; ctx = null;
+  }
+
+  function tick(){
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    let alive = 0;
+    for (const p of parts){
+      if (p.life <= 0) continue;
+      p.vy += 0.34;                       // gravity
+      p.vx *= 0.988; p.vy *= 0.996;       // air
+      p.x += p.vx; p.y += p.vy;
+      p.rot += p.vr;
+      p.life -= 0.0055;
+      if (p.y > innerHeight + 60) { p.life = 0; continue; }
+      alive++;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.scale(Math.max(0.08, Math.abs(Math.cos(p.rot * 1.6))), 1);   // a flat strip turning over
+      ctx.globalAlpha = Math.min(1, p.life * 1.8);
+      ctx.fillStyle = p.c;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    }
+    if (alive) raf = requestAnimationFrame(tick);
+    else unmount();
+  }
+
+  // two launchers, left and right edges at mid-height, firing inward and slightly up
+  function burst(){
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (raf) cancelAnimationFrame(raf);
+    if (!cv) mount();
+    parts = [];
+    const guns = [
+      { x: 0,          y: innerHeight * 0.52, a: -0.20 },            // left edge → right
+      { x: innerWidth, y: innerHeight * 0.52, a: Math.PI + 0.20 },   // right edge → left
+    ];
+    for (const g of guns){
+      for (let i = 0; i < 90; i++){
+        const spread = (Math.random() - 0.5) * 0.95;
+        const sp = 21 + Math.random() * 16;
+        parts.push({
+          x: g.x, y: g.y,
+          vx: Math.cos(g.a + spread) * sp,
+          vy: Math.sin(g.a + spread) * sp,
+          w: 5 + Math.random() * 5,
+          h: 11 + Math.random() * 9,
+          rot: Math.random() * Math.PI * 2,
+          vr: (Math.random() - 0.5) * 0.34,
+          c: COLORS[(Math.random() * COLORS.length) | 0],
+          life: 1,
+        });
+      }
+    }
+    raf = requestAnimationFrame(tick);
+  }
+  return { burst };
+})();
+
+/* ---------- Adopt: the card turns over, its reverse is the application ---------- */
+// Most of the archive is still unnamed, so those marks get the generic wording
+// rather than "Adopt Untitled".
+const namedMark = s => s.name && s.name !== 'Untitled' && s.name !== '—';
+const adoptLabel = s => namedMark(s) ? `Adopt ${s.name}` : 'Adopt this mark';
+
+const ADOPT_NOTE = "Make your case — in detail. What's the project, who's behind it, "
+  + 'and where would this mark live? We only release these to companies and people '
+  + 'with genuinely interesting projects.';
+
+function flipToAdopt(tile, s){
+  const flip = tile.querySelector('.xc-flip');
+  const back = tile.querySelector('.xc-face.back');
+  if (!back.firstChild) back.innerHTML = adoptFormHTML(s);
+  flip.classList.add('flipped');
+  Sound.play('toggle.on');
+  wireAdoptForm(tile, s);
+  setTimeout(() => { const el = back.querySelector('input'); if (el) el.focus(); }, 500);
+}
+
+function flipBack(tile){
+  const flip = tile.querySelector('.xc-flip');
+  if (!flip || !flip.classList.contains('flipped')) return false;
+  flip.classList.remove('flipped');
+  Sound.play('toggle.off');
+  return true;
+}
+
+function adoptFormHTML(s){
+  const f = (id, label, ph, type) =>
+      `<div class="afield"><label for="${id}">${label}</label>`
+    + `<input id="${id}" type="${type}" placeholder="${ph}" autocomplete="${type === 'email' ? 'email' : 'off'}"></div>`;
+  return `<form class="xc-adopt" novalidate>`
+    + `<button type="button" class="aback">Back</button>`
+    + `<div class="ahead"><span class="xc-idx">${s.id}</span>`
+    +   `<h2 class="xc-name">${adoptLabel(s)}</h2>`
+    +   `<p class="anote">${ADOPT_NOTE}</p></div>`
+    + f('a-name', 'Name', 'Your name', 'text')
+    + f('a-org', 'Organization', 'Studio, company, or just you', 'text')
+    + f('a-email', 'Email', 'you@example.com', 'email')
+    + `<div class="afield"><label for="a-case">Make your case</label>`
+    +   `<textarea id="a-case" placeholder="Why this mark, and why you…"></textarea></div>`
+    + `<p class="asent mono" hidden>Application drafted — send it from your mail app.</p>`
+    + `<button type="submit" class="aband">Submit Application</button>`
+    + `</form>`;
+}
+
+function wireAdoptForm(tile, s){
+  const form = tile.querySelector('.xc-adopt');
+  if (!form || form._wired) return;
+  form._wired = true;
+  const $ = sel => form.querySelector(sel);
+  form.querySelector('.aback').onclick = () => flipBack(tile);
+  // typing in the card must not reach the canvas shortcuts behind it
+  form.addEventListener('keydown', e => {
+    e.stopPropagation();
+    if (e.key === 'Escape') flipBack(tile);
+  });
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const name = $('#a-name').value.trim(), org = $('#a-org').value.trim();
+    const email = $('#a-email').value.trim(), why = $('#a-case').value.trim();
+    const bad = !name || !why || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (bad) {
+      Sound.play('state.error');
+      (!name ? $('#a-name') : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? $('#a-email') : $('#a-case')).focus();
+      return;
+    }
+    Sound.play('action.send');
+    const body = `Name: ${name}\nOrganization: ${org || '—'}\nEmail: ${email}\n\n${why}`;
+    location.href = 'mailto:hey@konpo.studio'
+      + '?subject=' + encodeURIComponent(`Adopt ${s.id}${namedMark(s) ? ' — ' + s.name : ''}`)
+      + '&body=' + encodeURIComponent(body);
+    form.querySelector('.asent').hidden = false;
+    Ribbons.burst();
+  });
 }
 
 function fillDrawer(s){
@@ -2550,12 +3074,14 @@ function fillDrawer(s){
   st.classList.toggle('revived', s.status === 'Revived');
   st.classList.toggle('killed', s.status === 'Killed');
   document.getElementById('d-attachment').textContent = s.attachment || '—';
+  reviveToggle.textContent = adoptLabel(s);
   resetRevive();
 }
 
 function closeDetail(){
   if (!openId) return;
   openId = null;
+  syncURL(true);
   drawer.classList.remove('open');
   scrim.classList.remove('open');
   drawer.setAttribute('aria-hidden', 'true');
@@ -2583,11 +3109,16 @@ function openDetail(tile, s){
     document.body.classList.add('page-blur');
   }
   openId = s.id;
+  syncURL();
 }
 
 drawer.querySelector('.close').onclick = closeDetail;
 scrim.onclick = closeDetail;
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeDetail(); collapseTile(); } });
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (expandedTile) { flipBack(expandedTile); return; }  // Esc turns the form back; the card itself
+  closeDetail();                                         // only closes via its close button
+});
 
 /* ---------- Revive request ---------- */
 const reviveToggle = document.getElementById('revive-toggle');
@@ -2619,6 +3150,63 @@ document.getElementById('revive-send').onclick = () => {
     + '&body=' + encodeURIComponent(why);
   reviveSent.hidden = false;
 };
+
+/* ---------- Footer: sign up for updates ----------
+   No backend on this page by design, so the form drafts a mail instead. --------- */
+(function wireSubscribe(){
+  const foot   = document.getElementById('footer');
+  const open   = document.getElementById('subOpen');
+  const form   = document.getElementById('subForm');
+  const email  = document.getElementById('subEmail');
+  const cancel = document.getElementById('subCancel');
+  const msg    = foot.querySelector('.msg');
+  const idle   = msg.innerHTML;
+
+  function show(){
+    foot.classList.add('subscribing');
+    Sound.play('toggle.on');
+    email.focus();
+  }
+  function hide(){
+    foot.classList.remove('subscribing');
+    email.value = '';
+    Sound.play('toggle.off');
+  }
+
+  open.addEventListener('click', show);
+  open.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); show(); }
+  });
+  cancel.addEventListener('click', hide);
+  email.addEventListener('keydown', e => {
+    e.stopPropagation();
+    if (e.key === 'Escape') hide();
+  });
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const v = email.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { email.focus(); Sound.play('state.error'); return; }
+    Sound.play('action.send');
+    location.href = 'mailto:hey@konpo.studio'
+      + '?subject=' + encodeURIComponent('Symbol Index — sign me up')
+      + '&body=' + encodeURIComponent(`Add ${v} to the list. Tell me when more rejections land.`);
+    foot.classList.remove('subscribing');
+    email.value = '';
+    msg.innerHTML = 'Drafted &mdash; send it from your mail app.';
+    setTimeout(() => { msg.innerHTML = idle; wireOpen(); }, 6000);
+  });
+
+  // the CTA lives inside .msg, so re-bind it after the confirmation swaps back
+  function wireOpen(){
+    const el = document.getElementById('subOpen');
+    if (!el) return;
+    el.addEventListener('click', show);
+    el.addEventListener('keydown', ev => {
+      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); show(); }
+    });
+  }
+})();
 
 /* ---------- Right-click guard: the marks aren't up for grabs ---------- */
 const copyToast = document.createElement('div');
@@ -2680,7 +3268,11 @@ document.getElementById('toast-case').onclick = () => {
     // staged reveal: black-on-black handover, so the title blurring in is the first visible event
     const rm = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 1;
     setTimeout(() => document.body.classList.add('t2'), 400 * rm);  // top bar fades in
-    setTimeout(() => { renderGrid(FILTER); renderList(FILTER); document.body.classList.add('t3'); }, 1200 * rm); // then the index + footer
+    setTimeout(() => {                                          // then the index + footer
+      URL_READY = true;
+      applyURLState();                                          // ?sym / ?cat / ?q / ?view
+      document.body.classList.add('t3');
+    }, 1200 * rm);
   }
 
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) { finish(); return; }
