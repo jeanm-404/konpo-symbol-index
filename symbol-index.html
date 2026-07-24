@@ -15,7 +15,7 @@
 <link rel="alternate" type="application/rss+xml" title="Symbol Shelter" href="/feed.xml">
 <link rel="alternate" type="application/feed+json" title="Symbol Shelter" href="/feed.json">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cstyle%3Ecircle%7Bfill:%230a0a0a%7D@media(prefers-color-scheme:dark)%7Bcircle%7Bfill:%23fff%7D%7D%3C/style%3E%3Ccircle cx='50' cy='50' r='32'/%3E%3C/svg%3E">
-<script defer src="https://unpkg.com/lottie-web@5.12.2/build/player/lottie.min.js"></script>
+<script defer src="/vendor/lottie.min.js"></script>
 <style>
   html { font-size: 62.5%; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -63,13 +63,13 @@
     padding: 4rem; pointer-events: none;
   }
   .topbar > * { pointer-events: auto; }
-  .logo {
-    display: flex; width: 4rem; height: 4rem;
-    background: rgba(255,255,255,0.02);
-    -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
-    border-radius: var(--radius-sm, 0.8rem);
+  .logo.wordmark {
+    display: flex; align-items: center; height: 4rem;
+    font-family: var(--sans); font-size: 1.8rem; font-weight: 400;
+    letter-spacing: -0.01em; color: var(--white);
+    text-decoration: none; transition: color .3s;
   }
-  .logo svg { display: block; width: 100%; height: 100%; }
+  .logo.wordmark:hover { color: var(--purple-vivid); }
   .toolbar { display: flex; align-items: center; gap: 2.5rem; }
   .tbtn {
     display: flex; align-items: center; gap: 0.8rem;
@@ -84,9 +84,21 @@
   .tbtn:hover { color: var(--white); background: rgba(255,255,255,0.05); }
   .view-toggle { padding: 1rem; }
   .view-toggle svg { display: block; width: 2rem; height: 2rem; }
-  .view-toggle .ic-grid { display: none; }
-  body.view-list .view-toggle .ic-grid { display: block; }
-  body.view-list .view-toggle .ic-list { display: none; }
+  /* the icon shows the CURRENT view; clicking cycles grid → zoomed-out → list */
+  .view-toggle .ic-grid, .view-toggle .ic-list, .view-toggle .ic-zoom { display: none; }
+  body.view-grid:not(.view-zoom) .view-toggle .ic-grid { display: block; }
+  body.view-zoom .view-toggle .ic-zoom { display: block; }
+  body.view-list .view-toggle .ic-list { display: block; }
+  /* zoomed-out view: smaller tiles, more of the shelter on screen */
+  body.view-zoom .tile:not(.expanded) { width: 24rem; height: 24rem; }
+  /* the expanded card spans two zoom cells, same contract as the grid view */
+  body.view-zoom .tile.expanded {
+    width: min(48.4rem, calc(100vw - 2.4rem));
+    height: min(48.4rem, calc(100vh - 4.8rem));
+    height: min(48.4rem, calc(100dvh - 4.8rem));
+  }
+  body.view-zoom .tile.expanded .xc-stage svg { width: min(30rem, 70vw); height: min(30rem, 70vw); }
+  body.view-zoom .tile.expanded .xc-stage .lottie-slot { width: min(30rem, 70vw); height: min(30rem, 70vw); }
   .filter { position: relative; }
   .filter-btn { padding: 1.2rem 1.6rem; }
   .filter-btn .chev { display: flex; width: 1.6rem; height: 1.6rem; transition: transform .3s; }
@@ -248,6 +260,7 @@
 
   .tile {
     position: absolute; top: 0; left: 0;
+    content-visibility: auto;      /* offscreen copies cost no style/layout/paint */
     width: 35rem; height: 35rem;
     background: var(--tile); border-radius: 2rem;
     overflow: hidden; cursor: pointer;
@@ -259,13 +272,7 @@
      Held off while the canvas is being dragged, and while a card is expanded
      (the card is the focus then, not whatever the cursor happens to be over). */
   .tile { transition: filter .5s cubic-bezier(0.4, 0, 0.2, 1); }
-  .grid:not(.dragging) .canvas:not(:has(.tile.expanded)):has(.tile:hover) .tile:not(:hover) {
-    filter: blur(2px) brightness(0.65);
-  }
-  body:has(.grid:not(.dragging) .canvas:not(:has(.tile.expanded)) .tile:hover):not(.page-blur) .topbar,
-  body:has(.grid:not(.dragging) .canvas:not(:has(.tile.expanded)) .tile:hover):not(.page-blur) footer {
-    filter: blur(2px) brightness(0.65);
-  }
+  /* (the sibling/chrome blur-on-hover was retired: hovering a mark leaves the rest alone) */
   /* hover annotations are suppressed while dragging the canvas — but an open card
      keeps its own, since the canvas can now be dragged with a card still open */
   .grid.dragging .tile:not(.expanded) .construction,
@@ -430,8 +437,8 @@
     text-transform: uppercase; }
   .featured .tag { color: var(--purple); }
 
-  .canvas, .list, footer, .topbar { transition: filter .45s cubic-bezier(0.165, 0.84, 0.44, 1); }
-  .page-blur .canvas, .page-blur .list,
+  .grid, .list, footer, .topbar { transition: filter .45s cubic-bezier(0.165, 0.84, 0.44, 1); }
+  .page-blur .grid, .page-blur .list,
   .page-blur footer, .page-blur .topbar { filter: blur(5px) brightness(0.4); }
   .tile.active { outline: 1px solid rgba(150,128,255,0.4); outline-offset: -1px; }
 
@@ -471,7 +478,7 @@
   /* ---------- Expanded card (a tile grows to 2×2 and pushes its neighbours) ---------- */
   .canvas.reflowing { transition: transform .55s cubic-bezier(0.66,0,0.34,1); }
   .canvas.reflowing .tile {
-    transition: transform .55s cubic-bezier(0.66,0,0.34,1),
+    transition: translate .55s cubic-bezier(0.66,0,0.34,1),
                 width .55s cubic-bezier(0.66,0,0.34,1),
                 height .55s cubic-bezier(0.66,0,0.34,1),
                 filter .5s cubic-bezier(0.4, 0, 0.2, 1);   /* keep the hover softening smooth mid-reflow */
@@ -744,22 +751,40 @@
   .revive-send:hover { opacity: 0.85; }
   .revive-sent { color: var(--purple-vivid); }
 
+  @media (pointer: coarse) {
+    /* frosted chips re-blur every pan frame on mobile GPUs — trade for opacity */
+    .tbtn, .search, footer, .filter-menu, .xc-close {
+      -webkit-backdrop-filter: none; backdrop-filter: none;
+      background: rgba(20,20,20,0.88);
+    }
+    /* sub-16px inputs make iOS Safari zoom the whole page on focus */
+    .search input, footer .sub input, #revive-text,
+    .xc-adopt input, .xc-adopt textarea { font-size: 1.6rem; }
+  }
+  @media (max-width: 480px) {
+    .topbar { padding: 1.6rem; }
+    .toolbar { gap: 0.8rem; }
+    .logo.wordmark { font-size: 1.5rem; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     #drawer, #scrim { transition: none !important; }
   }
 
-  /* ---------- Footer ---------- */
+  /* ---------- Footer: a single chip at the bottom right, styled like the search bar ---------- */
   footer {
-    position: fixed; left: 50%; bottom: 3rem; transform: translateX(-50%);
-    z-index: 15; padding: 0.8rem 1.6rem;
-    display: flex; justify-content: center; text-align: center; gap: 2rem;
+    position: fixed; right: 4rem; bottom: 4rem;
+    z-index: 15; padding: 1.2rem 1.6rem;
+    display: flex; align-items: center; gap: 2rem;
     background: rgba(255,255,255,0.02);
     -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
     border-radius: var(--radius-sm, 0.8rem);
     pointer-events: none; white-space: nowrap;
+    transition: background-color .3s;
   }
-  footer .cta { color: var(--white); pointer-events: auto; cursor: pointer; }
-  footer .cta:hover { color: var(--purple-vivid); }
+  footer:has(.cta:hover) { background: rgba(255,255,255,0.05); }
+  footer .cta { color: var(--fade); pointer-events: auto; cursor: pointer; transition: color .3s; }
+  footer .cta:hover { color: var(--white); }
   footer .sub { display: none; align-items: center; gap: 1.2rem; pointer-events: auto; }
   footer.subscribing .msg { display: none; }
   footer.subscribing .sub { display: flex; }
@@ -790,18 +815,27 @@
     .toolbar { gap: 1.2rem; }
     .search input { width: 6rem; }
     .search:focus-within input, .search.has-q input { width: 10rem; }
+    footer { right: 2rem; bottom: 2rem; }
     footer .sub input { width: 15rem; }
   }
 
   @media (prefers-reduced-motion: reduce) {
     * { animation: none !important; transition: none !important; }
-    .tile { opacity: 1 !important; transform: none !important; }
+    .tile { opacity: 1 !important; }
   }
   /* ---------- Ported from the Shelter: lottie motion, adoption, provenance chrome ---------- */
   /* animated marks: the motion cycle overlays the static mark */
   .tile .lottie-slot { position: absolute; inset: 0; pointer-events: none; }
   .tile.lottie-live:not(.expanded) > svg .mark { opacity: 0; }
-  .xc-stage .lottie-slot, #drawer .stage .lottie-slot {
+  /* the card's motion slot matches the static svg's centered 42rem box — the
+     stage itself spans the whole card, and inset:0 there played the mark huge */
+  .xc-stage .lottie-slot {
+    position: absolute; inset: 0; margin: auto;
+    width: min(42rem, 82vw); height: min(42rem, 82vw);
+    pointer-events: none; opacity: 0;
+    transition: transform .7s cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+  #drawer .stage .lottie-slot {
     position: absolute; inset: 0; pointer-events: none;
     opacity: 0;
     transition: transform .7s cubic-bezier(0.165, 0.84, 0.44, 1);
@@ -837,10 +871,57 @@
   .xc-case { font-style: italic; color: var(--fade); }
   .xc-meta dd a { pointer-events: auto; }
 
+  /* --- small screens: the card fits the viewport instead of its fixed 2×2 --- */
+  @media (max-width: 780px) {
+    .tile.expanded {
+      width: calc(100vw - 2.4rem);
+      height: min(71.6rem, calc(100vh - 4.8rem));
+      height: min(71.6rem, calc(100dvh - 4.8rem));
+    }
+    .xc-stage svg { width: min(42rem, 82vw); height: min(42rem, 82vw); }
+    .xc-head { width: auto; }
+  }
+
   /* the shelter's own tile: Konpo logomark, accent purple, links home */
   .tile.konpo { cursor: pointer; }
   .tile.konpo .mark path { fill: var(--purple-vivid); }
   .tile.konpo .idx, .tile.konpo .meta .name { color: var(--purple-vivid); }
+
+  /* --- the reveal: tiles pulse in from the centre of the screen outwards ---
+     `scale` (the individual property) composes with the inline translate3d
+     positioning transform — never animate `transform` here. */
+  .canvas.revealing .tile.rv:not(.expanded) {
+    animation: tile-in .6s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: var(--rd, 0s);
+  }
+  @keyframes tile-in {
+    from { opacity: 0; scale: 0.88; }
+    60%  { opacity: 1; }
+    to   { opacity: 1; scale: 1; }
+  }
+
+  /* --- expanded card: the text blurs in only once the card has fully grown --- */
+  .xc-head > *, .xc-meta, .xc-controls, .xc-close {
+    opacity: 0; filter: blur(8px);
+    transition: opacity .6s ease, filter .6s ease;
+  }
+  /* while invisible, the chrome must not be clickable (a hasty second tap was
+     landing on the invisible close button and "self-closing" the card) */
+  .tile.expanded:not(.settled) .xc-meta,
+  .tile.expanded:not(.settled) .xc-controls,
+  .tile.expanded:not(.settled) .xc-close { pointer-events: none; }
+  .tile.expanded.settled .xc-head > *, .tile.expanded.settled .xc-meta,
+  .tile.expanded.settled .xc-controls, .tile.expanded.settled .xc-close {
+    opacity: 1; filter: blur(0);
+  }
+  .tile.expanded.settled .xc-head > :nth-child(1) { transition-delay: 0s; }
+  .tile.expanded.settled .xc-head > :nth-child(2) { transition-delay: .09s; }
+  .tile.expanded.settled .xc-head > :nth-child(3) { transition-delay: .18s; }
+  .tile.expanded.settled .xc-head > :nth-child(4) { transition-delay: .27s; }
+  .tile.expanded.settled .xc-meta     { transition-delay: .22s; }
+  .tile.expanded.settled .xc-controls { transition-delay: .32s; }
+  .tile.expanded.settled .xc-close    { transition-delay: .42s; }
+
 </style>
 </head>
 <body>
@@ -852,16 +933,10 @@
 </div>
 
 <header class="topbar">
-    <a class="logo" href="https://konpo.studio" target="_blank" rel="noopener" aria-label="Konpo Studio">
-      <svg viewBox="0 0 40 40" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-        <path d="M14.1667 21.6667C16.4679 21.6667 18.3333 23.5321 18.3333 25.8333C18.3333 28.1345 16.4679 30 14.1667 30C11.8655 30 10 28.1345 10 25.8333C10 23.5321 11.8655 21.6667 14.1667 21.6667Z" fill="#9680FF"/>
-        <path d="M25.8333 21.6667C28.1345 21.6667 30 23.5321 30 25.8333C30 28.1345 28.1345 30 25.8333 30C23.5321 30 21.6667 28.1345 21.6667 25.8333C21.6667 23.5321 23.5321 21.6667 25.8333 21.6667Z" fill="#9680FF"/>
-        <path d="M14.1667 10C16.4679 10 18.3333 11.8655 18.3333 14.1667C18.3333 14.5778 18.2726 14.9747 18.1616 15.3499C16.8792 15.8573 15.8573 16.8792 15.3499 18.1616C14.9747 18.2726 14.5778 18.3333 14.1667 18.3333C11.8655 18.3333 10 16.4679 10 14.1667C10 11.8655 11.8655 10 14.1667 10Z" fill="#9680FF"/>
-        <path d="M25.8333 10C28.1345 10 30 11.8655 30 14.1667C30 16.4679 28.1345 18.3333 25.8333 18.3333C25.4219 18.3333 25.0247 18.2727 24.6493 18.1616C24.1417 16.8791 23.1202 15.8572 21.8376 15.3499C21.7266 14.9748 21.6667 14.5778 21.6667 14.1667C21.6667 11.8655 23.5321 10 25.8333 10Z" fill="#9680FF"/>
-      </svg>
-    </a>
+    <a class="logo wordmark" href="https://konpo.studio" target="_blank" rel="noopener" aria-label="Konpo Symbol Shelter">Konpo Symbol Shelter</a>
     <div class="toolbar">
-      <button class="tbtn view-toggle" id="viewToggle" type="button" aria-label="Toggle grid / list view">
+      <button class="tbtn view-toggle" id="viewToggle" type="button" aria-label="Cycle grid / zoomed-out / list view">
+        <span class="ic-zoom"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="4.2" cy="4.2" r="1.5" fill="currentColor"/><circle cx="10" cy="4.2" r="1.5" fill="currentColor"/><circle cx="15.8" cy="4.2" r="1.5" fill="currentColor"/><circle cx="4.2" cy="10" r="1.5" fill="currentColor"/><circle cx="10" cy="10" r="1.5" fill="currentColor"/><circle cx="15.8" cy="10" r="1.5" fill="currentColor"/><circle cx="4.2" cy="15.8" r="1.5" fill="currentColor"/><circle cx="10" cy="15.8" r="1.5" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.5" fill="currentColor"/></svg></span>
         <span class="ic-list"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M1.944 6.389H18.056" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.944 13.611H18.056" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         <span class="ic-grid"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5.833 3.333V8.333" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.333 5.833H3.333" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.167 3.333V8.333" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.667 5.833H11.667" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.833 11.667V16.667" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.333 14.167H3.333" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.167 11.667V16.667" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.667 14.167H11.667" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       </button>
@@ -931,7 +1006,7 @@
 
   <div class="wrap">
     <footer class="mono" id="footer">
-      <span class="msg">We get a little too attached. More rejections coming. <span class="cta" id="subOpen" role="button" tabindex="0">Sign up for updates</span></span>
+      <span class="msg"><span class="cta" id="subOpen" role="button" tabindex="0">Get notified when we add more</span></span>
       <form class="sub" id="subForm" novalidate>
         <input id="subEmail" type="email" placeholder="your@email.com" autocomplete="email" spellcheck="false" aria-label="Email address">
         <button type="submit">Send&nbsp;&rarr;</button>
@@ -1949,13 +2024,42 @@ const markClass = (s) => `mark k${s.id.slice(4)}`;
 
 const svg = (s, showCon=false) => {
   if (!s._t) s._t = typeset(s.con);
+  // Some marks arrive wrapped in their own <g transform="translate(…) scale(…)">.
+  // The hover settle animates `transform` on .mark's direct children, and a CSS
+  // animation overrides a presentation attribute — which threw those marks to the
+  // un-transformed origin. A neutral wrapper takes the animation instead.
+  const mark = /^\s*<g [^>]*transform/.test(s.mark) ? `<g>${s.mark}</g>` : s.mark;
   return `<svg viewBox="-28 -28 256 256" class="${showCon ? 'show-construction' : ''}" aria-hidden="true">${provenance(s)}
-     <g class="${markClass(s)}">${s.mark}</g>
+     <g class="${markClass(s)}">${mark}</g>
      <g class="construction">${s._t.con}</g>
    </svg>`;
 };
 const markOnly = (s, px) =>
   `<svg viewBox="30 30 140 140" width="${px}" height="${px}" aria-hidden="true">${provenance(s)}<g class="${markClass(s)}">${s.mark}</g></svg>`;
+
+/* Explode geometry: unwrap the neutral/transform wrappers so the real parts
+   travel individually; vectors radiate from the art's own centre (which, for
+   transform-wrapped marks, lives in local — not comp — coordinates). */
+function explodeSetup(stage, s){
+  let parts = [...stage.querySelectorAll('.mark > *')];
+  let cx0 = 100, cy0 = 100, unwrapped = false;
+  while (parts.length === 1 && parts[0].tagName.toLowerCase() === 'g' && parts[0].children.length) {
+    parts = [...parts[0].children]; unwrapped = true;
+  }
+  if (unwrapped && parts.length) {
+    const hb = parts[0].parentNode.getBBox();
+    cx0 = hb.x + hb.width / 2; cy0 = hb.y + hb.height / 2;
+  }
+  const vectors = s.explode === 'auto'
+    ? parts.map(el => {
+        const b = el.getBBox();
+        const dx = b.x + b.width / 2 - cx0, dy = b.y + b.height / 2 - cy0;
+        const d = Math.hypot(dx, dy);
+        return d < 6 ? [0, 0] : [dx / d * 26, dy / d * 26];
+      })
+    : s.explode;
+  return { parts, vectors };
+}
 
 /* Konpo logomark (four-dot symbol), 62x62 */
 const KONPO_MARK = '<path d="M13.5752 33.9356C21.0719 33.9356 27.1493 40.0131 27.1494 47.5098C27.1494 55.0066 21.072 61.084 13.5752 61.084C6.07832 61.084 0.000976562 55.0067 0.000976562 47.5098C0.00114046 40.0131 6.07843 33.9356 13.5752 33.9356ZM37.9141 37.9112C43.213 32.609 51.8074 32.612 57.1094 37.9112C62.4114 43.2105 62.4112 51.8059 57.1094 57.1084C51.8104 62.411 43.2161 62.4078 37.9141 57.1084C32.612 51.809 32.612 43.2137 37.9141 37.9112ZM13.5742 3.8115e-05C20.6616 3.8115e-05 26.4782 5.43181 27.0928 12.3594C21.0431 13.8702 16.5617 19.3408 16.5615 25.8584C16.5615 26.1783 16.5725 26.4961 16.5938 26.8106C15.6226 27.0312 14.6121 27.1485 13.5742 27.1485C6.07738 27.1484 0 21.0711 0 13.5743C3.55627e-05 6.07744 6.0774 7.36788e-05 13.5742 3.8115e-05ZM37.9131 3.97562C43.212 -1.32673 51.8064 -1.32368 57.1084 3.97562C62.4105 9.27503 62.4105 17.8704 57.1084 23.1729C53.6507 26.6329 48.7901 27.8329 44.3564 26.7774C44.3762 26.4737 44.3887 26.1671 44.3887 25.8584C44.3885 19.388 39.9714 13.9493 33.9883 12.3926C34.2552 9.32257 35.5632 6.32569 37.9131 3.97562Z"/>';
@@ -2019,7 +2123,7 @@ function tileCycle(t, s){
     t.appendChild(slot);
     const anim = lottie.loadAnimation({
       container: slot, renderer: 'svg', loop: false, autoplay: false,
-      path: 'anim/sym-' + s.id.slice(4) + '.json'
+      path: '/anim/sym-' + s.id.slice(4) + '.json'
     });
     // own cycle flag: lottie's isPaused goes stale after goToAndStop inside 'complete'
     let cycling = false;
@@ -2052,7 +2156,9 @@ function releaseTileAnim(t){
   t.classList.remove('lottie-live');
 }
 
-function renderGrid(){
+function renderGrid(reveal){
+  if (VIEW === 'list') { renderGrid._stale = true; return; }   // hidden: build on entry
+  renderGrid._stale = false;
   const canvas = document.getElementById('canvas');
   gridAnims.forEach(a => a.destroy());
   gridAnims = [];
@@ -2063,12 +2169,14 @@ function renderGrid(){
   syncEmpty();
   if (!N) { canvas.innerHTML = ''; return; }
   const vpW = innerWidth || 1440, vpH = innerHeight || 900;
-  const cell = GRID.cell;
+  const cell = GRID.cell = (VIEW === 'zoom' ? 250 : 366);   // 24rem / 35rem tiles + gap
   // Repeating the set to fill an endless canvas only reads as endless when there is
   // enough of it — a search down to two marks would just wallpaper the same tile.
   // Below two screenfuls the set lays out once, centred, and pans within its bounds.
   const screenful = Math.ceil(vpW / cell) * Math.ceil(vpH / cell);
-  GRID.tiling = N >= screenful * 2;
+  // the zoomed-out view exists to roam the whole field: it wallpapers whenever
+  // the set isn't tiny, regardless of how many cells fit one screen
+  GRID.tiling = VIEW === 'zoom' ? N >= 12 : N >= screenful * 2;
 
   let COLS = Math.max(2, Math.round(Math.sqrt(N * (vpW / vpH))));
   COLS = Math.min(COLS, N);
@@ -2076,9 +2184,36 @@ function renderGrid(){
   const bW = COLS * cell, bH = ROWS * cell;
   GRID.bW = bW; GRID.bH = bH;
 
-  const tile = (s, x, y) =>
-    `<div class="tile${s.__konpo ? ' konpo' : ''}${s.status === 'Adopted' ? ' adopted-mark' : ''}" data-id="${s.id}" data-x="${x}" data-y="${y}" style="transform:translate3d(${x}px,${y}px,0)">`
-    + (s.__konpo ? konpoInner() : tileInner(s)) + `</div>`;
+  // the reveal wave starts ON the centre-most card in the viewport and radiates
+  // outwards ring by ring — a pulse of cards, not a gradient. Rings are capped
+  // at the on-screen maximum so off-screen copies share the final beat.
+  const wx = GRID.tiling ? -bW : 0, wy = GRID.tiling ? -bH : 0;  // applyGridTransform at ox=oy=0
+  const baseX = GRID.tiling ? wx : Math.round((vpW - bW) / 2);
+  const baseY = GRID.tiling ? wy : Math.round((vpH - bH) / 2);
+  const oc = Math.max(0, GRID.tiling ? Math.round((vpW / 2 - baseX - cell / 2) / cell)
+                                     : Math.min(COLS - 1, Math.round((vpW / 2 - baseX - cell / 2) / cell)));
+  const orow = Math.max(0, GRID.tiling ? Math.round((vpH / 2 - baseY - cell / 2) / cell)
+                                       : Math.min(ROWS - 1, Math.round((vpH / 2 - baseY - cell / 2) / cell)));
+  const originX = baseX + oc * cell + cell / 2;
+  const originY = baseY + orow * cell + cell / 2;
+  const RING_MS = 130;
+  const maxRing = Math.ceil(Math.hypot(vpW / 2 + cell, vpH / 2 + cell) / cell);
+  // only tiles near the viewport actually animate (class rv) — a cheap phone
+  // shouldn't run three hundred simultaneous animations for off-screen copies
+  const rdelay = (x, y) => {
+    if (!reveal) return '';
+    const sx = x + wx, sy = y + wy;
+    if (sx < -cell || sx > vpW + cell || sy < -cell || sy > vpH + cell) return '';
+    const ring = Math.min(maxRing,
+      Math.round(Math.hypot(sx + cell / 2 - originX, sy + cell / 2 - originY) / cell));
+    return `;--rd:${ring * RING_MS}ms`;
+  };
+
+  const tile = (s, x, y) => {
+    const rd = rdelay(x, y);
+    return `<div class="tile${s.__konpo ? ' konpo' : ''}${s.status === 'Adopted' ? ' adopted-mark' : ''}${rd ? ' rv' : ''}" data-id="${s.id}" data-x="${x}" data-y="${y}" style="translate:${x}px ${y}px${rd}">`
+      + (s.__konpo ? konpoInner() : tileInner(s)) + `</div>`;
+  };
 
   let html = '';
   if (GRID.tiling){
@@ -2097,19 +2232,38 @@ function renderGrid(){
   }
   canvas.innerHTML = html;
   applyGridTransform();
+  // the pulse: run the wave once, then hand the tiles back to the hover styles
+  canvas.classList.remove('revealing');
+  clearTimeout(renderGrid._revealT);
+  if (reveal && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    void canvas.offsetWidth;                       // restart the animation cleanly
+    canvas.classList.add('revealing');
+    renderGrid._revealT = setTimeout(() => canvas.classList.remove('revealing'),
+      maxRing * RING_MS + 700);
+  }
   // every copy of the Konpo card dances (the fifth, center circle is tile-colored
-  // in the scene itself, so it reads as cutting the dots)
+  // in the scene itself, so it reads as cutting the dots) — but each copy only
+  // plays while it is actually in the viewport; off-screen loops are paused
+  if (renderGrid._io) { renderGrid._io.disconnect(); renderGrid._io = null; }
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const io = renderGrid._io = ('IntersectionObserver' in window)
+      ? new IntersectionObserver(es => es.forEach(en => {
+          const a = en.target._konpoAnim;
+          if (a) (en.isIntersecting ? a.play() : a.pause());
+        }))
+      : null;
     canvas.querySelectorAll('.tile.konpo').forEach(k => whenLottie(() => {
       if (!k.isConnected) return;
       const slot = document.createElement('div');
       slot.className = 'lottie-slot';
       k.appendChild(slot);
       const anim = lottie.loadAnimation({
-        container: slot, renderer: 'svg', loop: true, autoplay: true,
-        path: 'anim/konpo.json'
+        container: slot, renderer: 'svg', loop: true, autoplay: !io,
+        path: '/anim/konpo.json'
       });
       anim.addEventListener('DOMLoaded', () => k.classList.add('lottie-live'));
+      k._konpoAnim = anim;
+      if (io) io.observe(k);
       gridAnims.push(anim);
     }));
   }
@@ -2133,7 +2287,7 @@ function applyGridTransform(){
 
 (function wireGridDrag(){
   const grid = document.getElementById('grid');
-  let dragging = false, moved = 0, lastX = 0, lastY = 0, downId = null, downTile = null, pid = null;
+  let dragging = false, moved = 0, lastX = 0, lastY = 0, downId = null, downTile = null, pid = null, touch = false;
   function momentum(){
     GRID.ox += GRID.vx; GRID.oy += GRID.vy;
     GRID.vx *= 0.92; GRID.vy *= 0.92;
@@ -2150,6 +2304,7 @@ function applyGridTransform(){
     downOutsideCard = !!expandedTile && !e.target.closest('.tile.expanded');
     if (expandedTile && !downOutsideCard) return;        // pressing the card itself — let it handle
     dragging = true; moved = 0; lastX = e.clientX; lastY = e.clientY;
+    touch = e.pointerType === 'touch';
     GRID.vx = GRID.vy = 0;
     const cv = document.getElementById('canvas');
     cv.classList.remove('reflowing');                                  // instant drag
@@ -2176,7 +2331,8 @@ function applyGridTransform(){
     dragging = false;
     grid.classList.remove('dragging');
     if (pid != null) { try { grid.releasePointerCapture(pid); } catch (_) {} pid = null; }
-    const click = moved < 6;
+    // a finger wobbles more than a mouse: swipes must never read as taps
+    const click = moved < (touch ? 14 : 6);
     // A click on any tile opens it — and if another card was open, expandTile
     // collapses that one first. So the ways out are: the close button, or clicking
     // a different card. A click on empty space, or any drag, leaves the card alone.
@@ -2228,15 +2384,19 @@ function applyGridTransform(){
   });
 })();
 
-let gridResizeT;
+let gridResizeT, gridResizeW = innerWidth;
 addEventListener('resize', () => {
-  if (VIEW !== 'grid' || focused) return;
+  if (VIEW === 'list' || focused) return;
+  if (innerWidth === gridResizeW) return;   // height-only: the soft keyboard, not a real resize
+  gridResizeW = innerWidth;
   clearTimeout(gridResizeT);
   gridResizeT = setTimeout(() => renderGrid(), 200);
 });
 
 /* ---------- List view (compact index table) ---------- */
 function renderList(){
+  if (VIEW !== 'list') { renderList._stale = true; return; }   // hidden: build on entry
+  renderList._stale = false;
   const list = document.getElementById('list');
   const rows = visibleItems();
   if (!rows.length) { list.innerHTML = ''; return; }
@@ -2281,28 +2441,35 @@ function setFilter(f, opts){
   document.querySelectorAll('#filterMenu button').forEach(b =>
     b.classList.toggle('active', b.dataset.cat === f));
   GRID.ox = GRID.oy = 0;
-  rerender();
+  rerender(true);
   closeFilterMenu();
   if (!(opts && opts.silent)) syncURL();
 }
 
 // Everything that changes what's visible funnels through here.
-function rerender(){
+// Filter/search changes re-run the centre-out reveal pulse.
+function rerender(reveal){
   collapseTile(true);
   updateFilterLabel();
-  renderGrid();
+  renderGrid(reveal);
   renderList();
 }
 
-/* ---------- View switching ---------- */
-function setView(v){
-  if (v !== 'grid' && v !== 'list') v = 'grid';
+/* ---------- View switching: grid → zoomed-out grid → list ---------- */
+const VIEWS = ['grid', 'zoom', 'list'];
+function setView(v, opts){
+  if (!VIEWS.includes(v)) v = 'grid';
+  const zoomChange = (VIEW === 'zoom') !== (v === 'zoom');
   VIEW = v;
-  document.getElementById('grid').hidden = (v !== 'grid');
+  document.getElementById('grid').hidden = (v === 'list');
   document.getElementById('list').hidden = (v !== 'list');
   document.body.classList.toggle('view-list', v === 'list');
-  document.body.classList.toggle('view-grid', v === 'grid');
-  if (v === 'grid') renderGrid();
+  document.body.classList.toggle('view-zoom', v === 'zoom');
+  document.body.classList.toggle('view-grid', v !== 'list');
+  if (!(opts && opts.norender)) {
+    if (v === 'list') { if (renderList._stale !== false) renderList(); }
+    else if (renderGrid._stale !== false || zoomChange) renderGrid();
+  }
   syncEmpty();
   try { localStorage.setItem('konpo-view', v); } catch (e) {}
 }
@@ -2315,7 +2482,7 @@ function closeFilterMenu(){ filterEl.classList.remove('open'); document.getEleme
 buildFilterMenu();
 document.getElementById('viewToggle').addEventListener('click', () => {
   collapseTile(true); closeDetail();          // leave no card/drawer behind when the view flips
-  setView(VIEW === 'grid' ? 'list' : 'grid');
+  setView(VIEWS[(VIEWS.indexOf(VIEW) + 1) % VIEWS.length]);
   syncURL();
 });
 document.getElementById('filterBtn').addEventListener('click', e => {
@@ -2329,6 +2496,7 @@ document.getElementById('filterMenu').addEventListener('click', e => {
 document.addEventListener('click', e => { if (!filterEl.contains(e.target)) closeFilterMenu(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeFilterMenu(); });
 
+
 /* ---------- Search ---------- */
 const searchEl    = document.getElementById('search');
 const searchInput = document.getElementById('searchInput');
@@ -2338,7 +2506,7 @@ function setQuery(q, opts){
   if (searchInput.value !== q) searchInput.value = q;
   searchEl.classList.toggle('has-q', !!q.trim());
   GRID.ox = GRID.oy = 0;
-  rerender();
+  rerender(true);
   if (!(opts && opts.silent)) syncURL();
 }
 
@@ -2443,7 +2611,7 @@ function applyURLState(){
   collapseTile(true);
   closeDetail();
   // no ?view= means "leave the view alone" — the saved preference wins
-  if (p.has('view')) setView(p.get('view') === 'list' ? 'list' : 'grid');
+  if (p.has('view')) setView(p.get('view'), { norender: true });   // rendered just below
 
   FILTER = filterItems().some(([c]) => c === cat) ? cat : 'All';
   QUERY = q;
@@ -2454,10 +2622,14 @@ function applyURLState(){
 
   GRID.ox = GRID.oy = 0;
   updateFilterLabel();
-  renderGrid();
+  // the arrival pulse plays once, on first render (unless a deep link lands on
+  // its mark); Back/Forward re-renders are instant
+  renderGrid(applyURLState._first && !sym);
+  applyURLState._first = false;
   renderList();
   if (sym) focusSymbol(sym);
 }
+applyURLState._first = true;
 
 addEventListener('popstate', applyURLState);
 addEventListener('hashchange', () => { if (URL_READY) applyURLState(); });
@@ -2465,7 +2637,8 @@ addEventListener('hashchange', () => { if (URL_READY) applyURLState(); });
 document.body.classList.add('view-grid');
 try {
   const saved = localStorage.getItem('konpo-view');
-  if (saved === 'list' || saved === 'grid') setView(saved);
+  // norender: applyURLState builds the visible view once the intro hands over
+  if (VIEWS.includes(saved)) setView(saved, { norender: true });
 } catch (e) {}
 
 /* ------------------------------------------------------------------
@@ -2650,6 +2823,15 @@ function expandTile(tile, s){
   const cell = GRID.cell, T = 1;
   const cx = +tile.dataset.x, cy = +tile.dataset.y;
 
+  // small screens: the card fills the viewport, so bring the tile to the top-left
+  // corner first — otherwise a right-edge tap grows the card off-screen
+  if (innerWidth <= 780) {
+    const r0 = tile.getBoundingClientRect();
+    GRID.ox += 12 - r0.left;
+    GRID.oy += Math.max(12, innerHeight * 0.06) - r0.top;
+    GRID.vx = GRID.vy = 0;
+    applyGridTransform();
+  }
   canvas.classList.add('reflowing');
   // Hole-free 2×2: the row ABOVE stays put. The clicked row (R) and the row
   // below (R+1) push their right side one cell right (so nothing hides under the
@@ -2661,12 +2843,17 @@ function expandTile(tile, s){
     let ox = 0, oy = 0;
     if ((Math.abs(ty - cy) < T || Math.abs(ty - (cy + cell)) < T) && tx > cx + T) ox = cell;
     else if (Math.abs(tx - cx) < T && ty > cy + T) oy = cell;
-    t.style.transform = `translate3d(${tx + ox}px,${ty + oy}px,0)`;
+    t.style.translate = `${tx + ox}px ${ty + oy}px`;
   }
 
   fillTileDetail(tile, s);
   tile.classList.add('expanded');
   Sound.play('drawer.open');
+  // the text blurs in only once the card has finished growing (.55s reflow)
+  clearTimeout(tile._settleT);
+  tile._settleT = setTimeout(() => {
+    if (tile.classList.contains('expanded')) tile.classList.add('settled');
+  }, 580);
   focused = true;                          // the canvas still pans; hover/reflow stand down
   expandedTile = tile; expandedId = s.id;
   syncURL();                               // the open mark is the shareable thing
@@ -2679,11 +2866,17 @@ function collapseTile(immediate){
   const tile = expandedTile;
   const s = S.find(x => x.id === tile.dataset.id);
   for (const t of canvas.children){
-    t.style.transform = `translate3d(${t.dataset.x}px,${t.dataset.y}px,0)`;   // back to base
+    t.style.translate = `${t.dataset.x}px ${t.dataset.y}px`;   // back to base
   }
-  tile.classList.remove('expanded');
+  clearTimeout(tile._settleT);
+  tile.classList.remove('expanded', 'settled');   // text blurs out while the card shrinks
   const restore = () => {
     if (tile.classList.contains('expanded')) return;
+    if (tile._cardAnim) {
+      tile._cardAnim.destroy();
+      gridAnims = gridAnims.filter(a => a !== tile._cardAnim);
+      tile._cardAnim = null;
+    }
     releaseTileAnim(tile);
     tile.classList.remove('annot-ready', 'mark-anim', 'adopted-mark');
     if (s) {
@@ -2740,10 +2933,7 @@ function fillTileDetail(tile, s){
 
   if (s.explode) {
     const btn = document.createElement('button'); btn.textContent = 'Explode'; controls.appendChild(btn);
-    const parts = [...stage.querySelectorAll('.mark > *')];
-    const vectors = s.explode === 'auto'
-      ? parts.map(el => { const b = el.getBBox(); const dx = b.x + b.width/2 - 100, dy = b.y + b.height/2 - 100; const d = Math.hypot(dx, dy); return d < 6 ? [0,0] : [dx/d*26, dy/d*26]; })
-      : s.explode;
+    const { parts, vectors } = explodeSetup(stage, s);
     if (!vectors.some(v => v && Math.hypot(v[0], v[1]) > 1)) btn.remove();
     else btn.onclick = () => {
       stage.classList.remove('lottie-live');   // hand the stage back to the static mark
@@ -2786,13 +2976,15 @@ function fillTileDetail(tile, s){
         stage.insertBefore(slot, svgEl);                // under the svg: construction stays on top
         cardAnim = lottie.loadAnimation({
           container: slot, renderer: 'svg', loop: false, autoplay: false,
-          path: 'anim/sym-' + s.id.slice(4) + '.json'
+          path: '/anim/sym-' + s.id.slice(4) + '.json'
         });
         cardAnim.addEventListener('complete', () => {
           cycling = false;
           cardAnim.goToAndStop(0, true);   // frame 0 == final frame: invisible reset
           pBtn.classList.remove('active');
         });
+        tile._cardAnim = cardAnim;         // owned by the card: destroyed on collapse
+        gridAnims.push(cardAnim);
       }
       stage.classList.add('lottie-live');
       cycling = true;
@@ -3067,16 +3259,7 @@ function fillDrawer(s){
     const btn = document.createElement('button');
     btn.textContent = 'Explode';
     controls.appendChild(btn);
-    const parts = [...stage.querySelectorAll('.mark > *')];
-    const vectors = s.explode === 'auto'
-      ? parts.map(el => {
-          const b = el.getBBox();
-          const dx = b.x + b.width / 2 - 100, dy = b.y + b.height / 2 - 100;
-          const d = Math.hypot(dx, dy);
-          if (d < 6) return [0, 0];              // centered parts hold position
-          return [dx / d * 26, dy / d * 26];     // fixed 26u travel outward
-        })
-      : s.explode;
+    const { parts, vectors } = explodeSetup(stage, s);
     if (!vectors.some(v => v && Math.hypot(v[0], v[1]) > 1)) { btn.remove(); }
     else btn.onclick = () => {
       if (!stage.classList.contains('exploded') && annotOn) aBtn.click();
@@ -3107,7 +3290,7 @@ function fillDrawer(s){
       stage.insertBefore(slot, svgEl);              // under the svg: construction stays on top
       drawerAnim = lottie.loadAnimation({
         container: slot, renderer: 'svg', loop: false, autoplay: false,
-        path: 'anim/sym-' + s.id.slice(4) + '.json'
+        path: '/anim/sym-' + s.id.slice(4) + '.json'
       });
       drawerAnim.addEventListener('complete', () => {
         cycling = false;

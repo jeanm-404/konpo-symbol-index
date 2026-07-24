@@ -121,11 +121,16 @@ filters, view toggle, expand cards) carrying the Shelter's catalogue.
   returning visitors, deep links, and reduced-motion all skip it. Click/Esc/
   Enter skips too. Then the staged reveal: top bar, then canvas + footer.
 - The index is an infinite draggable canvas (pointer drag with momentum,
-  trackpad pan). The full set wallpapers endlessly; short result sets lay
-  out once, centred, with panning clamped. Top bar: Konpo logomark
-  (→ konpo.studio), grid/list view toggle, search (`/` focuses; matches id /
-  name / category / spec / reason / status), category filter whose label
-  counts what's actually on screen.
+  trackpad pan; on touch, a 14px tap threshold keeps swipes from opening
+  cards). The full set wallpapers endlessly; short result sets lay out once,
+  centred, with panning clamped — except the zoomed-out view, which
+  wallpapers whenever the set isn't tiny. Top bar: "Konpo Symbol Shelter"
+  wordmark (→ konpo.studio), a view toggle cycling grid → zoomed-out grid
+  (24rem tiles) → list whose icon shows the current view, search (`/`
+  focuses; matches id / name / category / spec / reason / status), category
+  filter whose label counts what's actually on screen. Arrival plays a
+  centre-out reveal: the wave starts on the centre-most card and radiates
+  ring by ring (filter/search changes replay it; Back/Forward don't).
 - Tile hover: construction drafts in element-by-element, corner notes type
   in. On the fifteen animated marks (001, 002, 004 + the curated twelve),
   hover plays the motion cycle first; annotations wait for it. Each loop is
@@ -160,8 +165,25 @@ filters, view toggle, expand cards) carrying the Shelter's catalogue.
   playing the Konpo Notes four-dot dance on loop — anim/konpo.json; the
   fifth, center circle is tile-colored so it reads as cutting the dots).
   Links to konpo.studio. Searches and filters set it aside.
-- Footer: "Sign up for updates" opens an inline email field that drafts a
-  mail (no backend by design).
+- Bottom-right chip (styled like the search bar): "Get notified when we add
+  more" opens an inline email field that drafts a mail (no backend by design).
+- Card text (name, description, meta, controls, close) blurs in only after
+  the card finishes growing (~580ms); until then the chrome is also
+  non-interactive so a hasty second tap can't hit the invisible close button.
+
+## Performance
+
+Tuned for cheap phones: tiles carry `content-visibility: auto` (off-screen
+copies skip style/layout/paint); hidden views are never built (list renders
+lazily, boot renders the grid exactly once); the reveal only animates tiles
+near the viewport; off-screen Konpo dance copies pause via
+IntersectionObserver; the card's Play animation is destroyed on collapse;
+height-only resizes (soft keyboard) don't rebuild the canvas; drawer blur
+applies to the viewport-sized `.grid`, not the huge canvas layer; touch
+devices drop backdrop-filter chips and use 16px inputs (no iOS focus zoom);
+lottie-web is self-hosted at `/vendor/lottie.min.js` (no CDN dependency);
+`/anim` + `/vendor` get day-long cache headers via `vercel.json`. Page is
+~330KB raw / ~100KB brotli, no webfonts, sounds synthesized in WebAudio.
 - Provenance: every rendered SVG embeds an ownership comment (© Konpo, the
   mark's id + name, and its adoption URL) plus a quiet per-mark class on the
   mark group (`k042`) that reads like styling but encodes the id — lifted
