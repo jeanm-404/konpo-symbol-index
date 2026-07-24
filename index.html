@@ -882,10 +882,19 @@
     .xc-head { width: auto; }
   }
 
-  /* the shelter's own tile: Konpo logomark, accent purple, links home */
+  /* the shelter's own tile: Konpo logomark in accent purple, links home;
+     the label wears the same grey as every other index number */
   .tile.konpo { cursor: pointer; }
   .tile.konpo .mark path { fill: var(--purple-vivid); }
-  .tile.konpo .idx, .tile.konpo .meta .name { color: var(--purple-vivid); }
+  /* hover hints that this one opens a new tab */
+  .tile.konpo .ext {
+    position: absolute; top: 1.6rem; right: 1.8rem;
+    font-family: var(--mono); font-size: 1.3rem; font-weight: 300;
+    color: var(--fade);
+    opacity: 0; transform: translate(-0.3rem, 0.3rem);
+    transition: opacity .3s, transform .3s, color .3s;
+  }
+  .tile.konpo:hover .ext { opacity: 1; transform: none; color: var(--white); }
 
   /* --- the reveal: tiles pulse in from the centre of the screen outwards ---
      `scale` (the individual property) composes with the inline translate3d
@@ -2107,7 +2116,8 @@ const tileInner = s =>
 // the shelter's own tile: Konpo logomark, accent purple, dancing on loop, links home
 const KONPO_TILE = { id: 'KONPO', __konpo: true };
 const konpoInner = () =>
-    `<span class="idx">KONPO</span>`
+    `<span class="idx">SYM-00K</span>`
+  + `<span class="ext" aria-hidden="true">&#8599;</span>`
   + `<svg viewBox="-28 -28 256 256" aria-hidden="true"><g class="mark"><g transform="translate(88 88) scale(0.387)">${KONPO_MARK}</g></g></svg>`
   + `<div class="meta"><span class="sub">konpo.studio</span></div>`;
 
