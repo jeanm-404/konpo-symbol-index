@@ -171,6 +171,21 @@ filters, view toggle, expand cards) carrying the Shelter's catalogue.
   the card finishes growing (~580ms); until then the chrome is also
   non-interactive so a hasty second tap can't hit the invisible close button.
 
+## Accessibility
+
+- Every mark is reachable by keyboard: one tab stop per mark (deduped across
+  the canvas's repeated copies), Enter/Space opens it through the same path as
+  a click, and focusing an off-screen mark pans the canvas to it rather than
+  scrolling the `overflow:hidden` grid box (which would desync the pan math).
+  Focus enters the card once its chrome is visible and returns to the tile on
+  close; the closed drawer and the card's turned-away face are `inert`.
+- The small-label tier clears WCAG AA on both surfaces: `--fade` is #858585
+  (4.99:1 on tiles, 5.69:1 on black) and the quiet id labels sit at 0.45–0.46
+  alpha (~4.5:1). Purple/green/red status colours were already AA.
+- `prefers-reduced-motion` covers every animation, including the card's
+  blur-in gate and the drawer's adopt panel (both animation-driven, so they
+  are forced visible rather than left at opacity 0).
+
 ## Performance
 
 Tuned for cheap phones: tiles carry `content-visibility: auto` (off-screen
@@ -207,6 +222,8 @@ lottie-web is self-hosted at `/vendor/lottie.min.js` (no CDN dependency);
 - Current adopters (Tessera, Swarm) are placeholder fiction pending real ones.
 - Category filters were removed at 15 marks; at 70 with four real categories
   they likely earn their way back (chips CSS still exists, unused).
+- Known dead CSS from the canvas port (`.featured`, `.chip(s)`, `.views`,
+  `.controls`, `.tile.hide`) is harmless but could be swept.
 - "Sign up for updates" in the footer is not wired to anything yet (the RSS
   feed covers the subscribe case for now).
 - Fonts fall back to Helvetica Neue; the real Neue Haas webfont would tighten
