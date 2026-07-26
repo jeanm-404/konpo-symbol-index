@@ -33,13 +33,15 @@ into the house coordinate system and catalogued as they arrive.
 
 One self-contained HTML file (`symbol-index.html`, copied to `index.html` for
 root serving — **edit both or re-copy before deploying**). No build step, no
-framework. The single runtime dependency is lottie-web from a CDN for the
-animated marks; static marks are the fallback, so nothing breaks without it.
+framework. The single runtime dependency is lottie-web, self-hosted at
+`/vendor/lottie.min.js`, for the animated marks; static marks are the
+fallback, so nothing breaks without it.
 UI sounds are synthesized live in WebAudio — no audio files.
 
 - rem base is 62.5% (1rem = 10px). Konpo tokens: bg #000, tile #141414,
   purple #9680ff (construction; adopted marks annotate in green instead),
-  purple-vivid #ad9cff (accent), green #4ade80 (Adopted), red #f87171 (Rejected), fade #6c6c6c, line rgba(255,255,255,0.10).
+  purple-vivid #ad9cff (accent), green #4ade80 (Adopted), red #f87171 (Rejected), fade #858585 (AA on both
+  surfaces), line rgba(255,255,255,0.10).
   Sans: Neue Haas Display Pro stack, weight 400 only. Mono: ui-monospace
   stack, weight 300 for labels.
 - All marks live inline as SVG strings in `const S = [...]` — the only data
@@ -124,8 +126,10 @@ filters, view toggle, expand cards) carrying the Shelter's catalogue.
   trackpad pan; on touch, a 14px tap threshold keeps swipes from opening
   cards). The full set wallpapers endlessly; short result sets lay out once,
   centred, with panning clamped — except the zoomed-out view, which
-  wallpapers whenever the set isn't tiny. Top bar: "Konpo Symbol Shelter"
-  wordmark (→ konpo.studio), a view toggle cycling grid → zoomed-out grid
+  wallpapers whenever the set isn't tiny. Top bar: a "Symbol Shelter"
+  wordmark that opens an about dropdown (what this is, one line on Konpo,
+  and links to Instagram / X / Substack / konpo.studio), a view toggle
+  cycling grid → zoomed-out grid
   (24rem tiles) → list whose icon shows the current view, search (`/`
   focuses; matches id / name / category / spec / reason / status), category
   filter whose label counts what's actually on screen. Arrival plays a
