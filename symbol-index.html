@@ -6,7 +6,7 @@
 <title>Symbol Shelter — Konpo Studio</title>
 <meta name="description" content="70 rejected logo marks by Konpo Studio, catalogued with construction geometry. Everyone here is up for adoption.">
 <meta property="og:title" content="Symbol Shelter — Konpo Studio">
-<meta property="og:description" content="A logo takes hundreds of proposals. Only one gets picked. This is the shelter for those who didn't make it — everyone here is up for adoption.">
+<meta property="og:description" content="A logo takes hundreds of proposals. Only one gets picked. This is the shelter for those who didn’t make it — everyone here is up for adoption.">
 <meta property="og:image" content="https://konpo-symbol-index.vercel.app/og/root.png">
 <meta property="og:url" content="https://konpo-symbol-index.vercel.app/">
 <meta property="og:type" content="website">
@@ -26,7 +26,7 @@
     --tile-raise: rgba(255,255,255,0.05);
     --white: #fff;
     --body: rgba(255,255,255,0.70);
-    --fade: #6c6c6c;
+    --fade: #858585;   /* 4.99:1 on tile, 5.69:1 on black — AA at 11px */
     --line: rgba(255,255,255,0.10);
     --purple: #9680ff;
     --purple-vivid: #ad9cff;
@@ -224,6 +224,7 @@
     display: grid;
     grid-template-columns: 4.4rem 6.5rem minmax(10rem,1.2fr) 9rem minmax(12rem,1.5fr) 8rem;
     align-items: center; gap: 2rem;
+    min-height: 6rem;
     padding: 1.4rem 1.2rem;
     border-bottom: 1px solid var(--line);
     cursor: crosshair;
@@ -238,6 +239,7 @@
     font-family: var(--mono); font-size: 1.1rem; text-transform: uppercase;
     letter-spacing: 0.08em; color: var(--fade);
   }
+  .list .lrow.head .lstatus { text-align: right; }
   .list .lrow:not(.head):hover,
   .list .lrow.active { background: var(--tile-raise); }
   .list .lglyph { width: 3.2rem; height: 3.2rem; display: flex; }
@@ -252,7 +254,7 @@
   .list .lcat, .list .lspec {
     font-family: var(--mono); font-size: 1.15rem; text-transform: uppercase;
     letter-spacing: 0.06em; color: var(--fade);
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    min-width: 0; overflow-wrap: anywhere;   /* wraps — never ellipsed (house rule) */
   }
   .list .lstatus {
     font-family: var(--mono); font-size: 1.15rem; text-transform: uppercase;
@@ -300,6 +302,11 @@
      Held off while the canvas is being dragged, and while a card is expanded
      (the card is the focus then, not whatever the cursor happens to be over). */
   .tile { transition: filter .5s cubic-bezier(0.4, 0, 0.2, 1); }
+  /* keyboard focus must be visible on a dark, animating surface */
+  .tile:focus-visible, .list .lrow:focus-visible {
+    outline: 2px solid var(--purple-vivid); outline-offset: 3px;
+  }
+  .tile:focus-visible { z-index: 6; }
   /* (the sibling/chrome blur-on-hover was retired: hovering a mark leaves the rest alone) */
   /* hover annotations are suppressed while dragging the canvas — but an open card
      keeps its own, since the canvas can now be dragged with a card still open */
@@ -312,7 +319,7 @@
     position: absolute; top: 1.6rem; left: 1.8rem;
     font-family: var(--mono); font-size: 1.1rem; font-weight: 300;
     letter-spacing: 0.08em;
-    color: rgba(255,255,255,0.22); z-index: 2;
+    color: rgba(255,255,255,0.45); z-index: 2;
     transition: color .3s;
   }
   .tile:not(.expanded):hover .idx { color: var(--white); }
@@ -497,10 +504,25 @@
   .topbar, footer { opacity: 0; transition: opacity .9s; }
   body.t2 .topbar { opacity: 1; }
   body.t3 footer { opacity: 1; }
+  /* an open card or drawer owns the screen: the chip hides outright (visibility,
+     not pointer-events — footer .cta re-enables its own hits) */
+  /* On roomy screens the fit-pan drops the card below the toolbar, so the
+     toolbar stays usable. Where it can't (narrow or short viewports) the card's
+     close button lands under the toolbar row, so the whole strip stops
+     hit-testing while a card is open — children included, since
+     `.topbar > * { pointer-events: auto }` would otherwise win. */
+  @media (max-width: 780px), (max-height: 828px) {
+    body.card-open .topbar, body.card-open .topbar > * { pointer-events: none; }
+  }
+  body.page-blur .topbar, body.page-blur .topbar > * { pointer-events: none; }
+  body.card-open footer, body.page-blur footer {
+    opacity: 0; visibility: hidden;
+    transition: opacity .3s, visibility 0s .3s;
+  }
   #intro .skip {
     position: absolute; bottom: 2.4rem; left: 50%; transform: translateX(-50%);
     font-family: var(--mono); font-size: 1.1rem; font-weight: 300;
-    letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.22);
+    letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.46);
   }
 
   /* ---------- Expanded card (a tile grows to 2×2 and pushes its neighbours) ---------- */
@@ -525,15 +547,20 @@
   .xc-stage.exploded .construction, .xc-stage.exploded .notes { opacity: 0; transition: opacity .25s; }
   .xc-stage .notes { top: 17.4rem; right: 3.2rem; text-align: right; }
   .xc-head { position: absolute; top: 3.2rem; left: 3.2rem; width: 42rem; max-width: calc(100% - 6.4rem); z-index: 2; display: flex; flex-direction: column; gap: 1.2rem; pointer-events: none; }
-  .xc-idx { font-family: var(--mono); font-size: 1.1rem; letter-spacing: 0.08em; color: rgba(255,255,255,0.3); }
+  .xc-idx { font-family: var(--mono); font-size: 1.1rem; letter-spacing: 0.08em; color: rgba(255,255,255,0.45); }
   .xc-name { font-family: var(--sans); font-size: 3.2rem; font-weight: 400; color: var(--white); line-height: 1.1; }
   .xc-desc { font-size: 1.5rem; line-height: 1.5; color: var(--body); }
-  .xc-meta { position: absolute; bottom: 3.2rem; left: 3.2rem; z-index: 2; display: grid; grid-template-columns: 11rem auto; row-gap: 1.2rem; column-gap: 2rem; }
+  /* meta + controls share one flex row so they can never cross as the card narrows */
+  .xc-foot {
+    position: absolute; left: 3.2rem; right: 3.2rem; bottom: 3.2rem; z-index: 2;
+    display: flex; align-items: flex-end; justify-content: space-between; gap: 2.4rem;
+  }
+  .xc-meta { display: grid; grid-template-columns: 11rem auto; row-gap: 1.2rem; column-gap: 2rem; }
   .xc-meta dt { font-family: var(--mono); font-size: 1.2rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fade); }
   .xc-meta dd { font-family: var(--mono); font-size: 1.2rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--body); }
   .xc-meta dd.killed { color: #f87171; }
   .xc-meta dd.revived { color: #4ade80; }
-  .xc-controls { position: absolute; bottom: 3.2rem; right: 3.2rem; z-index: 2; display: flex; flex-direction: column; align-items: flex-end; gap: 0.8rem; }
+  .xc-controls { display: flex; flex-direction: column; align-items: flex-end; gap: 0.8rem; }
   .xc-controls button {
     font-family: var(--mono); font-size: 1.1rem; letter-spacing: 0.08em; text-transform: uppercase;
     color: var(--fade); background: transparent; border: 1px solid var(--line);
@@ -585,8 +612,12 @@
   /* --- adoption form (the card's reverse) --- */
   .xc-adopt {
     position: absolute; inset: 0; overflow-y: auto;
+    overscroll-behavior: contain;
     display: flex; flex-direction: column;
   }
+  /* .grid sets touch-action:none for the canvas drag; the effective value is the
+     AND of the ancestors, so finger-scrolling the form needs it relaxed here */
+  .grid:has(.xc-flip.flipped) { touch-action: pan-y; }
   .xc-adopt .ahead { padding: 3.2rem 3.2rem 2.4rem; display: flex; flex-direction: column; gap: 1.2rem; }
   .xc-adopt .anote { font-size: 1.5rem; line-height: 1.5; color: var(--body); }
   .afield {
@@ -605,15 +636,16 @@
   .afield input::placeholder, .afield textarea::placeholder { color: var(--fade); }
   .afield:focus-within label { color: var(--purple-vivid); }
   .aband {
-    margin-top: auto;
+    margin-top: auto; position: sticky; bottom: 0; z-index: 3;
     font-family: var(--mono); font-size: 1.2rem; letter-spacing: 0.08em; text-transform: uppercase;
-    color: var(--white); background: transparent;
+    color: var(--white); background: var(--tile);
     border: 0; border-top: 1px solid var(--line);
     padding: 2.4rem; cursor: pointer; transition: background-color .3s;
   }
   .aband:hover { background: var(--tile-raise); }
   .xc-adopt .aback {
-    position: absolute; top: 3.2rem; right: 3.2rem; z-index: 2;
+    position: sticky; top: 3.2rem; z-index: 2;
+    align-self: flex-end; margin-right: 3.2rem; margin-bottom: -4rem;
     font-family: var(--mono); font-size: 1.1rem; letter-spacing: 0.08em; text-transform: uppercase;
     color: var(--fade); background: transparent; border: 1px solid var(--line);
     border-radius: 200rem; padding: 0.8rem 1.6rem; cursor: pointer;
@@ -629,7 +661,7 @@
 
   /* ---------- Side drawer ---------- */
   #scrim {
-    position: fixed; inset: 0; z-index: 9;
+    position: fixed; inset: 0; z-index: 21;
     background: rgba(0,0,0,0.45);
     opacity: 0; pointer-events: none;
     transition: opacity .4s;
@@ -637,7 +669,7 @@
   #scrim.open { opacity: 1; pointer-events: auto; }
 
   #drawer {
-    position: fixed; top: 0; right: 0; bottom: 0; z-index: 10;
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 22;
     width: min(48rem, 100vw);
     background: var(--tile);
     border-left: 1px solid var(--line);
@@ -703,7 +735,7 @@
   #drawer .ramp .step svg { display: block; transition: transform .7s cubic-bezier(0.165, 0.84, 0.44, 1); }
   #drawer .ramp .step span {
     font-family: var(--mono); font-size: 1rem; font-weight: 300;
-    letter-spacing: 0.08em; color: rgba(255,255,255,0.22);
+    letter-spacing: 0.08em; color: rgba(255,255,255,0.45);
   }
 
   #drawer .info {
@@ -794,20 +826,24 @@
     .search input, footer .sub input, #revive-text,
     .xc-adopt input, .xc-adopt textarea { font-size: 1.6rem; }
   }
-  @media (max-width: 480px) {
-    .topbar { padding: 1.6rem; }
-    .toolbar { gap: 0.8rem; }
-    .logo.wordmark { font-size: 1.5rem; }
-  }
-
   @media (prefers-reduced-motion: reduce) {
     #drawer, #scrim { transition: none !important; }
+    /* these open via an animation, so with animations off they must start visible */
+    .revive-panel { opacity: 1 !important; transform: none !important; }
+    /* [38] the card's blur-in gate is animation-driven too */
+    .tile.expanded .xc-head > *, .tile.expanded .xc-meta,
+    .tile.expanded .xc-controls, .tile.expanded .xc-close {
+      opacity: 1 !important; filter: none !important;
+    }
+    .tile.expanded:not(.settled) .xc-meta,
+    .tile.expanded:not(.settled) .xc-controls,
+    .tile.expanded:not(.settled) .xc-close { pointer-events: auto; }
   }
 
   /* ---------- Footer: a single chip at the bottom right, styled like the search bar ---------- */
   footer {
     position: fixed; right: 4rem; bottom: 4rem;
-    z-index: 15; padding: 1.2rem 1.6rem;
+    z-index: 4; padding: 1.2rem 1.6rem;
     display: flex; align-items: center; gap: 2rem;
     background: rgba(255,255,255,0.02);
     -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
@@ -851,6 +887,19 @@
     .search:focus-within input, .search.has-q input { width: 10rem; }
     footer { right: 2rem; bottom: 2rem; }
     footer .sub input { width: 15rem; }
+  }
+  /* phones — MUST stay after the 767 block: equal specificity, source order wins.
+     Measured at 375px: the filter chip keeps a 16px right gutter in every state. */
+  @media (max-width: 480px) {
+    .topbar { padding: 1.6rem; }
+    .toolbar { gap: 0.8rem; }
+    .logo.wordmark { font-size: 1.5rem; }
+    .search, .filter-btn { padding: 1.2rem; }
+    .search { gap: 0; }
+    .search input { width: 0; }                       /* icon only — never a clipped word */
+    .search:focus-within input, .search.has-q input { width: 9rem; margin-left: 0.8rem; }
+    .filter-btn .cnt { display: none; }   /* the per-category counts are in the menu */
+    .about-menu { width: calc(100vw - 3.2rem); }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -909,6 +958,34 @@
   @media (max-width: 780px) {
     .xc-stage svg { width: min(42rem, 82vw); height: min(42rem, 82vw); }
     .xc-head { width: auto; }
+    /* the foot stacks: controls above the meta list, both full width */
+    .xc-foot {
+      left: 2.4rem; right: 2.4rem; bottom: 2.4rem;
+      flex-direction: column-reverse; align-items: stretch; gap: 1.6rem;
+    }
+    .xc-controls { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: flex-start; }
+    .xc-meta { grid-template-columns: 9rem auto; column-gap: 1.2rem; row-gap: 0.8rem; }
+    /* the mark moves up so the taller foot never sits on it */
+    .xc-stage { align-items: flex-start; padding-top: 10rem; }
+    .xc-stage .notes { display: none; }
+  }
+  /* --- short cards (landscape phones, short laptop windows): the head and the
+         meta list would fight for the same vertical space, so the meta column
+         moves up to the right instead of staying anchored to the bottom --- */
+  @media (max-height: 700px) and (min-width: 781px) {
+    .tile.expanded .xc-foot { top: 3.2rem; bottom: 3.2rem; align-items: stretch; }
+    .tile.expanded .xc-meta { align-content: start; }
+    .tile.expanded .xc-controls { justify-content: flex-end; }
+    .tile.expanded .xc-head { width: auto; max-width: calc(100% - 34rem); }
+    .tile.expanded .xc-stage .notes { display: none; }
+  }
+
+  /* short viewports: tighten the form so it needs little or no scrolling */
+  @media (max-height: 760px) {
+    .xc-adopt .ahead { padding: 2.4rem 2.4rem 1.6rem; gap: 0.8rem; }
+    .afield { padding: 1.4rem 2.4rem; }
+    .afield textarea { min-height: 6rem; }
+    .aband { padding: 1.8rem 2.4rem; }
   }
 
   /* the shelter's own tile: Konpo logomark in accent purple, links home;
@@ -1000,7 +1077,7 @@
       </div>
       <div class="filter" id="filter">
         <button class="tbtn filter-btn" id="filterBtn" type="button" aria-haspopup="true" aria-expanded="false">
-          <span id="filterLabel">All • 88</span>
+          <span id="filterLabel">All<span class="cnt"> • 70</span></span>
           <span class="chev"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M12 6L8 10L4 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         </button>
         <div class="filter-menu" id="filterMenu" role="menu" hidden></div>
@@ -1014,7 +1091,7 @@
 
 
   <div id="scrim"></div>
-  <aside id="drawer" aria-hidden="true">
+  <aside id="drawer" aria-hidden="true" inert>
     <button class="close" aria-label="Close">Close</button>
     <div class="content">
       <div class="stage"></div>
@@ -1047,10 +1124,10 @@
         <div class="revive">
           <button class="revive-btn" id="revive-toggle">Adopt this mark</button>
           <div class="revive-panel" id="revive-panel" hidden>
-            <p class="revive-note">Make your case — in detail. What's the project, who's behind it, and where would this mark live? We only release these to companies and people with genuinely interesting projects.</p>
+            <p class="revive-note">Make your case &mdash; in detail. What&rsquo;s the project, who&rsquo;s behind it, and where would this mark live? We only release these to companies and people with genuinely interesting projects.</p>
             <textarea id="revive-text" placeholder="Why this mark, and why you…"></textarea>
-            <button class="revive-send" id="revive-send">Send request</button>
-            <p class="revive-sent mono" id="revive-sent" hidden>Request drafted — send it from your mail app.</p>
+            <button class="revive-send" id="revive-send">Submit Application</button>
+            <p class="revive-sent mono" id="revive-sent" hidden>Application drafted &mdash; send it from your mail app.</p>
           </div>
         </div>
       </div>
@@ -1150,7 +1227,7 @@ const S = [
   "adopterUrl": "https://softgrid.studio",
   "adopterCase": "We build modular care software, and a tile that repeats cleanly is our whole product story. We had been sketching worse versions of it for a year.",
   "adopterStatus": "Rescued",
-  "adopterReason": "love itttttt!",
+  "adopterReason": "Modularity, already drawn",
   "adopterDate": "05.2026",
   "attachment": "High"
  },
@@ -1198,7 +1275,7 @@ const S = [
   "adopterUrl": "https://hivemind.systems",
   "adopterCase": "Seven dots and no hierarchy is exactly how our research collective runs. It was rejected for being too timeless. We intend to test that.",
   "adopterStatus": "Rescued",
-  "adopterReason": "love itttttt!",
+  "adopterReason": "Timeless is the point",
   "adopterDate": "06.2026"
  },
  {
@@ -1397,10 +1474,10 @@ const S = [
   "id": "SYM-014",
   "name": "Trinode",
   "cat": "Abstract",
-  "spec": "3 nodes R 13.9 · span 54.2u · apex 90°",
+  "spec": "3 nodes R 12.6 · span 54.2u · apex 90°",
   "mark": "<path d=\"M144.791 97.98C139.713 92.9909 131.472 93.2582 126.439 98.2918L120.046 104.684C119.349 105.382 118.406 105.768 117.418 105.768H108.673C104.574 105.768 101.248 102.442 101.248 98.3438V89.1674C101.248 88.18 101.642 87.2371 102.332 86.5392L108.68 80.1915C113.714 75.1579 113.981 66.917 108.992 61.8388C103.951 56.7087 95.6801 56.7087 90.639 61.8388C85.598 66.969 85.9172 75.1579 90.9509 80.1915L97.2912 86.5318C97.989 87.2297 98.3751 88.1726 98.3751 89.16V98.3363C98.3751 102.435 95.049 105.761 90.9509 105.761H82.2051C81.2177 105.761 80.2748 105.367 79.5769 104.677L73.1847 98.2844C68.1511 93.2507 59.9102 92.9835 54.832 97.9725C49.7018 103.014 49.7018 111.284 54.832 116.325C59.9621 121.366 68.1511 121.047 73.1847 116.013L79.5769 109.621C80.2748 108.923 81.2177 108.537 82.2051 108.537H90.9509C95.049 108.537 98.3751 111.863 98.3751 115.961V124.677C98.3751 125.769 97.8925 126.808 97.061 127.514L81.7745 140.417V142.993H117.849V140.417L102.562 127.514C101.723 126.808 101.248 125.769 101.248 124.677V115.961C101.248 111.863 104.574 108.537 108.673 108.537H117.418C118.406 108.537 119.349 108.931 120.046 109.621L126.439 116.013C131.472 121.047 139.713 121.314 144.791 116.325C149.922 111.284 149.922 103.014 144.791 97.9725V97.98Z\"/><path d=\"M108.701 116.035C113.601 111.135 113.601 103.184 108.701 98.2766C103.801 93.3766 95.85 93.3766 90.9426 98.2766C86.0426 103.177 86.0426 111.128 90.9426 116.035C95.8426 120.935 103.794 120.935 108.701 116.035Z\"/><path d=\"M135.778 88.9591C140.678 84.0591 140.678 76.1078 135.778 71.2004C130.878 66.3004 122.926 66.3004 118.019 71.2004C113.119 76.1004 113.119 84.0517 118.019 88.9591C122.919 93.8591 130.87 93.8591 135.778 88.9591Z\"/><path d=\"M81.6252 88.9591C86.5252 84.0591 86.5252 76.1078 81.6252 71.2004C76.7252 66.3004 68.7738 66.3004 63.8664 71.2004C58.9664 76.1004 58.9664 84.0517 63.8664 88.9591C68.7664 93.8666 76.7177 93.8591 81.6252 88.9591Z\"/>",
-  "con": "<line class=\"guide\" x1=\"72.7\" y1=\"80.1\" x2=\"126.9\" y2=\"80.1\"/><line class=\"guide\" x1=\"72.7\" y1=\"80.1\" x2=\"99.8\" y2=\"107.2\"/><line class=\"guide\" x1=\"126.9\" y1=\"80.1\" x2=\"99.8\" y2=\"107.2\"/><circle class=\"guide\" cx=\"72.7\" cy=\"80.1\" r=\"13.9\"/><circle class=\"guide\" cx=\"126.9\" cy=\"80.1\" r=\"13.9\"/><circle class=\"guide\" cx=\"99.8\" cy=\"107.2\" r=\"13.9\"/><circle class=\"pt\" cx=\"72.7\" cy=\"80.1\" r=\"1.3\"/><circle class=\"pt\" cx=\"126.9\" cy=\"80.1\" r=\"1.3\"/><circle class=\"pt\" cx=\"99.8\" cy=\"107.2\" r=\"1.3\"/><line pathLength=\"1\" x1=\"95.6\" y1=\"103\" x2=\"99.8\" y2=\"98.7\"/><line pathLength=\"1\" x1=\"99.8\" y1=\"98.7\" x2=\"104\" y2=\"103\"/><line pathLength=\"1\" x1=\"72.7\" y1=\"62\" x2=\"126.9\" y2=\"62\"/><line pathLength=\"1\" x1=\"72.7\" y1=\"59\" x2=\"72.7\" y2=\"65\"/><line pathLength=\"1\" x1=\"126.9\" y1=\"59\" x2=\"126.9\" y2=\"65\"/><text>3 × R 13.9U</text><text>SPAN 54.2U</text><text>APEX 90°</text>",
-  "blurb": "Three R 13.9 nodes joined by one continuous bond. The top pair sits 54.2u apart and the apex closes at exactly 90 degrees. A molecule that behaves like a monogram.",
+  "con": "<line class=\"guide\" x1=\"72.7\" y1=\"80.1\" x2=\"126.9\" y2=\"80.1\"/><line class=\"guide\" x1=\"72.7\" y1=\"80.1\" x2=\"99.8\" y2=\"107.2\"/><line class=\"guide\" x1=\"126.9\" y1=\"80.1\" x2=\"99.8\" y2=\"107.2\"/><circle class=\"guide\" cx=\"72.7\" cy=\"80.1\" r=\"12.6\"/><circle class=\"guide\" cx=\"126.9\" cy=\"80.1\" r=\"12.6\"/><circle class=\"guide\" cx=\"99.8\" cy=\"107.2\" r=\"12.6\"/><circle class=\"pt\" cx=\"72.7\" cy=\"80.1\" r=\"1.3\"/><circle class=\"pt\" cx=\"126.9\" cy=\"80.1\" r=\"1.3\"/><circle class=\"pt\" cx=\"99.8\" cy=\"107.2\" r=\"1.3\"/><line pathLength=\"1\" x1=\"95.6\" y1=\"103\" x2=\"99.8\" y2=\"98.7\"/><line pathLength=\"1\" x1=\"99.8\" y1=\"98.7\" x2=\"104\" y2=\"103\"/><line pathLength=\"1\" x1=\"72.7\" y1=\"62\" x2=\"126.9\" y2=\"62\"/><line pathLength=\"1\" x1=\"72.7\" y1=\"59\" x2=\"72.7\" y2=\"65\"/><line pathLength=\"1\" x1=\"126.9\" y1=\"59\" x2=\"126.9\" y2=\"65\"/><text>3 × R 12.6U</text><text>SPAN 54.2U</text><text>APEX 90°</text>",
+  "blurb": "Three R 12.6 nodes joined by one continuous bond. The top pair sits 54.2u apart and the apex closes at exactly 90 degrees. A molecule that behaves like a monogram.",
   "explode": "auto",
   "year": "2025",
   "industry": "Mental Health",
@@ -1712,8 +1789,8 @@ const S = [
   "name": "Visor",
   "cat": "Pictorial",
   "spec": "90 × 90u · 1 part",
-  "mark": "<path d=\"M97.6216 144.972C97.8286 144.966 98.0357 144.959 98.2427 144.945C102.935 144.731 107.421 143.854 111.334 142.385C114.48 141.26 117.434 139.776 120.132 137.968C132.671 129.97 141 115.941 141 100C141 75.1848 120.815 55 96 55C71.1848 55 51 75.1848 51 100C51 115.941 59.3361 129.97 71.868 137.968C74.5662 139.776 77.5197 141.26 80.6664 142.385C84.5792 143.854 89.0578 144.731 93.7503 144.945C93.9573 144.952 94.1644 144.966 94.3714 144.972C94.5094 144.972 94.6474 144.979 94.7854 144.986C94.8199 144.986 94.8544 144.986 94.8958 144.986C95.2616 144.993 95.6273 145 95.993 145C96.3588 145 96.7246 145 97.0903 144.986C97.1248 144.986 97.1593 144.986 97.2007 144.986C97.3387 144.986 97.4768 144.979 97.6148 144.972H97.6216ZM123.783 122.379C122.368 119.157 119.532 116.293 115.467 114.05C110.202 111.145 103.287 109.551 96 109.551C88.7127 109.551 81.7982 111.152 76.5329 114.05C72.4683 116.293 69.6321 119.157 68.2174 122.379C66.789 119.681 66.0023 116.734 66.0023 113.643C66.0023 100.863 79.4588 90.4631 96 90.4631C112.541 90.4631 125.998 100.863 125.998 113.643C125.998 116.734 125.211 119.681 123.783 122.379ZM95.0615 136.809C95.0615 136.809 94.9994 136.809 94.9717 136.809C90.0722 136.671 85.4142 135.574 81.1702 133.703C77.5335 131.889 75.3598 129.515 75.3598 127.279C75.3598 122.773 84.1858 117.735 96.0069 117.735C107.828 117.735 116.654 122.773 116.654 127.279C116.654 129.515 114.48 131.882 110.844 133.703C106.6 135.58 101.942 136.678 97.042 136.809C97.0144 136.809 96.9799 136.809 96.9523 136.809C96.6417 136.816 96.3312 136.823 96.0138 136.823C95.6963 136.823 95.3858 136.823 95.0753 136.809H95.0615ZM96 63.1912C116.302 63.1912 132.816 79.7048 132.816 100.007C132.816 101.518 132.719 103.016 132.547 104.479C130.704 99.4755 127.35 94.9141 122.665 91.1601C115.502 85.4324 106.034 82.2788 96.0069 82.2788C85.98 82.2788 76.5053 85.4324 69.3491 91.1601C64.6635 94.9072 61.3029 99.4686 59.4673 104.479C59.2878 103.009 59.1981 101.518 59.1981 100.007C59.1981 79.7048 75.7117 63.1912 96.0138 63.1912H96Z\"/>",
-  "con": "<rect class=\"guide\" x=\"51\" y=\"55\" width=\"90\" height=\"90\"/><line class=\"guide\" x1=\"96\" y1=\"47\" x2=\"96\" y2=\"153\"/><line class=\"guide\" x1=\"43\" y1=\"100\" x2=\"149\" y2=\"100\"/><circle class=\"pt\" cx=\"96\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"51\" y1=\"157\" x2=\"141\" y2=\"157\"/><line pathLength=\"1\" x1=\"51\" y1=\"154\" x2=\"51\" y2=\"160\"/><line pathLength=\"1\" x1=\"141\" y1=\"154\" x2=\"141\" y2=\"160\"/><text>90 × 90U</text><text>1 PART</text>",
+  "mark": "<g transform=\"translate(4 0)\"><path d=\"M97.6216 144.972C97.8286 144.966 98.0357 144.959 98.2427 144.945C102.935 144.731 107.421 143.854 111.334 142.385C114.48 141.26 117.434 139.776 120.132 137.968C132.671 129.97 141 115.941 141 100C141 75.1848 120.815 55 96 55C71.1848 55 51 75.1848 51 100C51 115.941 59.3361 129.97 71.868 137.968C74.5662 139.776 77.5197 141.26 80.6664 142.385C84.5792 143.854 89.0578 144.731 93.7503 144.945C93.9573 144.952 94.1644 144.966 94.3714 144.972C94.5094 144.972 94.6474 144.979 94.7854 144.986C94.8199 144.986 94.8544 144.986 94.8958 144.986C95.2616 144.993 95.6273 145 95.993 145C96.3588 145 96.7246 145 97.0903 144.986C97.1248 144.986 97.1593 144.986 97.2007 144.986C97.3387 144.986 97.4768 144.979 97.6148 144.972H97.6216ZM123.783 122.379C122.368 119.157 119.532 116.293 115.467 114.05C110.202 111.145 103.287 109.551 96 109.551C88.7127 109.551 81.7982 111.152 76.5329 114.05C72.4683 116.293 69.6321 119.157 68.2174 122.379C66.789 119.681 66.0023 116.734 66.0023 113.643C66.0023 100.863 79.4588 90.4631 96 90.4631C112.541 90.4631 125.998 100.863 125.998 113.643C125.998 116.734 125.211 119.681 123.783 122.379ZM95.0615 136.809C95.0615 136.809 94.9994 136.809 94.9717 136.809C90.0722 136.671 85.4142 135.574 81.1702 133.703C77.5335 131.889 75.3598 129.515 75.3598 127.279C75.3598 122.773 84.1858 117.735 96.0069 117.735C107.828 117.735 116.654 122.773 116.654 127.279C116.654 129.515 114.48 131.882 110.844 133.703C106.6 135.58 101.942 136.678 97.042 136.809C97.0144 136.809 96.9799 136.809 96.9523 136.809C96.6417 136.816 96.3312 136.823 96.0138 136.823C95.6963 136.823 95.3858 136.823 95.0753 136.809H95.0615ZM96 63.1912C116.302 63.1912 132.816 79.7048 132.816 100.007C132.816 101.518 132.719 103.016 132.547 104.479C130.704 99.4755 127.35 94.9141 122.665 91.1601C115.502 85.4324 106.034 82.2788 96.0069 82.2788C85.98 82.2788 76.5053 85.4324 69.3491 91.1601C64.6635 94.9072 61.3029 99.4686 59.4673 104.479C59.2878 103.009 59.1981 101.518 59.1981 100.007C59.1981 79.7048 75.7117 63.1912 96.0138 63.1912H96Z\"/></g>",
+  "con": "<rect class=\"guide\" x=\"55\" y=\"55\" width=\"90\" height=\"90\"/><line class=\"guide\" x1=\"100\" y1=\"47\" x2=\"100\" y2=\"153\"/><line class=\"guide\" x1=\"47\" y1=\"100\" x2=\"153\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"55\" y1=\"157\" x2=\"145\" y2=\"157\"/><line pathLength=\"1\" x1=\"55\" y1=\"154\" x2=\"55\" y2=\"160\"/><line pathLength=\"1\" x1=\"145\" y1=\"154\" x2=\"145\" y2=\"160\"/><text>90 × 90U</text><text>1 PART</text>",
   "blurb": "An orb with two smile-lines low on the face. Reads as a helmet from across the room, a kettle up close. Nobody would arbitrate.",
   "year": "—",
   "industry": "—",
@@ -2036,9 +2113,9 @@ const S = [
   "id": "SYM-094",
   "name": "Marigold",
   "cat": "Pictorial",
-  "spec": "80 × 80u · 1 parts",
+  "spec": "80 × 80u · 1 part",
   "mark": "<path d=\"M133.8045 99.9965C136.1068 98.532 137.8632 96.3918 139.0197 93.5977C140.3222 90.447 140.3222 86.9828 139.0197 83.832C137.7173 80.6813 135.2637 78.2331 132.1129 76.9252C129.3188 75.7687 126.568 75.4984 123.9091 76.0875C124.4981 73.4286 124.2279 70.6777 123.0714 67.8837C121.7689 64.7329 119.3153 62.2847 116.1646 60.9768C113.0138 59.6744 109.5495 59.6744 106.3988 60.9768C103.6047 62.1334 101.4646 63.8898 100 66.1921C98.5354 63.8898 96.3953 62.1334 93.6012 60.9768C90.4558 59.6744 86.9862 59.6744 83.8354 60.9768C80.6901 62.2793 78.2365 64.7329 76.9286 67.8837C75.7721 70.6723 75.5019 73.4286 76.091 76.0875C73.432 75.4984 70.6812 75.7687 67.8871 76.9252C64.7363 78.2277 62.2881 80.6813 60.9803 83.832C59.6778 86.9828 59.6778 90.447 60.9803 93.5977C62.1368 96.3918 63.8932 98.532 66.1955 99.9965C63.8932 101.4611 62.1368 103.6013 60.9803 106.3953C59.6778 109.5461 59.6778 113.0103 60.9803 116.1612C62.2827 119.312 64.7363 121.7602 67.8871 123.068C69.7354 123.8355 71.5675 124.2192 73.3671 124.2192C74.2859 124.2192 75.1938 124.1057 76.091 123.9111C75.5019 126.5701 75.7721 129.3209 76.9286 132.115C78.2311 135.2658 80.6847 137.7139 83.8354 139.0218C85.4081 139.6757 87.0619 140 88.7156 140C90.3694 140 92.0231 139.6757 93.5958 139.0218C96.3898 137.8653 98.53 136.1088 99.9946 133.8066C101.4592 136.1088 103.5993 137.8653 106.3934 139.0218C107.9661 139.6757 109.6198 140 111.2735 140C112.9273 140 114.5811 139.6757 116.1538 139.0218C119.3045 137.7193 121.7527 135.2658 123.0606 132.115C124.2171 129.3263 124.4873 126.5755 123.8982 123.9111C124.7954 124.1111 125.7033 124.2192 126.6221 124.2192C128.4217 124.2192 130.2538 123.8355 132.1021 123.068C135.2529 121.7656 137.7011 119.312 139.0089 116.1612C140.3114 113.0103 140.3114 109.5461 139.0089 106.3953C137.8524 103.6013 136.096 101.4611 133.7937 99.9965C133.7937 99.9965 133.8045 99.9965 133.8045 99.9965ZM130.4646 80.9245C132.5453 81.7892 134.1666 83.4105 135.0313 85.4912C135.896 87.5719 135.896 89.8633 135.0313 91.944C134.0747 94.2463 132.5831 95.9 130.5943 96.8566C128.4055 97.9104 125.552 98.1212 122.3526 97.4619C122.3526 97.4619 122.2013 97.4295 122.2013 97.4295C120.8069 97.1376 119.4558 96.7269 118.148 96.2135C118.148 96.2135 118.148 96.2027 118.148 96.2027C117.3535 95.8892 116.5753 95.5433 115.8133 95.1542C115.7214 95.1056 115.6241 95.0515 115.5322 95.0029C115.3215 94.8894 115.1053 94.7759 114.8999 94.657C114.6243 94.5003 114.3541 94.3436 114.0839 94.176C114.1163 94.0301 114.1487 93.8788 114.1866 93.7329C114.2082 93.641 114.2352 93.5491 114.2568 93.4572C114.5865 92.2304 115.008 91.0307 115.5268 89.8579C115.5268 89.8579 115.5052 89.8471 115.5052 89.8471C116.0673 88.5555 116.732 87.3124 117.5103 86.1181C117.5103 86.1181 117.5913 85.9938 117.5913 85.9938C118.2236 85.0318 118.91 84.1833 119.6234 83.4429C119.7423 83.3294 119.8558 83.2159 119.9693 83.1024C121.1852 81.9243 122.4985 81.065 123.8496 80.5948C125.9357 79.8652 128.1569 79.9787 130.4592 80.9353C130.4592 80.9353 130.4646 80.9245 130.4646 80.9245ZM103.1507 69.4131C104.1073 67.4243 105.7611 65.9327 108.0633 64.9815C109.1064 64.5491 110.1981 64.333 111.2897 64.333C112.3814 64.333 113.4785 64.5491 114.5162 64.9815C116.5969 65.8408 118.2182 67.4621 119.0829 69.5482C120.0341 71.8505 120.153 74.0771 119.4234 76.1578C118.9478 77.5143 118.0885 78.8221 116.9104 80.0435C116.7969 80.157 116.6834 80.2705 116.5699 80.3894C115.8295 81.1028 114.9864 81.7838 114.0244 82.4161C114.0244 82.4161 113.8947 82.5025 113.8947 82.5025C112.7003 83.2808 111.4519 83.9509 110.1656 84.5076C110.1656 84.5076 110.1548 84.4859 110.1548 84.4859C108.9767 85.0048 107.7769 85.4263 106.5501 85.756C106.4636 85.7776 106.3772 85.7992 106.2853 85.8208C106.134 85.8587 105.9826 85.8911 105.8313 85.9289C105.6638 85.6587 105.5071 85.3885 105.3503 85.1129C105.226 84.8967 105.1071 84.6805 104.9936 84.4589C104.945 84.3725 104.9018 84.286 104.8531 84.1995C104.464 83.4429 104.1127 82.6593 103.8047 81.8594C103.8047 81.8594 103.7939 81.8594 103.7939 81.8594C103.2804 80.557 102.8697 79.2059 102.5779 77.8115C102.5779 77.8115 102.5454 77.6602 102.5454 77.6602C101.8915 74.4554 102.0969 71.6019 103.1507 69.4131ZM80.9333 69.5428C81.798 67.4621 83.4193 65.8408 85.5 64.9761C87.5807 64.1114 89.8776 64.1168 91.9582 64.9761C94.2605 65.9273 95.9143 67.4243 96.8708 69.4131C97.9247 71.6019 98.1355 74.4554 97.4815 77.6494C97.4815 77.6494 97.4491 77.8061 97.4491 77.8061C97.1573 79.2005 96.7465 80.5515 96.2331 81.8594C96.2331 81.8594 96.2223 81.8594 96.2223 81.8594C95.9089 82.6539 95.5576 83.4375 95.1739 84.1941C95.1252 84.286 95.0766 84.3725 95.0333 84.4589C94.9199 84.6751 94.801 84.8913 94.6821 85.1075C94.5253 85.3831 94.3686 85.6533 94.2011 85.9235C94.0497 85.8857 93.8984 85.8533 93.7471 85.8154C93.6606 85.7938 93.5742 85.7722 93.4877 85.7506C92.2609 85.4209 91.0557 84.9994 89.883 84.4805C89.883 84.4805 89.8722 84.5022 89.8722 84.5022C88.5805 83.9401 87.3375 83.2754 86.1431 82.4971C86.1431 82.4971 86.0188 82.4161 86.0188 82.4161C85.0568 81.7838 84.2084 81.0974 83.468 80.384C83.3545 80.2651 83.241 80.1516 83.1275 80.0381C81.9493 78.8221 81.09 77.5089 80.6144 76.1524C79.8848 74.0717 79.9983 71.8451 80.9549 69.5428C80.9549 69.5428 80.9333 69.5428 80.9333 69.5428ZM64.9849 85.4858C65.8496 83.4051 67.4656 81.7838 69.5516 80.919C70.8595 80.3786 72.1403 80.1084 73.3834 80.1084C74.3345 80.1084 75.2587 80.2651 76.1612 80.584C77.5177 81.0596 78.8256 81.9135 80.047 83.0916C80.1605 83.2051 80.274 83.3186 80.3929 83.4321C81.1062 84.1725 81.7872 85.0156 82.4195 85.9776C82.4195 85.9776 82.506 86.1073 82.506 86.1073C83.2842 87.3016 83.9543 88.55 84.511 89.8363C84.511 89.8363 84.4894 89.8471 84.4894 89.8471C85.0082 91.0199 85.4297 92.225 85.7594 93.4464C85.781 93.5383 85.8081 93.6302 85.8297 93.722C85.8675 93.868 85.8999 94.0193 85.9324 94.1652C85.6621 94.3327 85.3865 94.4949 85.1109 94.6516C84.9001 94.7705 84.6893 94.884 84.4786 94.9975C84.3867 95.0461 84.2948 95.1002 84.2029 95.1434C83.4463 95.5325 82.6681 95.8838 81.8628 96.1919C81.8628 96.1919 81.8628 96.2027 81.8628 96.2027C80.5604 96.7161 79.2093 97.1268 77.8204 97.4187C77.8204 97.4187 77.669 97.4511 77.669 97.4511C74.4642 98.105 71.6107 97.8996 69.4219 96.8458C67.4331 95.8892 65.9415 94.2355 64.9849 91.9332C64.1202 89.8525 64.1202 87.561 64.9849 85.4749C64.9849 85.4749 64.9849 85.4858 64.9849 85.4858ZM69.5516 119.0742C67.471 118.2095 65.8496 116.5882 64.9849 114.5075C64.1202 112.4266 64.1202 110.1352 64.9849 108.0491C65.9415 105.7468 67.4331 104.0931 69.4219 103.1365C70.773 102.4826 72.3835 102.1583 74.167 102.1583C74.167 102.1583 74.1778 102.1583 74.1832 102.1583C74.1832 102.1583 74.1832 102.1583 74.1886 102.1583C75.2857 102.1583 76.4476 102.2826 77.6582 102.5312C77.6582 102.5312 77.8096 102.5636 77.8096 102.5636C79.2039 102.8555 80.555 103.2662 81.8628 103.7796C81.8628 103.7796 81.8628 103.7904 81.8628 103.7904C82.6573 104.1039 83.4355 104.4498 84.1975 104.8389C84.2894 104.8875 84.3867 104.9416 84.4786 104.9902C84.6893 105.1037 84.9001 105.2172 85.1109 105.3361C85.3865 105.4928 85.6621 105.6549 85.9324 105.8225C85.8999 105.9684 85.8675 106.1197 85.8297 106.2656C85.8081 106.3575 85.781 106.4494 85.7594 106.5413C85.4297 107.7681 85.0082 108.9678 84.4894 110.1406C84.4894 110.1406 84.511 110.1514 84.511 110.1514C83.9489 111.443 83.2842 112.6861 82.506 113.8804C82.506 113.8804 82.4249 114.0047 82.4249 114.0047C81.7872 114.9669 81.1062 115.8154 80.3929 116.5558C80.274 116.6692 80.1605 116.7827 80.047 116.8962C78.831 118.0744 77.5177 118.9337 76.1612 119.4093C74.0751 120.1389 71.8539 120.0254 69.5516 119.0688C69.5516 119.0688 69.5516 119.0742 69.5516 119.0742ZM96.8654 130.5856C95.9089 132.5744 94.2551 134.066 91.9528 135.0226C89.8722 135.8873 87.5753 135.8873 85.4946 135.0226C83.4139 134.1579 81.7926 132.5365 80.9279 130.4558C79.9713 128.1536 79.8578 125.927 80.5928 123.8463C81.0684 122.4898 81.9223 121.1819 83.1005 119.9605C83.2139 119.847 83.3274 119.7335 83.4409 119.6146C84.1813 118.9013 85.0244 118.2203 85.9864 117.588C85.9864 117.588 86.1161 117.5015 86.1161 117.5015C87.3105 116.7233 88.5589 116.0531 89.8451 115.4965C89.8451 115.4965 89.8559 115.5181 89.8559 115.5181C91.0341 114.9993 92.2339 114.5778 93.4607 114.2481C93.5471 114.2265 93.6336 114.2048 93.7201 114.1832C93.8714 114.1454 94.0227 114.113 94.174 114.0751C94.3416 114.3454 94.4983 114.6156 94.655 114.8858C94.7793 115.102 94.8982 115.3236 95.0117 115.5397C95.055 115.6262 95.1036 115.7127 95.1468 115.7991C95.536 116.5558 95.8872 117.3394 96.1953 118.1392C96.1953 118.1392 96.2061 118.1392 96.2061 118.1392C96.7195 119.4417 97.1302 120.7928 97.4221 122.1871C97.4221 122.1871 97.4545 122.3385 97.4545 122.3385C98.1084 125.5433 97.9031 128.3968 96.8492 130.5856C96.8492 130.5856 96.8654 130.5856 96.8654 130.5856ZM119.0829 130.4558C118.2182 132.5365 116.6023 134.1579 114.5162 135.0226C112.4301 135.8873 110.144 135.8819 108.0579 135.0226C105.7557 134.066 104.1019 132.5744 103.1453 130.5856C102.0915 128.3968 101.8807 125.5433 102.5346 122.3493C102.5346 122.3493 102.5671 122.1925 102.5671 122.1925C102.8589 120.7982 103.2696 119.4471 103.7831 118.1392C103.7831 118.1392 103.7939 118.1392 103.7939 118.1392C104.1073 117.3448 104.4586 116.5612 104.8423 115.8045C104.8855 115.7181 104.9342 115.6316 104.9828 115.5451C105.0963 115.3236 105.2152 115.1074 105.3395 114.8912C105.4962 114.621 105.653 114.3454 105.8205 114.0805C105.9718 114.1184 106.1232 114.1508 106.2691 114.1886C106.3555 114.2103 106.4474 114.2319 106.5339 114.2589C107.7607 114.5886 108.9605 115.0101 110.1386 115.5289C110.1386 115.5289 110.1494 115.5073 110.1494 115.5073C111.4411 116.0694 112.6841 116.7341 113.8785 117.5123C113.8785 117.5123 114.0028 117.5934 114.0028 117.5934C114.9648 118.2257 115.8133 118.9121 116.5537 119.6255C116.6672 119.7443 116.7807 119.8578 116.8996 119.9713C118.0777 121.1873 118.9316 122.5006 119.4072 123.8517C120.1368 125.9324 120.0233 128.159 119.0667 130.4613C119.0667 130.4613 119.0829 130.4558 119.0829 130.4558ZM135.0259 114.5075C134.1612 116.5882 132.5453 118.2095 130.4592 119.0742C128.1569 120.0308 125.9303 120.1443 123.8496 119.4147C122.4931 118.9391 121.1852 118.0852 119.9693 116.907C119.8558 116.7936 119.7423 116.6801 119.6234 116.5666C118.91 115.8262 118.229 114.9831 117.5967 114.0209C117.5967 114.0209 117.5103 113.8912 117.5103 113.8912C116.732 112.6969 116.0619 111.4484 115.5052 110.1622C115.5052 110.1622 115.5268 110.1514 115.5268 110.1514C115.008 108.9786 114.5865 107.7735 114.2568 106.5521C114.2352 106.4602 114.2082 106.3683 114.1866 106.2764C114.1487 106.1305 114.1163 105.9792 114.0839 105.8333C114.3541 105.6657 114.6243 105.5036 114.8999 105.3469C115.1107 105.228 115.3215 105.1145 115.5322 105.001C115.6241 104.9524 115.716 104.8983 115.8133 104.8497C116.5699 104.4606 117.3481 104.1147 118.148 103.8012C118.148 103.8012 118.148 103.7904 118.148 103.7904C119.4504 103.277 120.8015 102.8663 122.1905 102.5744C122.1905 102.5744 122.3418 102.542 122.3418 102.542C125.5466 101.8827 128.4001 102.0934 130.5889 103.1473C132.5777 104.1039 134.0693 105.7576 135.0259 108.0599C135.8906 110.1406 135.8906 112.432 135.0259 114.5183C135.0259 114.5183 135.0259 114.5075 135.0259 114.5075ZM110.4359 99.9965C110.4359 105.7576 105.7665 110.427 100.0054 110.427C94.2443 110.427 89.5749 105.7576 89.5749 99.9965C89.5749 94.2355 94.2443 89.5661 100.0054 89.5661C105.7665 89.5661 110.4359 94.2355 110.4359 99.9965Z\"/>",
-  "con": "<rect class=\"guide\" x=\"60\" y=\"60\" width=\"80\" height=\"80\"/><line class=\"guide\" x1=\"100\" y1=\"52\" x2=\"100\" y2=\"148\"/><line class=\"guide\" x1=\"52\" y1=\"100\" x2=\"148\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"60\" y1=\"152\" x2=\"140\" y2=\"152\"/><line pathLength=\"1\" x1=\"60\" y1=\"149\" x2=\"60\" y2=\"155\"/><line pathLength=\"1\" x1=\"140\" y1=\"149\" x2=\"140\" y2=\"155\"/><text>80 × 80U</text><text>1 PARTS</text>",
+  "con": "<rect class=\"guide\" x=\"60\" y=\"60\" width=\"80\" height=\"80\"/><line class=\"guide\" x1=\"100\" y1=\"52\" x2=\"100\" y2=\"148\"/><line class=\"guide\" x1=\"52\" y1=\"100\" x2=\"148\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"60\" y1=\"152\" x2=\"140\" y2=\"152\"/><line pathLength=\"1\" x1=\"60\" y1=\"149\" x2=\"60\" y2=\"155\"/><line pathLength=\"1\" x1=\"140\" y1=\"149\" x2=\"140\" y2=\"155\"/><text>80 × 80U</text><text>1 PART</text>",
   "blurb": "Eight lobes and a core cut from one piece. The stamp version of a garden. Ink it and press — it holds at any size.",
   "year": "—",
   "industry": "—",
@@ -2265,9 +2342,19 @@ function renderGrid(reveal){
     return `;--rd:${ring * RING_MS}ms`;
   };
 
+  // the field repeats marks across copies; only the first copy of each id joins
+  // the tab ring, so keyboard users get one stop per mark, not per copy
+  const seen = new Set();
   const tile = (s, x, y) => {
     const rd = rdelay(x, y);
-    return `<div class="tile${s.__konpo ? ' konpo' : ''}${s.status === 'Adopted' ? ' adopted-mark' : ''}${rd ? ' rv' : ''}" data-id="${s.id}" data-x="${x}" data-y="${y}" style="translate:${x}px ${y}px${rd}">`
+    const first = !seen.has(s.id);
+    if (first) seen.add(s.id);
+    const label = s.__konpo ? 'Konpo Studio — opens konpo.studio in a new tab'
+                            : `${s.id} ${s.name}, ${s.cat}`;
+    return `<div class="tile${s.__konpo ? ' konpo' : ''}${s.status === 'Adopted' ? ' adopted-mark' : ''}${rd ? ' rv' : ''}"`
+      + ` data-id="${s.id}" data-x="${x}" data-y="${y}"`
+      + ` tabindex="${first ? 0 : -1}" role="button" aria-label="${label}"`
+      + ` style="translate:${x}px ${y}px${rd}">`
       + (s.__konpo ? konpoInner() : tileInner(s)) + `</div>`;
   };
 
@@ -2276,11 +2363,13 @@ function renderGrid(reveal){
     const SLOTS = COLS * ROWS;             // full rectangle — no empty cells
     const copiesX = Math.ceil(vpW / bW) + 1;
     const copiesY = Math.ceil(vpH / bH) + 1;
+    GRID.cX = copiesX; GRID.cY = copiesY;          // rendered extent, for pan bounds
     for (let cy = 0; cy < copiesY; cy++)
       for (let cx = 0; cx < copiesX; cx++)
         for (let j = 0; j < SLOTS; j++)     // wrap marks to fill every slot
           html += tile(items[j % N], cx * bW + (j % COLS) * cell, cy * bH + Math.floor(j / COLS) * cell);
   } else {
+    GRID.cX = GRID.cY = 1;
     const startX = Math.round((vpW - bW) / 2), startY = Math.round((vpH - bH) / 2);
     for (let j = 0; j < N; j++)
       html += tile(items[j], startX + (j % COLS) * cell, startY + Math.floor(j / COLS) * cell);
@@ -2329,10 +2418,20 @@ function applyGridTransform(){
   const canvas = document.getElementById('canvas');
   if (!canvas) return;
   if (!GRID.tiling){                              // short set: pan, but never off its own edge
-    const slackX = Math.max(0, (GRID.bW - innerWidth)  / 2 + 40);
-    const slackY = Math.max(0, (GRID.bH - innerHeight) / 2 + 40);
-    GRID.ox = Math.max(-slackX, Math.min(slackX, GRID.ox));
-    GRID.oy = Math.max(-slackY, Math.min(slackY, GRID.oy));
+    // the slack is derived from the TILE grid, so on a filtered set it used to
+    // throw away the open card's fit-pan and leave the card unreachable. When a
+    // card is open the range widens to contain the position that fits it.
+    let minX = -Math.max(0, (GRID.bW - innerWidth)  / 2 + 40), maxX = -minX;
+    let minY = -Math.max(0, (GRID.bH - innerHeight) / 2 + 40), maxY = -minY;
+    if (GRID.card){
+      const m = 24;
+      const ax = (innerWidth  - m) - (GRID.card.x + GRID.card.w), bx = m - GRID.card.x;
+      minX = Math.min(minX, ax, bx); maxX = Math.max(maxX, ax, bx);
+      const ay = (innerHeight - m) - (GRID.card.y + GRID.card.h), by = m - GRID.card.y;
+      minY = Math.min(minY, ay, by); maxY = Math.max(maxY, ay, by);
+    }
+    GRID.ox = Math.max(minX, Math.min(maxX, GRID.ox));
+    GRID.oy = Math.max(minY, Math.min(maxY, GRID.oy));
     canvas.style.transform = `translate3d(${GRID.ox}px,${GRID.oy}px,0)`;
     return;
   }
@@ -2340,6 +2439,29 @@ function applyGridTransform(){
   // field — pan continuously from the offset locked at expand time instead
   let wx, wy;
   if (GRID.lock) {
+    // bound the ACCUMULATOR (not wx) so wx stays block-congruent and releasing
+    // the lock on collapse remains invisible; panning stops at the field's edge
+    // instead of running out into void.
+    let maxLX = GRID.lock.ox - GRID.lock.wx;                                // wx = 0
+    let minLX = Math.min(maxLX, maxLX + innerWidth  - (GRID.cX || 1) * GRID.bW);
+    let maxLY = GRID.lock.oy - GRID.lock.wy;
+    let minLY = Math.min(maxLY, maxLY + innerHeight - (GRID.cY || 1) * GRID.bH);
+    // An open card can reach past the rendered field's own edge (its tile sits
+    // near the last row/column). Reachability beats hiding the seam: widen the
+    // bounds to admit whatever offset actually fits the card.
+    if (GRID.card) {
+      const m = 24;
+      const ox1 = GRID.lock.ox + (((innerWidth  - m) - (GRID.card.x + GRID.card.w)) - GRID.lock.wx);
+      const ox2 = GRID.lock.ox + ((m - GRID.card.x) - GRID.lock.wx);
+      minLX = Math.min(minLX, ox1, ox2); maxLX = Math.max(maxLX, ox1, ox2);
+      const oy1 = GRID.lock.oy + (((innerHeight - m) - (GRID.card.y + GRID.card.h)) - GRID.lock.wy);
+      const oy2 = GRID.lock.oy + ((m - GRID.card.y) - GRID.lock.wy);
+      minLY = Math.min(minLY, oy1, oy2); maxLY = Math.max(maxLY, oy1, oy2);
+    }
+    if (GRID.ox > maxLX) { GRID.ox = maxLX; GRID.vx = 0; }
+    if (GRID.ox < minLX) { GRID.ox = minLX; GRID.vx = 0; }
+    if (GRID.oy > maxLY) { GRID.oy = maxLY; GRID.vy = 0; }
+    if (GRID.oy < minLY) { GRID.oy = minLY; GRID.vy = 0; }
     wx = GRID.lock.wx + (GRID.ox - GRID.lock.ox);
     wy = GRID.lock.wy + (GRID.oy - GRID.lock.oy);
   } else {
@@ -2363,6 +2485,7 @@ function applyGridTransform(){
   let downOutsideCard = false;
   grid.addEventListener('pointerdown', e => {
     if (e.button && e.button !== 0) return;
+    if (dragging) return;                    // a second finger must not hijack the drag
     // A card being open no longer pins the canvas: the press starts a drag either way.
     // Only a press that ends without travel ("a click, not a drag") closes the card.
     downOutsideCard = !!expandedTile && !e.target.closest('.tile.expanded');
@@ -2382,7 +2505,7 @@ function applyGridTransform(){
     grid.classList.add('dragging');
   });
   grid.addEventListener('pointermove', e => {
-    if (!dragging) return;
+    if (!dragging || (pid != null && e.pointerId !== pid)) return;   // ignore other fingers
     const dx = e.clientX - lastX, dy = e.clientY - lastY;
     lastX = e.clientX; lastY = e.clientY;
     moved += Math.abs(dx) + Math.abs(dy);
@@ -2390,13 +2513,16 @@ function applyGridTransform(){
     GRID.vx = dx; GRID.vy = dy;
     applyGridTransform();
   });
-  function endDrag(){
+  function endDrag(e){
     if (!dragging) return;
+    if (e && pid != null && e.pointerId !== pid) return;   // another finger lifting
+    // a cancelled pointer (system gesture, scroll takeover) is NOT a tap
+    const cancelled = !!e && e.type === 'pointercancel';
     dragging = false;
     grid.classList.remove('dragging');
     if (pid != null) { try { grid.releasePointerCapture(pid); } catch (_) {} pid = null; }
     // a finger wobbles more than a mouse: swipes must never read as taps
-    const click = moved < (touch ? 14 : 6);
+    const click = !cancelled && moved < (touch ? 14 : 6);
     // A click on any tile opens it — and if another card was open, expandTile
     // collapses that one first. So the ways out are: the close button, or clicking
     // a different card. A click on empty space, or any drag, leaves the card alone.
@@ -2414,6 +2540,8 @@ function applyGridTransform(){
   grid.addEventListener('pointercancel', endDrag);
   grid.addEventListener('wheel', e => {                          // trackpad pan — including over an open card
     if (e.target.closest('textarea, input')) return;             // form fields keep native scrolling
+    const sc = e.target.closest('.xc-adopt');                    // the adoption form scrolls itself
+    if (sc && sc.scrollHeight > sc.clientHeight) return;
     e.preventDefault();
     GRID.ox -= e.deltaX; GRID.oy -= e.deltaY;
     applyGridTransform();
@@ -2421,6 +2549,32 @@ function applyGridTransform(){
 
   // hover a tile → the mark settles first, then its construction drafts in
   const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Enter/Space opens the focused mark, routed through expandFromTile so the
+  // annotation fade runs and the mark never flashes
+  grid.addEventListener('keydown', e => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const t = e.target.closest('.tile');
+    if (!t || t.classList.contains('expanded')) return;
+    e.preventDefault();
+    if (t.dataset.id === 'KONPO') { window.open('https://konpo.studio', '_blank', 'noopener'); return; }
+    const s = S.find(x => x.id === t.dataset.id);
+    if (s) expandFromTile(t, s);
+  });
+  // Tab-focusing an off-screen tile would scroll the overflow:hidden grid box and
+  // desync every pan calculation — pan the canvas to it instead
+  grid.addEventListener('scroll', () => { grid.scrollLeft = 0; grid.scrollTop = 0; });
+  grid.addEventListener('focusin', e => {
+    const t = e.target.closest('.tile');
+    if (!t || t.classList.contains('expanded') || expandedTile) return;
+    const r = t.getBoundingClientRect(), m = 24;
+    let dx = 0, dy = 0;
+    if (r.left < m) dx = m - r.left;
+    else if (r.right > innerWidth - m) dx = (innerWidth - m) - r.right;
+    if (r.top < m) dy = m - r.top;
+    else if (r.bottom > innerHeight - m) dy = (innerHeight - m) - r.bottom;
+    if (dx || dy) { GRID.ox += dx; GRID.oy += dy; GRID.vx = GRID.vy = 0; applyGridTransform(); }
+  });
+
   grid.addEventListener('mouseover', e => {
     if (dragging || focused) return;
     const t = e.target.closest('.tile');
@@ -2467,11 +2621,12 @@ function renderList(){
   const head =
     `<div class="lrow head">`
     + `<span></span><span>Index</span><span>Name</span>`
-    + `<span>Category</span><span>Construction</span><span>Status</span></div>`;
+    + `<span class="lcat">Category</span><span class="lspec">Construction</span>`
+    + `<span class="lstatus">Status</span></div>`;
   list.innerHTML = head + rows.map(s => {
     const cls = s.status === 'Rejected' ? 'killed' : s.status === 'Adopted' ? 'revived' : '';
     const label = (s.status && s.status !== '—') ? s.status : 'Archived';
-    return `<div class="lrow" data-id="${s.id}">`
+    return `<div class="lrow" data-id="${s.id}" tabindex="0" role="button" aria-label="${s.id} ${s.name}, ${s.cat}">`
       + `<span class="lglyph">${markOnly(s, 32)}</span>`
       + `<span class="lid">${s.id}</span>`
       + `<span class="lname">${s.name}</span>`
@@ -2482,13 +2637,18 @@ function renderList(){
   list.querySelectorAll('.lrow:not(.head)').forEach(row => {
     const s = S.find(x => x.id === row.dataset.id);
     row.onclick = () => openDetail(row, s);
+    row.onkeydown = e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDetail(row, s); }
+    };
   });
 }
 
 /* ---------- Filter dropdown ---------- */
 // The label counts what's actually on screen, so it tracks the search too.
 function updateFilterLabel(){
-  document.getElementById('filterLabel').textContent = `${FILTER} • ${visibleItems().length}`;
+  // the count is wrapped so phones can drop it without losing the category name
+  document.getElementById('filterLabel').innerHTML =
+    FILTER + '<span class="cnt"> • ' + visibleItems().length + '</span>';
 }
 function filterItems(){
   const counts = {};
@@ -2513,7 +2673,7 @@ function setFilter(f, opts){
 // Everything that changes what's visible funnels through here.
 // Filter/search changes re-run the centre-out reveal pulse.
 function rerender(reveal){
-  collapseTile(true);
+  collapseTile(true, true);
   updateFilterLabel();
   renderGrid(reveal);
   renderList();
@@ -2535,7 +2695,9 @@ function setView(v, opts){
     else if (renderGrid._stale !== false || renderGrid._builtZoom !== (v === 'zoom')) renderGrid();
   }
   syncEmpty();
-  try { localStorage.setItem('konpo-view', v); } catch (e) {}
+  if (!(opts && opts.persist === false)) {
+    try { localStorage.setItem('konpo-view', v); } catch (e) {}
+  }
 }
 
 /* ---------- Wire top-bar controls ---------- */
@@ -2545,7 +2707,7 @@ function closeFilterMenu(){ filterEl.classList.remove('open'); document.getEleme
 
 buildFilterMenu();
 document.getElementById('viewToggle').addEventListener('click', () => {
-  collapseTile(true); closeDetail();          // leave no card/drawer behind when the view flips
+  collapseTile(true, true); closeDetail();     // leave no card/drawer behind when the view flips
   setView(VIEWS[(VIEWS.indexOf(VIEW) + 1) % VIEWS.length]);
   syncURL();
 });
@@ -2632,7 +2794,7 @@ function syncURL(replace){
   // a plain open mark shows its shareable stub path — crawlers get real OG tags
   // there — while filtered/searched states keep the query-param form
   let url;
-  if (p.get('sym') && [...p.keys()].length === 1) {
+  if (p.get('sym') && !p.get('cat') && !p.get('q')) {
     url = '/s/' + sym.toLowerCase();
   } else {
     const qs = p.toString();
@@ -2689,15 +2851,33 @@ function applyURLState(){
   const q   = p.get('q') || '';
   // three spellings open a mark: ?sym=SYM-0XX, the /s/sym-0xx stub path,
   // and the legacy #SYM-0XX permalink (what the crawler stubs redirect to)
-  const sym = p.get('sym')
-    || (location.pathname.match(/^\/s\/(sym-\d+)/i) || [])[1]?.toUpperCase()
-    || (location.hash.match(/^#(sym-\d+)$/i) || [])[1]?.toUpperCase();
+  const sym = (p.get('sym')
+    || (location.pathname.match(/^\/s\/(sym-\d+)/i) || [])[1]
+    || (location.hash.match(/^#(sym-\d+)$/i) || [])[1]
+    || '').toUpperCase() || null;
   if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+  // Already showing exactly this state (e.g. Back after closing a card)? Do
+  // nothing — re-rendering here would reset the canvas pan the visitor set.
+  // the visitor may have typed/filtered during the intro handover, before
+  // URL_READY let syncURL record it — adopt their state instead of clobbering it
+  if (applyURLState._first && !p.has('cat') && !p.has('q')
+      && (FILTER !== 'All' || QUERY.trim())) {
+    applyURLState._first = false;
+    updateFilterLabel(); renderGrid(false); renderList(); syncURL(true);
+    if (sym) focusSymbol(sym);
+    return;
+  }
+  if (!applyURLState._first
+      && cat === FILTER && q === QUERY
+      && (!p.has('view') || p.get('view') === VIEW)
+      && (sym || null) === (expandedId || openId)) return;
 
-  collapseTile(true);
+  collapseTile(true, true);
   closeDetail();
-  // no ?view= means "leave the view alone" — the saved preference wins
-  if (p.has('view')) setView(p.get('view'), { norender: true });   // rendered just below
+  // no ?view= means grid — except on the very first pass, where the visitor's
+  // saved preference wins. A Back/Forward restore never rewrites that preference.
+  if (p.has('view')) setView(p.get('view'), { norender: true, persist: false });
+  else if (!applyURLState._first) setView('grid', { norender: true, persist: false });
 
   FILTER = filterItems().some(([c]) => c === cat) ? cat : 'All';
   QUERY = q;
@@ -2713,7 +2893,10 @@ function applyURLState(){
   renderGrid(applyURLState._first && !sym);
   applyURLState._first = false;
   renderList();
-  if (sym) focusSymbol(sym);
+  if (sym) {
+    if (!S.some(x => x.id === sym)) syncURL(true);   // unresolvable id: stop the URL lying
+    else focusSymbol(sym);
+  }
 }
 applyURLState._first = true;
 
@@ -2883,7 +3066,7 @@ const Sound = (() => {
 })();
 
 /* ---------- Side drawer ---------- */
-let openId = null;
+let openId = null, drawerOpener = null;   // who opened it, so focus can go home
 const drawer = document.getElementById('drawer');
 const scrim  = document.getElementById('scrim');
 
@@ -2903,7 +3086,7 @@ function expandFromTile(tile, s){
 
 function expandTile(tile, s){
   if (expandedId === s.id) { collapseTile(); return; }
-  if (expandedTile) collapseTile(true);
+  if (expandedTile) collapseTile(true, true);
   releaseTileAnim(tile);                   // the card rebuilds this tile's DOM
   const canvas = document.getElementById('canvas');
   const cell = GRID.cell, T = 1;
@@ -2923,12 +3106,23 @@ function expandTile(tile, s){
     const cardPx = (VIEW === 'zoom') ? 740 : 716;
     const cardW = Math.min(cardPx, innerWidth - 2 * m);
     const cardH = Math.min(cardPx, innerHeight - 2 * m);
+    // the close button sits 2.4rem into the card, so the card top should clear
+    // the fixed toolbar row — but never by pushing the card's bottom off-screen
+    const tb = document.querySelector('.toolbar');
+    const chrome = tb ? tb.getBoundingClientRect().bottom + 8 : m;
+    const topSafe = Math.max(m, Math.min(chrome, innerHeight - m - cardH));
     const r0 = tile.getBoundingClientRect();
     let dx = 0, dy = 0;
     if (r0.left + cardW > innerWidth - m) dx = (innerWidth - m) - (r0.left + cardW);
     if (r0.left + dx < m) dx = m - r0.left;
+    // when the card all but fills the width, split the slack instead of sitting
+    // flush against one edge
+    if (cardW > innerWidth - 4 * m) dx = Math.round((innerWidth - cardW) / 2) - r0.left;
     if (r0.top + cardH > innerHeight - m) dy = (innerHeight - m) - (r0.top + cardH);
-    if (r0.top + dy < m) dy = m - r0.top;
+    if (r0.top + dy < topSafe) dy = topSafe - r0.top;
+    // the card box in canvas coords — the non-tiling clamp needs it to keep the
+    // fit-pan instead of discarding it back to the tile grid's slack
+    GRID.card = { x: cx, y: cy, w: cardW, h: cardH };
     if (dx || dy) { GRID.ox += dx; GRID.oy += dy; GRID.vx = GRID.vy = 0; applyGridTransform(); }
   }
   // Hole-free reflow: the row ABOVE stays put. The card spans `span` cells at
@@ -2949,28 +3143,48 @@ function expandTile(tile, s){
 
   fillTileDetail(tile, s);
   tile.classList.add('expanded');
+  document.body.classList.add('card-open');
   Sound.play('drawer.open');
   // the text blurs in only once the card has finished growing (.55s reflow)
   clearTimeout(tile._settleT);
   tile._settleT = setTimeout(() => {
-    if (tile.classList.contains('expanded')) tile.classList.add('settled');
+    if (!tile.classList.contains('expanded')) return;
+    tile.classList.add('settled');
+    // focus lands inside the card once its chrome is actually visible+clickable
+    if (tile.matches(':focus-within') || document.activeElement === tile) {
+      const cl = tile.querySelector('.xc-close');
+      if (cl) cl.focus({ preventScroll: true });
+    }
   }, 580);
   focused = true;                          // the canvas still pans; hover/reflow stand down
   expandedTile = tile; expandedId = s.id;
   syncURL();                               // the open mark is the shareable thing
 }
 
-function collapseTile(immediate){
+function collapseTile(immediate, silent){
   if (!expandedTile) return;
-  GRID.lock = null;   // the wrap resumes (an exact multiple of the block: invisible)
   const wasOpen = expandedId;
   const canvas = document.getElementById('canvas');
+  // hand the wrap back. The correction is a whole block (invisible), but the
+  // canvas still carries .reflowing's .55s transform transition, so suppress it
+  // or the whole field would slide across while the card shrinks.
+  GRID.lock = null; GRID.card = null;
+  const _tr = canvas.style.transition;
+  canvas.style.transition = 'none';
+  applyGridTransform();
+  void canvas.offsetWidth;
+  canvas.style.transition = _tr;
+  document.body.classList.remove('card-open');
   const tile = expandedTile;
   const s = S.find(x => x.id === tile.dataset.id);
   for (const t of canvas.children){
     t.style.translate = `${t.dataset.x}px ${t.dataset.y}px`;   // back to base
   }
   clearTimeout(tile._settleT);
+  // hand focus back to the tile before its chrome is torn down
+  if (tile.contains(document.activeElement)) {
+    try { tile.focus({ preventScroll: true }); } catch (e) {}
+  }
   tile.classList.remove('expanded', 'settled');   // text blurs out while the card shrinks
   const restore = () => {
     if (tile.classList.contains('expanded')) return;
@@ -2991,7 +3205,9 @@ function collapseTile(immediate){
   if (!immediate) Sound.play('drawer.close');
   expandedTile = null; expandedId = null;
   focused = false;                     // hover annotations resume
-  if (wasOpen) syncURL(true);          // drop ?sym= without stacking a history entry
+  // side-effect collapses (filter, search, view flip, re-entry) leave the URL to
+  // whoever triggered them; only a real close rewrites it
+  if (wasOpen && !silent) syncURL(true);
 }
 
 // xmark 1.svg, supplied with the design
@@ -3010,12 +3226,11 @@ function fillTileDetail(tile, s){
     +     '<div class="xc-inner">'
     +       '<div class="xc-stage"></div>'
     +       '<div class="xc-head"><span class="xc-idx"></span><h2 class="xc-name"></h2><p class="xc-desc"></p></div>'
-    +       '<dl class="xc-meta"></dl>'
-    +       '<div class="xc-controls"></div>'
+    +       '<div class="xc-foot"><dl class="xc-meta"></dl><div class="xc-controls"></div></div>'
     +       '<button class="xc-close" type="button" aria-label="Close">' + X_MARK + '</button>'
     +     '</div>'
     +   '</div>'
-    +   '<div class="xc-face back"></div>'
+    +   '<div class="xc-face back" inert></div>'
     + '</div>';
   const inner = tile.querySelector('.xc-inner');
   const stage = tile.querySelector('.xc-stage');
@@ -3042,6 +3257,9 @@ function fillTileDetail(tile, s){
       const on = stage.classList.toggle('exploded');
       parts.forEach((el, i) => { const [dx, dy] = vectors[i] || [0, 0]; const rot = s.spin ? ' rotate(360deg)' : ''; el.style.transform = on ? `translate(${dx}px, ${dy}px)${rot}` : ''; });
       btn.textContent = on ? 'Assemble' : 'Explode';
+      // the CSS hides the annotations while exploded; keep the button's lit state honest
+      if (on) { const a2 = [...controls.querySelectorAll('button')].find(b => b.textContent === 'Notes');
+                if (a2 && a2.classList.contains('active')) a2.click(); }
     };
   }
 
@@ -3055,6 +3273,18 @@ function fillTileDetail(tile, s){
     } else {                                         // replay the draw-on from the start
       aBtn.classList.add('active');
       svgEl.classList.remove('show-construction'); if (nEl) nEl.classList.remove('on');   // reset
+      // exploded? assemble first — annotations drawn over parts still in flight
+      // would sit off the geometry they measure (parts travel 1.4s)
+      const xBtn = [...controls.querySelectorAll('button')].find(b => b.textContent === 'Assemble');
+      if (stage.classList.contains('exploded') && xBtn) {
+        xBtn.click();
+        annotOn = true;
+        setTimeout(() => {
+          if (!annotOn || stage.classList.contains('exploded')) return;
+          svgEl.classList.add('show-construction'); if (nEl) nEl.classList.add('on');
+        }, 1500);
+        return;
+      }
       void svgEl.getBoundingClientRect();                                                 // commit
       requestAnimationFrame(() => requestAnimationFrame(() => {
         svgEl.classList.add('show-construction'); if (nEl) nEl.classList.add('on');
@@ -3143,7 +3373,9 @@ function fillTileDetail(tile, s){
   const sv = stage.querySelector(':scope > svg');
   const tileW = tile.getBoundingClientRect().width;
   const svW = sv.getBoundingClientRect().width;
-  if (tileW && svW && svW > tileW) {
+  // continuity in BOTH directions: on phones the stage svg is SMALLER than the
+  // 350px tile mark, and a one-sided guard let the mark snap down on open
+  if (tileW && svW && Math.abs(svW - tileW) > 1) {
     sv.style.transition = 'none';
     sv.style.transform = `scale(${(tileW / svW).toFixed(4)})`;
     requestAnimationFrame(() => requestAnimationFrame(() => {
@@ -3237,7 +3469,7 @@ const Ribbons = (() => {
 const namedMark = s => s.name && s.name !== 'Untitled' && s.name !== '—';
 const adoptLabel = s => namedMark(s) ? `Adopt ${s.name}` : 'Adopt this mark';
 
-const ADOPT_NOTE = "Make your case — in detail. What's the project, who's behind it, "
+const ADOPT_NOTE = "Make your case — in detail. What’s the project, who’s behind it, "
   + 'and where would this mark live? We only release these to companies and people '
   + 'with genuinely interesting projects.';
 
@@ -3245,6 +3477,9 @@ function flipToAdopt(tile, s){
   const flip = tile.querySelector('.xc-flip');
   const back = tile.querySelector('.xc-face.back');
   if (!back.firstChild) back.innerHTML = adoptFormHTML(s);
+  // the face turned away leaves the tab ring
+  back.removeAttribute('inert');
+  tile.querySelector('.xc-face.front').setAttribute('inert', '');
   flip.classList.add('flipped');
   Sound.play('toggle.on');
   wireAdoptForm(tile, s);
@@ -3255,6 +3490,8 @@ function flipBack(tile){
   const flip = tile.querySelector('.xc-flip');
   if (!flip || !flip.classList.contains('flipped')) return false;
   flip.classList.remove('flipped');
+  tile.querySelector('.xc-face.front').removeAttribute('inert');
+  tile.querySelector('.xc-face.back').setAttribute('inert', '');
   Sound.play('toggle.off');
   return true;
 }
@@ -3485,6 +3722,9 @@ function closeDetail(){
   drawer.classList.remove('open');
   scrim.classList.remove('open');
   drawer.setAttribute('aria-hidden', 'true');
+  drawer.setAttribute('inert', '');
+  if (drawerOpener && drawerOpener.isConnected) drawerOpener.focus({ preventScroll: true });
+  drawerOpener = null;
   document.body.style.overflow = '';
   document.querySelectorAll('.tile.active, .lrow.active').forEach(t => t.classList.remove('active'));
   document.body.classList.remove('page-blur');
@@ -3494,6 +3734,7 @@ function openDetail(tile, s){
   if (openId === s.id) { closeDetail(); return; }   // same tile toggles shut
   document.querySelectorAll('.tile.active, .lrow.active').forEach(t => t.classList.remove('active'));
   tile.classList.add('active');
+  if (!openId) drawerOpener = tile;                 // return focus here on close
 
   if (openId) {
     // drawer already open: crossfade content in place
@@ -3503,11 +3744,14 @@ function openDetail(tile, s){
   } else {
     fillDrawer(s);
     Sound.play('drawer.open');
+    drawer.removeAttribute('inert');
     drawer.classList.add('open');
     scrim.classList.add('open');
     drawer.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
     document.body.classList.add('page-blur');
+    const cl = drawer.querySelector('.close');
+    if (cl) setTimeout(() => cl.focus({ preventScroll: true }), 60);
   }
   openId = s.id;
   syncURL();
@@ -3517,7 +3761,7 @@ drawer.querySelector('.close').onclick = closeDetail;
 scrim.onclick = closeDetail;
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
-  if (expandedTile) { flipBack(expandedTile); return; }  // Esc turns the form back; the card itself
+  if (expandedTile && flipBack(expandedTile)) return;    // Esc turns the form back; the card itself
   closeDetail();                                         // only closes via its close button
 });
 
@@ -3547,7 +3791,7 @@ document.getElementById('revive-send').onclick = () => {
   if (!why) { reviveText.focus(); return; }
   Sound.play('action.send');
   location.href = 'mailto:hey@konpo.studio'
-    + '?subject=' + encodeURIComponent('Revive ' + openId)
+    + '?subject=' + encodeURIComponent('Adopt ' + openId + ' — Application')
     + '&body=' + encodeURIComponent(why);
   reviveSent.hidden = false;
 };
@@ -3637,6 +3881,12 @@ document.getElementById('toast-case').onclick = () => {
   clearTimeout(copyToastTimer);
   const s = S.find(x => x.id === toastSymId);
   if (!s) return;
+  // the card for this mark is already open: flip IT to the form. Opening the
+  // drawer on top would blur the card behind a scrim with no way out.
+  if (expandedId === s.id && expandedTile) {
+    if (expandedTile.querySelector('.xc-controls .revive')) flipToAdopt(expandedTile, s);
+    return;                                   // adopted marks have no CTA
+  }
   if (openId !== s.id) {
     const tile = document.querySelector(`.tile[data-id="${s.id}"]`);
     if (!tile) return;
@@ -3646,7 +3896,7 @@ document.getElementById('toast-case').onclick = () => {
   setTimeout(() => {
     if (drawer.querySelector('.revive').hidden) return; // already adopted: nothing to apply for
     if (revivePanel.hidden) reviveToggle.click();
-    document.querySelector('.revive').scrollIntoView({ behavior: 'smooth', block: 'end' });
+    drawer.querySelector('.revive').scrollIntoView({ behavior: 'smooth', block: 'end' });
   }, 250);
 };
 
