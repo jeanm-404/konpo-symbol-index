@@ -27,6 +27,7 @@
     --white: #fff;
     --body: rgba(255,255,255,0.70);
     --fade: #858585;   /* 4.99:1 on tile, 5.69:1 on black — AA at 11px */
+    --card-inset: 4.8rem;   /* vertical room the chrome reserves for an open card */
     --line: rgba(255,255,255,0.10);
     --purple: #9680ff;
     --purple-vivid: #ad9cff;
@@ -123,8 +124,8 @@
   /* the expanded card fills its 3-cell hole flush (3 x 25rem - 1rem gutter) */
   body.view-zoom .tile.expanded {
     width: min(74rem, calc(100vw - 2.4rem));
-    height: min(74rem, calc(100vh - 4.8rem));
-    height: min(74rem, calc(100dvh - 4.8rem));
+    height: min(74rem, calc(100vh - var(--card-inset)));
+    height: min(74rem, calc(100dvh - var(--card-inset)));
   }
 
   .filter { position: relative; }
@@ -535,8 +536,8 @@
   }
   .tile.expanded {
     width: min(71.6rem, calc(100vw - 2.4rem));
-    height: min(71.6rem, calc(100vh - 4.8rem));
-    height: min(71.6rem, calc(100dvh - 4.8rem));
+    height: min(71.6rem, calc(100vh - var(--card-inset)));
+    height: min(71.6rem, calc(100dvh - var(--card-inset)));
     z-index: 5; display: block; cursor: default;
   }
   .xc-inner { position: absolute; inset: 0; }
@@ -956,17 +957,46 @@
 
   /* --- small screens: the card fits the viewport instead of its fixed 2×2 --- */
   @media (max-width: 780px) {
+    /* the card lives in the space under the toolbar, never beneath it —
+       one token so the zoom card (higher specificity) follows too */
+    :root { --card-inset: 8.8rem; }   /* :root beats html on specificity */
     .xc-stage svg { width: min(42rem, 82vw); height: min(42rem, 82vw); }
     .xc-head { width: auto; }
+    /* The card becomes a real column: title, then the mark taking whatever
+       height is left, then the data. Same composition as desktop — but the
+       zones are allocated instead of absolutely stacked, so a long blurb or an
+       adopted mark's nine meta rows can never land on top of the mark. */
+    .xc-inner {
+      display: flex; flex-direction: column; gap: 1.2rem;
+      padding: 2.4rem;
+      overflow-y: auto; overscroll-behavior: contain;   /* safety valve only */
+    }
+    .xc-name { font-size: 2.8rem; }
+    .xc-head, .xc-foot { position: static; left: auto; right: auto; top: auto; bottom: auto; }
+    .xc-head { width: auto; max-width: none; padding-right: 4.8rem; }  /* clear of the close */
+    /* the stage is first in the DOM (it sits behind everything on desktop), so
+       the column re-orders it into the middle: title, mark, data */
+    .xc-head { order: 1; flex: none; }
+    .xc-stage {
+      order: 2;
+      position: relative; inset: auto;
+      flex: 1 1 auto;
+      align-items: center; justify-content: center;
+    }
+    .xc-foot { order: 3; }
+    .xc-stage svg { width: 100%; height: 100%; max-width: min(42rem, 82vw); max-height: 100%; }
+    .xc-stage .lottie-slot { inset: 0; width: auto; height: auto; margin: 0; }
     /* the foot stacks: controls above the meta list, both full width */
     .xc-foot {
-      left: 2.4rem; right: 2.4rem; bottom: 2.4rem;
+      flex: none;
       flex-direction: column-reverse; align-items: stretch; gap: 1.6rem;
     }
-    .xc-controls { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: flex-start; }
-    .xc-meta { grid-template-columns: 9rem auto; column-gap: 1.2rem; row-gap: 0.8rem; }
-    /* the mark moves up so the taller foot never sits on it */
-    .xc-stage { align-items: flex-start; padding-top: 10rem; }
+    .xc-controls { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 0.6rem; }
+    /* the four utility chips share one row; Adopt keeps its own full-width band */
+    .xc-controls button { padding: 0.7rem 1.1rem; font-size: 1rem; letter-spacing: 0.06em; }
+    .xc-controls button.revive { order: 1; flex: 1 0 100%; text-align: center; padding: 1.2rem 1.6rem; font-size: 1.2rem; letter-spacing: 0.08em; }
+    .xc-meta { grid-template-columns: 8.5rem auto; column-gap: 1.2rem; row-gap: 0.6rem; }
+    .xc-stage { min-height: 10rem; }
     .xc-stage .notes { display: none; }
   }
   /* --- short cards (landscape phones, short laptop windows): the head and the
@@ -980,9 +1010,11 @@
     .tile.expanded .xc-stage .notes { display: none; }
   }
 
+  /* the sticky Back pill overlays the head — keep the copy clear of it */
+  .xc-adopt .ahead { padding-right: 11rem; }
   /* short viewports: tighten the form so it needs little or no scrolling */
   @media (max-height: 760px) {
-    .xc-adopt .ahead { padding: 2.4rem 2.4rem 1.6rem; gap: 0.8rem; }
+    .xc-adopt .ahead { padding: 2.4rem 11rem 1.6rem 2.4rem; gap: 0.8rem; }
     .afield { padding: 1.4rem 2.4rem; }
     .afield textarea { min-height: 6rem; }
     .aband { padding: 1.8rem 2.4rem; }
@@ -2540,8 +2572,10 @@ function applyGridTransform(){
   grid.addEventListener('pointercancel', endDrag);
   grid.addEventListener('wheel', e => {                          // trackpad pan — including over an open card
     if (e.target.closest('textarea, input')) return;             // form fields keep native scrolling
-    const sc = e.target.closest('.xc-adopt');                    // the adoption form scrolls itself
-    if (sc && sc.scrollHeight > sc.clientHeight) return;
+    // an open card's own scrollers (the adoption form, or the phone column when
+    // its content genuinely exceeds the card) keep native scrolling
+    const sc = e.target.closest('.xc-adopt, .xc-inner');
+    if (sc && sc.scrollHeight > sc.clientHeight + 1) return;
     e.preventDefault();
     GRID.ox -= e.deltaX; GRID.oy -= e.deltaY;
     applyGridTransform();
@@ -3105,7 +3139,9 @@ function expandTile(tile, s){
     const m = 24;
     const cardPx = (VIEW === 'zoom') ? 740 : 716;
     const cardW = Math.min(cardPx, innerWidth - 2 * m);
-    const cardH = Math.min(cardPx, innerHeight - 2 * m);
+    // phones reserve the toolbar row in the card's own height (see the
+    // max-width:780px block) — mirror that here or topSafe can't clear it
+    const cardH = Math.min(cardPx, innerHeight - (innerWidth <= 780 ? 88 : 2 * m));
     // the close button sits 2.4rem into the card, so the card top should clear
     // the fixed toolbar row — but never by pushing the card's bottom off-screen
     const tb = document.querySelector('.toolbar');
@@ -3227,8 +3263,8 @@ function fillTileDetail(tile, s){
     +       '<div class="xc-stage"></div>'
     +       '<div class="xc-head"><span class="xc-idx"></span><h2 class="xc-name"></h2><p class="xc-desc"></p></div>'
     +       '<div class="xc-foot"><dl class="xc-meta"></dl><div class="xc-controls"></div></div>'
-    +       '<button class="xc-close" type="button" aria-label="Close">' + X_MARK + '</button>'
     +     '</div>'
+    +     '<button class="xc-close" type="button" aria-label="Close">' + X_MARK + '</button>'
     +   '</div>'
     +   '<div class="xc-face back" inert></div>'
     + '</div>';
