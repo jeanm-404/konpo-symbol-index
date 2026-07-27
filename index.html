@@ -2245,6 +2245,8 @@ const notes = (s) => { if (!s._t) s._t = typeset(s.con); return `<div class="not
 
 /* ---------- View + filter state ---------- */
 let FILTER = 'All', VIEW = 'grid', QUERY = '';
+// phones get the drawer and the denser grid; the 2x2 card stays a desktop gesture
+const MOBILE = () => innerWidth <= 780;
 
 // One place decides what's on screen: category filter AND the search query.
 // Searchable text = index, name, category, construction spec, rejection reason, status.
@@ -2562,7 +2564,9 @@ function applyGridTransform(){
       window.open('https://konpo.studio', '_blank', 'noopener');
     } else if (click && downId && downTile){                     // a click, not a drag
       const s = S.find(x => x.id === downId);
-      if (s) expandFromTile(downTile, s);                        // annotations fade, then it grows
+      // phones open the side panel — the in-place 2x2 card is a desktop gesture
+      if (s && MOBILE()) openDetail(downTile, s);
+      else if (s) expandFromTile(downTile, s);                   // annotations fade, then it grows
     } else if (Math.abs(GRID.vx) > 0.5 || Math.abs(GRID.vy) > 0.5){
       GRID.raf = requestAnimationFrame(momentum);               // fling
     }
@@ -2592,7 +2596,8 @@ function applyGridTransform(){
     e.preventDefault();
     if (t.dataset.id === 'KONPO') { window.open('https://konpo.studio', '_blank', 'noopener'); return; }
     const s = S.find(x => x.id === t.dataset.id);
-    if (s) expandFromTile(t, s);
+    if (s && MOBILE()) openDetail(t, s);
+    else if (s) expandFromTile(t, s);
   });
   // Tab-focusing an off-screen tile would scroll the overflow:hidden grid box and
   // desync every pan calculation — pan the canvas to it instead
@@ -2860,6 +2865,15 @@ function focusSymbol(id){
   const canvas = document.getElementById('canvas');
   const any = canvas.querySelector(`.tile[data-id="${id}"]`);
   if (!any) return false;
+  if (MOBILE()) {                       // phones: the drawer, centred on its tile
+    const r = any.getBoundingClientRect();
+    GRID.ox += Math.round(innerWidth / 2 - (r.left + r.width / 2));
+    GRID.oy += Math.round(innerHeight / 2 - (r.top + r.height / 2));
+    GRID.vx = GRID.vy = 0;
+    applyGridTransform();
+    openDetail(any, s);
+    return true;
+  }
   // The card grows 2×2 down-right from the tile, so park the tile up-left of centre.
   const targetX = Math.max(24, innerWidth / 2 - GRID.cell);
   const targetY = Math.max(24, innerHeight / 2 - GRID.cell);
@@ -2942,6 +2956,8 @@ try {
   const saved = localStorage.getItem('konpo-view');
   // norender: applyURLState builds the visible view once the intro hands over
   if (VIEWS.includes(saved)) setView(saved, { norender: true });
+  // first visit on a phone: the denser grid reads better at 24rem tiles
+  else if (MOBILE()) setView('zoom', { norender: true, persist: false });
 } catch (e) {}
 
 /* ------------------------------------------------------------------
