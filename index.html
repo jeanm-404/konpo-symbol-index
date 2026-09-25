@@ -3663,6 +3663,11 @@ const X_MARK =
   +   '<path d="M4.44434 4.44434L15.5554 15.5554" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>'
   + '</svg>';
 
+// the card's controls act on the drawing: they hold until a turn still running on the
+// card's mark has landed (the press still counts, it just lands after)
+const afterTurn = (tile, fn) => (SOLID ? SOLID.whenLanded(tile) : Promise.resolve())
+  .then(() => { if (tile.classList.contains('expanded')) fn(); });
+
 function fillTileDetail(tile, s){
   const adopted = s.status === 'Adopted' && s.adopter;
   tile.classList.toggle('adopted-mark', s.status === 'Adopted');
@@ -3688,17 +3693,17 @@ function fillTileDetail(tile, s){
 
   const tBtn = document.createElement('button'); tBtn.textContent = 'Turn'; controls.appendChild(tBtn);
   let angle = 0;
-  tBtn.onclick = () => {
+  tBtn.onclick = () => afterTurn(tile, () => {
     angle += 90;
     // rotate the static svg and any mounted lottie slot together
     stage.querySelectorAll(':scope > svg, :scope > .lottie-slot').forEach(el => el.style.transform = `rotate(${angle}deg)`);
-  };
+  });
 
   if (s.explode) {
     const btn = document.createElement('button'); btn.textContent = 'Explode'; controls.appendChild(btn);
     const { parts, vectors } = explodeSetup(stage, s);
     if (!vectors.some(v => v && Math.hypot(v[0], v[1]) > 1)) btn.remove();
-    else btn.onclick = () => {
+    else btn.onclick = () => afterTurn(tile, () => {
       stage.classList.remove('lottie-live');   // hand the stage back to the static mark
       const on = stage.classList.toggle('exploded');
       parts.forEach((el, i) => { const [dx, dy] = vectors[i] || [0, 0]; const rot = s.spin ? ' rotate(360deg)' : ''; el.style.transform = on ? `translate(${dx}px, ${dy}px)${rot}` : ''; });
@@ -3706,7 +3711,7 @@ function fillTileDetail(tile, s){
       // the CSS hides the annotations while exploded; keep the button's lit state honest
       if (on) { const a2 = [...controls.querySelectorAll('button')].find(b => b.textContent === 'Notes');
                 if (a2 && a2.classList.contains('active')) a2.click(); }
-    };
+    });
   }
 
   const aBtn = document.createElement('button'); aBtn.textContent = 'Notes'; controls.appendChild(aBtn);

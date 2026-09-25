@@ -197,6 +197,8 @@ export function createSolid(){
   // A run lives in its tile; if the tile opens into a card mid-turn, the run moves onto the
   // card's mark and finishes there (the card grows around it) instead of being cut off
   let cur = null, queued = null;
+  const waiters = new Map();                                // tile -> callbacks for when its turn lands
+  const release = tile => { const w = waiters.get(tile); if (w) { waiters.delete(tile); w.forEach(f => f()); } };
   function finish(){
     const c = cur; cur = null;
     if (c) {
@@ -205,6 +207,8 @@ export function createSolid(){
     }
     const nx = queued; queued = null;
     if (nx && nx.ok()) play(nx.tile, nx.s, nx.done, nx.ok);
+    else if (nx) release(nx.tile);                          // dropped: nothing left to wait for
+    if (c && !(cur && cur.tile === c.tile)) release(c.tile);
   }
   // put the canvas over the run's mark: the whole tile, or the card's stage mark
   let bufSize = 0;
@@ -286,7 +290,7 @@ export function createSolid(){
     host.appendChild(canvas);
     renderer.setScissorTest(true);
     runs.forEach(r => r.tile.classList.add('solid-live'));
-    const land = r => { runs.delete(r.tile); r.tile.classList.remove('solid-live'); if (r.done) r.done(); };
+    const land = r => { runs.delete(r.tile); r.tile.classList.remove('solid-live'); if (r.done) r.done(); release(r.tile); };
     const end = handoff => {
       runs.forEach(land);
       renderer.setScissorTest(false); renderer.setPixelRatio(dpr);
@@ -334,5 +338,12 @@ export function createSolid(){
     if (waving && waveTake) waveTake(tile);                // a card over the field ends the wave
     return false;
   }
-  return { play, prepare, wave, carry };
+  // resolves once no turn is running (or waiting to run) on this tile: the card's
+  // controls act on the drawing, so they hold until the canvas has handed back
+  function whenLanded(tile){
+    const busy = (cur && cur.tile === tile) || (queued && queued.tile === tile) || (waving && waving.has(tile));
+    if (!busy) return Promise.resolve();
+    return new Promise(r => { if (!waiters.has(tile)) waiters.set(tile, []); waiters.get(tile).push(r); });
+  }
+  return { play, prepare, wave, carry, whenLanded };
 }
