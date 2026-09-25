@@ -1060,6 +1060,8 @@
 
   /* --- small screens: the card fits the viewport instead of its fixed 2×2 --- */
   @media (max-width: 780px) {
+    /* zoomed out on a phone: 40% smaller than the desktop zoom (cell 150 in renderGrid) */
+    body.view-zoom .tile:not(.expanded) { width: 14.4rem; height: 14.4rem; }
     /* the card lives in the space under the toolbar, never beneath it —
        one token so the zoom card (higher specificity) follows too */
     :root { --card-inset: 8.8rem; }   /* :root beats html on specificity */
@@ -2481,7 +2483,8 @@ function renderGrid(reveal){
   syncEmpty();
   if (!N) { canvas.innerHTML = ''; return; }
   const vpW = innerWidth || 1440, vpH = innerHeight || 900;
-  const cell = GRID.cell = (VIEW === 'zoom' ? 250 : 366);   // 24rem / 35rem tiles + gap
+  // 24rem / 35rem tiles + gap; phones zoom out 40% further (14.4rem tiles)
+  const cell = GRID.cell = (VIEW === 'zoom' ? (MOBILE() ? 150 : 250) : 366);
   // Repeating the set to fill an endless canvas only reads as endless when there is
   // enough of it — a search down to two marks would just wallpaper the same tile.
   // Below two screenfuls the set lays out once, centred, and pans within its bounds.
@@ -2715,9 +2718,9 @@ function applyGridTransform(){
       window.open('https://konpo.studio', '_blank', 'noopener');
     } else if (click && downId && downTile){                     // a click, not a drag
       const s = S.find(x => x.id === downId);
-      // phones open the side panel — the in-place 2x2 card is a desktop gesture
-      if (s && MOBILE()) openDetail(downTile, s);
-      else if (s) expandFromTile(downTile, s);                   // annotations fade, then it grows
+      // phones too: the card grows in place to the viewport width (the drawer is
+      // the parked table view's detail)
+      if (s) expandFromTile(downTile, s);                        // annotations fade, then it grows
     } else if (Math.abs(GRID.vx) > 0.5 || Math.abs(GRID.vy) > 0.5){
       GRID.raf = requestAnimationFrame(momentum);               // fling
     }
@@ -2747,8 +2750,7 @@ function applyGridTransform(){
     e.preventDefault();
     if (t.dataset.id === 'KONPO') { window.open('https://konpo.studio', '_blank', 'noopener'); return; }
     const s = S.find(x => x.id === t.dataset.id);
-    if (s && MOBILE()) openDetail(t, s);
-    else if (s) expandFromTile(t, s);
+    if (s) expandFromTile(t, s);
   });
   // Tab-focusing an off-screen tile would scroll the overflow:hidden grid box and
   // desync every pan calculation — pan the canvas to it instead
@@ -3101,15 +3103,6 @@ function focusSymbol(id){
   const canvas = document.getElementById('canvas');
   const any = canvas.querySelector(`.tile[data-id="${id}"]`);
   if (!any) return false;
-  if (MOBILE()) {                       // phones: the drawer, centred on its tile
-    const r = any.getBoundingClientRect();
-    GRID.ox += Math.round(innerWidth / 2 - (r.left + r.width / 2));
-    GRID.oy += Math.round(innerHeight / 2 - (r.top + r.height / 2));
-    GRID.vx = GRID.vy = 0;
-    applyGridTransform();
-    openDetail(any, s);
-    return true;
-  }
   // The card grows 2×2 down-right from the tile, so park the tile up-left of centre.
   const targetX = Math.max(24, innerWidth / 2 - GRID.cell);
   const targetY = Math.max(24, innerHeight / 2 - GRID.cell);
@@ -3393,14 +3386,17 @@ function pushAround(canvas, tile){
   const cell = GRID.cell, T = 1;
   const cx = +tile.dataset.x, cy = +tile.dataset.y;
   const cardPx = (VIEW === 'zoom') ? 740 : 716;   // both sit flush: span*cell - gutter
-  const span = Math.ceil(cardPx / cell);
-  const shift = (span - 1) * cell;
+  // the card's real box (set by expandTile): on a phone it's one column wide and
+  // taller than two cells, so the spans differ per axis
+  const w = GRID.card ? GRID.card.w : cardPx, h = GRID.card ? GRID.card.h : cardPx;
+  const spanX = Math.ceil(w / cell), spanY = Math.ceil(h / cell);
+  const shiftX = (spanX - 1) * cell, shiftY = (spanY - 1) * cell;
   for (const t of canvas.children){
     if (t === tile) { t.style.translate = `${cx}px ${cy}px`; continue; }
     const tx = +t.dataset.x, ty = +t.dataset.y;
     let ox = 0, oy = 0;
-    if (ty > cy - T && ty < cy + (span - 1) * cell + T && tx > cx + T) ox = shift;
-    else if (Math.abs(tx - cx) < T && ty > cy + T) oy = shift;
+    if (ty > cy - T && ty < cy + (spanY - 1) * cell + T && tx > cx + T) ox = shiftX;
+    else if (Math.abs(tx - cx) < T && ty > cy + T) oy = shiftY;
     t.style.translate = `${tx + ox}px ${ty + oy}px`;
   }
 }
@@ -3507,7 +3503,7 @@ function expandTile(tile, s){
   {
     const m = 24;
     const cardPx = (VIEW === 'zoom') ? 740 : 716;
-    const cardW = Math.min(cardPx, innerWidth - 2 * m);
+    const cardW = Math.min(cardPx, innerWidth - 24);     // the CSS: min(71.6rem | 74rem, 100vw - 2.4rem)
     // phones reserve the toolbar row in the card's own height (see the
     // max-width:780px block) — mirror that here or topSafe can't clear it
     const cardH = Math.min(cardPx, innerHeight - (innerWidth <= 780 ? 88 : 2 * m));
