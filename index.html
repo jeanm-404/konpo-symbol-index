@@ -16,6 +16,13 @@
 <link rel="alternate" type="application/feed+json" title="Symbol Shelter" href="/feed.json">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cstyle%3Ecircle%7Bfill:%230a0a0a%7D@media(prefers-color-scheme:dark)%7Bcircle%7Bfill:%23fff%7D%7D%3C/style%3E%3Ccircle cx='50' cy='50' r='32'/%3E%3C/svg%3E">
 <script defer src="/vendor/lottie.min.js"></script>
+<!-- Three.js for the solid 3D hover (solid.js): nothing is fetched until the first hover dwell -->
+<script type="importmap">
+  { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+  } }
+</script>
 <style>
   html { font-size: 62.5%; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -356,6 +363,18 @@
      Same choreography as the animated build on the live site, done in CSS off the
      mark's own parts, so it works for all 88 without an external animation payload. */
   .tile .mark > * { transform-box: fill-box; transform-origin: center; }
+  /* solid 3D hover (solid.js): one shared canvas moves into the tile that plays; the
+     drawing hides under it, then shows again as the flattened canvas fades into it */
+  .tile > .solid-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .tile.solid-live:not(.expanded) > svg .mark { visibility: hidden; }
+  .tile.solid-live.solid-handback > svg .mark { visibility: visible; }
+  .tile.solid-handback > .solid-canvas { opacity: 0; transition: opacity .18s ease; }
+  /* the arrival wave: one canvas over the whole field */
+  .grid > .solid-wave { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  /* a turn caught by a click finishes on the card's mark (solid.js sets the canvas box) */
+  .xc-stage.solid-live > svg .mark { visibility: hidden; }
+  .xc-stage.solid-live.solid-handback > svg .mark { visibility: visible; }
+  .xc-stage.solid-handback > .solid-canvas { opacity: 0; transition: opacity .18s ease; }
   .tile:not(.expanded).mark-anim .mark > * {
     animation: settle .46s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
@@ -2349,6 +2368,49 @@ const konpoInner = () =>
   + `<svg viewBox="-28 -28 256 256" aria-hidden="true"><g class="mark"><g transform="translate(88 88) scale(0.387)">${KONPO_MARK}</g></g></svg>`
   + `<div class="meta"><span class="sub">konpo.studio</span></div>`;
 
+// the hover motion is the solid 3D turn (solid.js), for every mark. It plays as soon as
+// the pointer lands, so it is fetched and every mark's geometry built in idle time as the
+// index reveals (the reveal is compositor-driven, so this doesn't stutter it), and the
+// marks in view all turn once as the reveal ends; without WebGL the CSS settle plays instead. The Lottie cycles (tileCycle) are parked for hover: cards still use them
+let SOLID = null, solidP = null;
+function loadSolid(){
+  if (!solidP) solidP = import('/solid.js').then(m => { SOLID = m.createSolid() || false; }).catch(() => { SOLID = false; });
+  return solidP;
+}
+// the marks in view, as [tile, symbol] pairs
+function tilesInView(){
+  return [...document.querySelectorAll('#grid .tile')].filter(t => {
+    const r = t.getBoundingClientRect();
+    return r.right > 0 && r.left < innerWidth && r.bottom > 0 && r.top < innerHeight;
+  }).map(t => [t, S.find(x => x.id === t.dataset.id)]).filter(([, s]) => s);
+}
+function warmSolid(){
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const idle = window.requestIdleCallback || (f => setTimeout(f, 50));
+  // the marks in view first (the arrival wave needs them), then the rest
+  const seen = new Set(), order = [];
+  [...tilesInView().map(([, s]) => s), ...S].forEach(s => { if (!seen.has(s.id)) { seen.add(s.id); order.push(s); } });
+  loadSolid().then(() => {
+    if (!SOLID) return;
+    let i = 0;                                   // one mark per idle slice
+    const next = () => { if (i < order.length) { SOLID.prepare(order[i++]); idle(next); } };
+    idle(next);
+  });
+}
+// once, on arrival: when the reveal pulse ends, every mark in view turns together.
+// Hovers wait at the gate until then, so a mark under the pointer joins the wave
+// (its annotations follow when it lands) instead of taking the renderer first
+let waveGate = Promise.resolve(), waveOpen = null;
+function holdForWave(){ openWave(); waveGate = new Promise(r => { waveOpen = r; }); }
+function openWave(){ if (waveOpen) { waveOpen(); waveOpen = null; } }
+function waveSolid(){
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches || VIEW === 'list') { openWave(); return; }
+  loadSolid().then(() => {
+    if (SOLID && !document.querySelector('.tile.expanded')) SOLID.wave(tilesInView(), document.getElementById('grid'));
+    openWave();
+  });
+}
+
 // per-tile motion cycle for the animated marks: mounted on first hover, and the
 // construction annotations hold until a cycle completes while still hovered
 function tileCycle(t, s){
@@ -2489,11 +2551,15 @@ function renderGrid(reveal){
   // the pulse: run the wave once, then hand the tiles back to the hover styles
   canvas.classList.remove('revealing');
   clearTimeout(renderGrid._revealT);
+  openWave();                                      // a cut-short arrival pulse never holds hovers
   if (reveal && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
     void canvas.offsetWidth;                       // restart the animation cleanly
     canvas.classList.add('revealing');
-    renderGrid._revealT = setTimeout(() => canvas.classList.remove('revealing'),
-      maxRing * RING_MS + 700);
+    if (!renderGrid._waved) holdForWave();
+    renderGrid._revealT = setTimeout(() => {
+      canvas.classList.remove('revealing');
+      if (!renderGrid._waved) { renderGrid._waved = true; waveSolid(); }   // the arrival pulse only
+    }, maxRing * RING_MS + 700);
   }
   // every copy of the Konpo card dances (the fifth, center circle is tile-colored
   // in the scene itself, so it reads as cutting the dots) — but each copy only
@@ -2723,10 +2789,11 @@ function applyGridTransform(){
     next.focus({ preventScroll: true });   // focusin pans to it and hands off to its visible copy
   });
 
-  // the hover motion waits for the pointer to REST on a mark: sweeping across
-  // the field or clicking around fast plays nothing (and never fights a card
-  // opening under the cursor)
-  const HOVER_DWELL = 2000;
+  // the hover motion plays as soon as the pointer lands on a mark. A 120ms intent
+  // window (below what reads as a delay) keeps a pointer on its way somewhere from
+  // starting the turn on every tile it crosses: the turn runs one at a time, so the
+  // first tile crossed would take it from the one the pointer stops on
+  const HOVER_DWELL = 120;
   let dwellT = 0, dwellTile = null;
   grid.addEventListener('mouseover', e => {
     if (dragging || focused) return;
@@ -2734,6 +2801,11 @@ function applyGridTransform(){
     if (!t || t === dwellTile || t.classList.contains('expanded') || t.querySelector('.notes')) return;
     clearTimeout(dwellT);
     dwellTile = t;
+    // normally warm already (warmSolid); if not, start on this mark right away
+    if (!REDUCED && SOLID !== false) {
+      const s = S.find(x => x.id === t.dataset.id);
+      if (s) loadSolid().then(() => { if (SOLID) SOLID.prepare(s); });
+    }
     dwellT = setTimeout(() => {
       dwellTile = null;
       if (!dragging && !focused && t.isConnected && t.matches(':hover')) hoverPlay(t);
@@ -2746,7 +2818,19 @@ function applyGridTransform(){
     if (!s) return;
     t.insertAdjacentHTML('afterbegin', notes(s));       // notes stay hidden until annot-ready
     if (REDUCED) { t.classList.add('annot-ready'); return; }
-    if (ANIMATED.has(s.id)) { tileCycle(t, s); return; } // motion cycle first; annotations wait for it
+    if (SOLID !== false) {                               // the turn lands, then the annotations draft in
+      const live = () => t.isConnected && t.matches(':hover') && !t.classList.contains('expanded');
+      loadSolid().then(() => waveGate).then(() => {
+        if (!SOLID) { if (live()) settleAnim(t); return; }
+        // landed: it has played for this hover (the card won't replay it)
+        if (live()) SOLID.play(t, s, () => { t._played = true; if (live()) t.classList.add('annot-ready'); }, live);
+      });
+      return;
+    }
+    settleAnim(t);
+  }
+  // the CSS settle: the fallback when WebGL isn't there
+  function settleAnim(t){
     t.classList.add('mark-anim');
     const parts = t.querySelectorAll('.mark > *').length;
     const settled = 350 + Math.min(parts, 13) * 30;     // annotations overlap the last parts settling
@@ -2760,6 +2844,9 @@ function applyGridTransform(){
     if (!t || t.classList.contains('expanded')) return;
     if (t.contains(e.relatedTarget)) return;            // still inside the tile
     if (t === dwellTile) { clearTimeout(dwellT); dwellTile = null; }
+    // the next hover (or click) may turn it again; not on a press, where the field's
+    // pointer capture (.dragging) fires this mouseout just before the click opens the card
+    if (!grid.classList.contains('dragging')) t._played = false;
     clearTimeout(t._annotT);
     t.classList.remove('mark-anim', 'annot-ready');
     const n = t.querySelector('.notes'); if (n) n.remove();
@@ -3428,6 +3515,11 @@ function expandTile(tile, s){
   fillTileDetail(tile, s);
   if (restingIdx) glideIdx(tile, restingIdx, true);
   tile.classList.add('expanded');
+  // a turn in progress finishes on the card's mark; a mark that hasn't turned during this
+  // hover (a quick click, a tap, the keyboard) turns as its card opens
+  if (!(SOLID && SOLID.carry(tile)) && !tile._played && SOLID !== false
+      && !matchMedia('(prefers-reduced-motion: reduce)').matches)
+    loadSolid().then(() => { if (SOLID && expandedTile === tile) SOLID.play(tile, s, null, () => expandedTile === tile); });
   document.body.classList.add('card-open');
   Sound.play('drawer.open');
   // the text blurs in only once the card has finished growing (.55s reflow)
@@ -4358,6 +4450,7 @@ document.getElementById('toast-case').onclick = () => {
       // stamp the landing entry with the view it opened in, so Back to it restores that view
       history.replaceState({ ...(history.state || {}), view: VIEW }, '', location.pathname + location.search);
       document.body.classList.add('t3');
+      warmSolid();                                              // fetch + build while the reveal plays
     }, 1200 * rm);
   }
 
