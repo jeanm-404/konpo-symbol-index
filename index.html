@@ -325,6 +325,11 @@
   }
   .tile:not(.expanded):hover .idx { color: var(--white); }
   .tile.active .idx { color: var(--purple); }
+  /* the resting SYM-n eyebrow fades out as a card grows, and back in once it
+     has shrunk home (the card's own eyebrow blurs in with the rest of its head) */
+  .tile .idx.idx-leaving { opacity: 0; pointer-events: none; transition: opacity .22s ease, color .3s; }
+  .tile .idx.idx-enter { animation: idx-in .35s ease both; }
+  @keyframes idx-in { from { opacity: 0; } to { opacity: 1; } }
   .status-dot {
     display: inline-block; width: 0.6rem; height: 0.6rem;
     border-radius: 50%; background: #4ade80;
@@ -344,10 +349,13 @@
   .tile:not(.expanded).mark-anim .mark > * {
     animation: settle .46s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
+  /* starts AND ends on the resting mark (no dark frame, no jump when the class
+     lands): each part gives a small dip and overshoot in between */
   @keyframes settle {
-    0%   { transform: scale(0.78); opacity: 0.25; }
-    55%  { transform: scale(1.05); opacity: 1; }
-    100% { transform: none;        opacity: 1; }
+    0%   { transform: none; }
+    35%  { transform: scale(0.93); }
+    70%  { transform: scale(1.03); }
+    100% { transform: none; }
   }
   .tile.mark-anim .mark > :nth-child(1 ) { animation-delay: 0s; }
   .tile.mark-anim .mark > :nth-child(2 ) { animation-delay: .03s; }
@@ -3365,7 +3373,14 @@ function expandTile(tile, s){
   }
   pushAround(canvas, tile);
 
+  const restingIdx = tile.querySelector(':scope > .idx');
   fillTileDetail(tile, s);
+  if (restingIdx) {                        // keep it just long enough to fade out
+    tile.appendChild(restingIdx);
+    void restingIdx.offsetWidth;
+    restingIdx.classList.add('idx-leaving');
+    setTimeout(() => restingIdx.remove(), 260);
+  }
   tile.classList.add('expanded');
   document.body.classList.add('card-open');
   Sound.play('drawer.open');
@@ -3453,6 +3468,7 @@ function collapseTile(immediate, silent){
     if (s) {
       if (s.status === 'Adopted') tile.classList.add('adopted-mark');
       tile.innerHTML = tileInner(s);
+      if (!immediate) tile.querySelector('.idx')?.classList.add('idx-enter');
     }
     settleReflow(canvas);
   };
