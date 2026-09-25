@@ -2680,10 +2680,25 @@ function applyGridTransform(){
     next.focus({ preventScroll: true });   // focusin pans to it and hands off to its visible copy
   });
 
+  // the hover motion waits for the pointer to REST on a mark: sweeping across
+  // the field or clicking around fast plays nothing (and never fights a card
+  // opening under the cursor)
+  const HOVER_DWELL = 2000;
+  let dwellT = 0, dwellTile = null;
   grid.addEventListener('mouseover', e => {
     if (dragging || focused) return;
     const t = e.target.closest('.tile');
-    if (!t || t.classList.contains('expanded') || t.querySelector('.notes')) return;
+    if (!t || t === dwellTile || t.classList.contains('expanded') || t.querySelector('.notes')) return;
+    clearTimeout(dwellT);
+    dwellTile = t;
+    dwellT = setTimeout(() => {
+      dwellTile = null;
+      if (!dragging && !focused && t.isConnected && t.matches(':hover')) hoverPlay(t);
+    }, HOVER_DWELL);
+  });
+  grid.addEventListener('pointerdown', () => { clearTimeout(dwellT); dwellTile = null; });
+  function hoverPlay(t){
+    if (t.classList.contains('expanded') || t.querySelector('.notes')) return;
     const s = S.find(x => x.id === t.dataset.id);
     if (!s) return;
     t.insertAdjacentHTML('afterbegin', notes(s));       // notes stay hidden until annot-ready
@@ -2696,11 +2711,12 @@ function applyGridTransform(){
     t._annotT = setTimeout(() => {
       if (t.isConnected && t.matches(':hover')) t.classList.add('annot-ready');
     }, settled);
-  });
+  }
   grid.addEventListener('mouseout', e => {
     const t = e.target.closest('.tile');
     if (!t || t.classList.contains('expanded')) return;
     if (t.contains(e.relatedTarget)) return;            // still inside the tile
+    if (t === dwellTile) { clearTimeout(dwellT); dwellTile = null; }
     clearTimeout(t._annotT);
     t.classList.remove('mark-anim', 'annot-ready');
     const n = t.querySelector('.notes'); if (n) n.remove();
@@ -4192,7 +4208,10 @@ document.getElementById('toast-case').onclick = () => {
   const deepLink = /^#sym-\d+$/i.test(location.hash)
     || new URLSearchParams(location.search).has('sym')
     || /^\/s\/sym-\d+/i.test(location.pathname);
-  const seenIntro = (() => { try { return !!localStorage.getItem('shelter.intro.v1'); } catch (e) { return false; } })();
+  // TESTING: the intro plays on every load. Flip to false to go back to once
+  // per browser (the first-load flow gets designed later)
+  const INTRO_EVERY_LOAD = true;
+  const seenIntro = !INTRO_EVERY_LOAD && (() => { try { return !!localStorage.getItem('shelter.intro.v1'); } catch (e) { return false; } })();
 
   function finish(){
     if (finished) return;
