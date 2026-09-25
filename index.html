@@ -960,6 +960,12 @@
   footer .cta { color: var(--white); pointer-events: auto; cursor: pointer; transition: color .3s; }
   footer .cta:hover { color: var(--purple-vivid); }
   footer .sub { display: none; align-items: center; gap: 1.2rem; pointer-events: auto; }
+  /* touch screens: solid, not frosted (see the pointer:coarse block above). Restated
+     here because the footer's own rule comes later and would win the tie: a white mark
+     under the chip blurred straight through its text */
+  @media (pointer: coarse) {
+    footer, footer:has(.cta:hover) { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(20,20,20,0.88); }
+  }
   footer.subscribing .msg { display: none; }
   footer.subscribing .sub { display: flex; }
   footer .sub input {
@@ -1060,6 +1066,12 @@
 
   /* --- small screens: the card fits the viewport instead of its fixed 2×2 --- */
   @media (max-width: 780px) {
+    /* the bar floats over the field: a fade behind it keeps tile labels from reading
+       through the wordmark and the buttons */
+    .topbar::before {
+      content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+      background: linear-gradient(to bottom, var(--bg) 0%, rgba(0,0,0,0.82) 62%, rgba(0,0,0,0) 100%);
+    }
     /* zoomed out on a phone: 40% smaller than the desktop zoom (cell 150 in renderGrid) */
     body.view-zoom .tile:not(.expanded) { width: 14.4rem; height: 14.4rem; }
     /* the card lives in the space under the toolbar, never beneath it —
@@ -1100,7 +1112,8 @@
     /* the four utility chips share one row; Adopt keeps its own full-width band */
     .xc-controls button { padding: 0.7rem 1.1rem; font-size: 1rem; letter-spacing: 0.06em; }
     .xc-controls button.revive { order: 1; flex: 1 0 100%; text-align: center; padding: 1.2rem 1.6rem; font-size: 1.2rem; letter-spacing: 0.08em; }
-    .xc-meta { grid-template-columns: 8.5rem auto; column-gap: 1.2rem; row-gap: 0.6rem; }
+    /* the label column fits its longest label (ORGANIZATION ran into its value at 8.5rem) */
+    .xc-meta { grid-template-columns: max-content auto; column-gap: 1.6rem; row-gap: 0.6rem; }
     .xc-stage { min-height: 10rem; }
     .xc-stage .notes { display: none; }
   }
@@ -1117,6 +1130,26 @@
 
   /* the sticky Back pill overlays the head — keep the copy clear of it */
   .xc-adopt .ahead { padding-right: 11rem; }
+  /* phones: only the title row shares a line with the pill; the note runs the full
+     width, so the fields start higher up the card */
+  @media (max-width: 780px) {
+    .xc-adopt .ahead { padding-right: 2.4rem; }
+    .xc-adopt .ahead .xc-name { padding-right: 8rem; }
+  }
+  /* short phones (SE-size): the card and its form tighten so the data and the
+     case field sit in view instead of under the card's edge */
+  @media (max-width: 780px) and (max-height: 720px) {
+    .xc-inner { padding: 2rem; gap: 0.8rem; }
+    .xc-name { font-size: 2.4rem; }
+    .xc-desc { font-size: 1.4rem; line-height: 1.45; }
+    .xc-meta { row-gap: 0.2rem; }
+    .xc-foot { gap: 1.2rem; }
+    .xc-adopt .ahead { padding: 2rem 2rem 1.2rem; gap: 0.6rem; }
+    .xc-adopt .ahead .xc-name { padding-right: 8rem; }
+    .xc-adopt .anote { font-size: 1.4rem; line-height: 1.45; }
+    .afield { padding: 1.1rem 2rem; gap: 0.4rem; }
+    .aband { padding: 1.6rem 2rem; }
+  }
   /* short viewports: tighten the form so it needs little or no scrolling */
   @media (max-height: 760px) {
     .xc-adopt .ahead { padding: 2.4rem 11rem 1.6rem 2.4rem; gap: 0.8rem; }
