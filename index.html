@@ -647,6 +647,12 @@
     border-radius: 2rem; overflow: hidden;
   }
   .xc-face.back { transform: rotateY(180deg); background: var(--tile); }
+  /* iOS Safari ignores backface-visibility once a face holds composited children
+     (the blurred close, the WebGL canvas, the transformed svg), so the faces also
+     swap visibility at the flip's midpoint (0.425s of the symmetric 0.85s curve) */
+  .xc-face { transition: visibility 0s .425s; }
+  .xc-face.back, .xc-flip.flipped .xc-face.front { visibility: hidden; }
+  .xc-flip.flipped .xc-face.back { visibility: visible; }
   /* only the face you're looking at takes the pointer, so tabbing and clicking
      between the form's fields isn't intercepted by the face behind it */
   .xc-face.back { pointer-events: none; }
@@ -1114,7 +1120,10 @@
     .xc-controls button.revive { order: 1; flex: 1 0 100%; text-align: center; padding: 1.2rem 1.6rem; font-size: 1.2rem; letter-spacing: 0.08em; }
     /* the label column fits its longest label (ORGANIZATION ran into its value at 8.5rem) */
     .xc-meta { grid-template-columns: max-content auto; column-gap: 1.6rem; row-gap: 0.6rem; }
-    .xc-stage { min-height: 10rem; }
+    /* the mark spans the card edge to edge as a square; the column scrolls to reach the data */
+    .xc-stage { flex: none; aspect-ratio: 1; margin: 0 -2.4rem; min-height: 0; overflow: hidden; }
+    .xc-stage svg { max-width: none; max-height: none; }
+    .xc-stage > svg, .xc-stage > .lottie-slot { scale: var(--fit, 1); }
     .xc-stage .notes { display: none; }
   }
   /* --- short cards (landscape phones, short laptop windows): the head and the
@@ -1140,6 +1149,7 @@
      case field sit in view instead of under the card's edge */
   @media (max-width: 780px) and (max-height: 720px) {
     .xc-inner { padding: 2rem; gap: 0.8rem; }
+    .xc-stage { margin: 0 -2rem; }
     .xc-name { font-size: 2.4rem; }
     .xc-desc { font-size: 1.4rem; line-height: 1.45; }
     .xc-meta { row-gap: 0.2rem; }
@@ -3719,6 +3729,21 @@ const X_MARK =
 const afterTurn = (tile, fn) => (SOLID ? SOLID.whenLanded(tile) : Promise.resolve())
   .then(() => { if (tile.classList.contains('expanded')) fn(); });
 
+// Phones: the card's mark spans the text column. Marks sit on an 80-90u frame
+// inside the 256u viewBox, so each gets its own scale from its drawn box
+// (width to the column, height capped to the square stage). The scale is a
+// ratio of the svg's own size, so it holds while the card grows.
+function fitStageMark(stage){
+  stage.style.removeProperty('--fit');
+  if (!MOBILE()) return;
+  const g = stage.querySelector(':scope > svg .mark');
+  let bb; try { bb = g && g.getBBox(); } catch (_) {}
+  if (!bb || !bb.width || !bb.height) return;
+  const w = Math.min(innerWidth - 24, 716), pad = innerHeight <= 720 ? 20 : 24;
+  const k = Math.min((w - 2 * pad) / w * 256 / bb.width, 0.92 * 256 / bb.height);
+  stage.style.setProperty('--fit', k.toFixed(3));
+}
+
 function fillTileDetail(tile, s){
   const adopted = s.status === 'Adopted' && s.adopter;
   tile.classList.toggle('adopted-mark', s.status === 'Adopted');
@@ -3738,6 +3763,7 @@ function fillTileDetail(tile, s){
   const stage = tile.querySelector('.xc-stage');
   stage.classList.remove('exploded', 'hide-annot');
   stage.innerHTML = notes(s) + svg(s, false);   // a card opens clean — annotations are opt-in
+  fitStageMark(stage);
   tile.querySelector('.xc-close').onclick = () => collapseTile();
 
   const controls = tile.querySelector('.xc-controls');
