@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Symbol Spin Pilot</title>
+<style>
+  :root {
+    --bg: #000; --tile: #141414; --white: #fff; --fade: #858585; --line: rgba(255,255,255,0.1);
+    --purple: #9680ff; --purple-vivid: #ad9cff;
+    --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { font-size: 62.5%; }
+  body { margin: 0; background: var(--bg); color: var(--white); font-family: var(--sans); font-size: 1.4rem; }
+  main { max-width: 118rem; margin: 0 auto; padding: 4rem 1.6rem 6rem; }
+  h1 { font-size: 2rem; font-weight: 400; margin: 0 0 0.6rem; }
+  p.lede { color: var(--fade); margin: 0 0 3.2rem; max-width: 70rem; line-height: 1.5; }
+  .bar { display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: center; margin-bottom: 2.4rem; }
+  .bar .lbl { font-family: var(--mono); font-size: 1.1rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fade); margin-right: 0.4rem; }
+  .bar button {
+    font-family: var(--mono); font-size: 1.1rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--fade); background: transparent; border: 1px solid var(--line);
+    border-radius: 200rem; padding: 0.8rem 1.6rem; cursor: pointer; transition: color .3s, border-color .3s;
+  }
+  .bar button:hover { color: var(--white); border-color: rgba(255,255,255,0.3); }
+  .bar button.on { color: var(--white); border-color: var(--purple); }
+  .bar input[type=range] { accent-color: var(--purple); width: 14rem; }
+  .bar .val { font-family: var(--mono); font-size: 1.1rem; color: var(--fade); min-width: 3.6rem; }
+  .sp { width: 2.4rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(35rem, 100%), 1fr)); gap: 1.6rem; }
+  .tile {
+    position: relative; aspect-ratio: 1; background: var(--tile); border-radius: 2rem;
+    overflow: hidden; cursor: pointer;
+  }
+  .tile svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .tile .idx { position: absolute; top: 1.6rem; left: 1.8rem; font-family: var(--mono); font-size: 1.1rem; font-weight: 300; letter-spacing: 0.08em; color: rgba(255,255,255,0.45); }
+  .tile .nm { position: absolute; bottom: 1.6rem; left: 1.8rem; font-size: 1.3rem; color: var(--fade); }
+  .mark path, .mark circle, .mark rect, .mark ellipse, .mark line { fill: var(--white); stroke: none; }
+  .mark .stroked { fill: none; stroke: var(--white); stroke-width: 2; }
+  .note { margin-top: 2.4rem; color: var(--fade); font-size: 1.3rem; line-height: 1.6; max-width: 76rem; }
+  .note b { color: var(--white); font-weight: 400; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Symbol spin, pilot</h1>
+  <p class="lede">The colleague's circle-symbol spin, applied to three marks. Every part of a mark is a flat piece in 3D:
+    it rotates with the whole, projects through a perspective camera (nearer parts grow, farther ones shrink,
+    tilted ones squash) and parts re-stack by depth. Each run starts and ends on the resting mark. Hover a tile to play it, or use Play all.</p>
+
+  <div class="bar" id="presets">
+    <span class="lbl">Preset</span>
+    <button data-p="spin">Spin</button>
+    <button data-p="breath">Breath</button>
+    <button data-p="spin3d" class="on">Spin · 3D</button>
+    <button data-p="breath3d">Breath · 3D</button>
+    <button data-p="turn">Logo turn</button>
+  </div>
+  <div class="bar">
+    <span class="lbl">Perspective</span>
+    <input type="range" id="fov" min="20" max="100" value="90"><span class="val" id="fovv">90°</span>
+    <span class="sp"></span>
+    <span class="lbl">Duration</span>
+    <input type="range" id="dur" min="800" max="4000" step="100" value="2200"><span class="val" id="durv">2.2s</span>
+    <span class="sp"></span>
+    <button id="playAll">Play all</button>
+    <button id="loop">Loop</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <p class="note"><b>How it maps onto the site.</b> This runs on the same SVG the tiles already draw, with no WebGL
+    and no new files: one small per-frame routine sets a 2D matrix on each part. On the site it would replace the
+    hover motion for these three marks (after the 2s rest), and could also drive the card's Play.</p>
+</main>
+
+<script>
+// cubic-bezier easing (same curve family as the site's reflow)
+function bezier(x1, y1, x2, y2){
+  const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx;
+  const cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+  const sx = t => ((ax * t + bx) * t + cx) * t, sy = t => ((ay * t + by) * t + cy) * t;
+  const dx = t => (3 * ax * t + 2 * bx) * t + cx;
+  return x => { let t = x; for (let i = 0; i < 6; i++) { const e = sx(t) - x, d = dx(t); if (Math.abs(e) < 1e-5 || !d) break; t -= e / d; } return sy(Math.min(1, Math.max(0, t))); };
+}
+const EASE = bezier(0.66, 0, 0.34, 1);           // the site's card curve: slow out, slow in
+const SOFT = bezier(0.45, 0, 0.55, 1);
+
+// presets: each returns the pose at progress u in [0,1]; u=0 and u=1 are the resting mark
+//   rz/ry/rx in turns, spread = how far parts sit from the centre (1 = as drawn), grow = part scale
+const bump = u => Math.sin(Math.PI * u);                 // 0 -> 1 -> 0
+const PRESETS = {
+  spin:     u => ({ rz: EASE(u), ry: 0, rx: 0, spread: 1, grow: 1 }),
+  breath:   u => { const b = bump(SOFT(u)); return { rz: 0, ry: 0, rx: 0, spread: 1 + 0.28 * b, grow: 1 - 0.14 * b }; },
+  spin3d:   u => ({ rz: EASE(u), ry: 0, rx: EASE(u), spread: 1, grow: 1 }),
+  breath3d: u => { const b = bump(SOFT(u)); return { rz: EASE(u) * 0.5, ry: 0, rx: EASE(u), spread: 1 + 0.28 * b, grow: 1 - 0.14 * b }; },
+  turn:     u => ({ rz: 0, ry: EASE(u), rx: 0, spread: 1, grow: 1 }),
+};
+let preset = 'spin3d', fov = 90, dur = 2200, looping = false;
+
+const C = 100;                                          // the marks are drawn on a 200-unit square
+function camera(){ return 128 / Math.tan((fov * Math.PI / 180) / 2) + 90; }   // distance from the mark plane
+
+function rot(rx, ry, rz){
+  const [a, b, c] = [rx, ry, rz].map(t => t * 2 * Math.PI);
+  const cx = Math.cos(a), sx = Math.sin(a), cy = Math.cos(b), sy = Math.sin(b), cz = Math.cos(c), sz = Math.sin(c);
+  // R = Rx * Ry * Rz (in-plane spin first, then the turn and the tumble)
+  return [
+    [cy * cz,                 -cy * sz,                 sy      ],
+    [sx * sy * cz + cx * sz,  -sx * sy * sz + cx * cz,  -sx * cy],
+    [-cx * sy * cz + sx * sz,  cx * sy * sz + sx * cz,  cx * cy ],
+  ];
+}
+
+function build(tile, m){
+  tile.innerHTML = `<span class="idx">${m.id}</span><span class="nm">${m.name}</span>`
+    + `<svg viewBox="-28 -28 256 256" aria-hidden="true"><g class="mark">${m.mark}</g></svg>`;
+  const g = tile.querySelector('.mark');
+  // a mark wrapped in its own transformed <g> animates as one piece (that transform is kept)
+  const parts = [...g.children].map(el => { const bb = el.getBBox(); return { el, cx: bb.x + bb.width / 2, cy: bb.y + bb.height / 2 }; });
+  return { g, parts, run: null };
+}
+
+function pose(st, P){
+  const R = rot(P.rx, P.ry, P.rz), D = camera();
+  const order = [];
+  for (const p of st.parts) {
+    const ox = (p.cx - C) * P.spread, oy = (p.cy - C) * P.spread;     // part centre, off the mark centre
+    const X = R[0][0] * ox + R[0][1] * oy, Y = R[1][0] * ox + R[1][1] * oy, Z = R[2][0] * ox + R[2][1] * oy;
+    const s = D / (D - Z);                                            // nearer grows, farther shrinks
+    const k = s * P.grow;
+    const a = k * R[0][0], b = k * R[1][0], c = k * R[0][1], d = k * R[1][1];   // the part's own foreshortening
+    const e = C + s * X - (a * p.cx + c * p.cy), f = C + s * Y - (b * p.cx + d * p.cy);
+    p.el.setAttribute('transform', `matrix(${a.toFixed(5)} ${b.toFixed(5)} ${c.toFixed(5)} ${d.toFixed(5)} ${e.toFixed(3)} ${f.toFixed(3)})`);
+    order.push([Z, p.el]);
+  }
+  order.sort((m, n) => m[0] - n[0]).forEach(([, el]) => st.g.appendChild(el));   // far parts first
+}
+function rest(st){ st.parts.forEach(p => p.el.removeAttribute('transform')); st.parts.forEach(p => st.g.appendChild(p.el)); }
+
+function play(st){
+  if (st.run) return;                    // mid-run: let it finish from where it is
+  const t0 = performance.now(), fn = PRESETS[preset], T = dur;
+  const step = now => {
+    const u = Math.min(1, (now - t0) / T);
+    pose(st, fn(u));
+    if (u < 1) st.run = requestAnimationFrame(step);
+    else { rest(st); st.run = null; if (looping) setTimeout(() => play(st), 500); }
+  };
+  st.run = requestAnimationFrame(step);
+}
+
+fetch('spin3d-marks.json').then(r => r.json()).then(marks => {
+  const grid = document.getElementById('grid');
+  const states = marks.map(m => {
+    const tile = document.createElement('div'); tile.className = 'tile'; grid.appendChild(tile);
+    const st = build(tile, m);
+    tile.addEventListener('mouseenter', () => play(st));
+    tile.addEventListener('click', () => play(st));
+    return st;
+  });
+  document.getElementById('playAll').onclick = () => states.forEach(play);
+  document.getElementById('loop').onclick = e => { looping = !looping; e.target.classList.toggle('on', looping); if (looping) states.forEach(play); };
+  document.querySelectorAll('#presets button').forEach(b => b.onclick = () => {
+    preset = b.dataset.p; document.querySelectorAll('#presets button').forEach(x => x.classList.toggle('on', x === b)); states.forEach(play);
+  });
+  const fovI = document.getElementById('fov'), durI = document.getElementById('dur');
+  fovI.oninput = () => { fov = +fovI.value; document.getElementById('fovv').textContent = fov + '°'; };
+  durI.oninput = () => { dur = +durI.value; document.getElementById('durv').textContent = (dur / 1000).toFixed(1) + 's'; };
+});
+</script>
+</body>
+</html>

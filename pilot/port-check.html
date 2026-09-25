@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Motion Port Check</title>
+<style>
+  :root {
+    --bg: #000; --tile: #141414; --line: rgba(255,255,255,0.10);
+    --white: #fff; --body: rgba(255,255,255,0.70); --fade: #858585;
+    --purple: #9680ff; --purple-vivid: #ad9cff; --green: #4ade80; --red: #f87171;
+    --sans: "Neue Haas Display Pro", Arial, "Helvetica Neue", Helvetica, sans-serif;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { font-size: 62.5%; }
+  body { background: var(--bg); color: var(--white); font-family: var(--sans); font-size: 1.5rem;
+         -webkit-font-smoothing: antialiased; padding: 4rem 4rem 8rem; }
+  .mono { font-family: var(--mono); font-size: 1.1rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 2.4rem;
+           max-width: 120rem; margin: 0 auto 3.2rem; }
+  h1 { font-size: 3.2rem; font-weight: 500; letter-spacing: -0.01em; }
+  header p { color: var(--body); max-width: 60rem; margin-top: 1rem; line-height: 1.5; }
+  .bar { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+  button { font-family: var(--mono); font-size: 1.1rem; letter-spacing: 0.08em; text-transform: uppercase;
+           color: var(--fade); background: transparent; border: 1px solid var(--line); border-radius: 200rem;
+           padding: 0.8rem 1.6rem; cursor: pointer; transition: color .2s, border-color .2s, background .2s; }
+  button:hover { color: var(--white); border-color: rgba(255,255,255,0.3); }
+  button.on { background: var(--white); color: #191919; border-color: var(--white); }
+  button:focus-visible { outline: 2px solid var(--purple-vivid); outline-offset: 2px; }
+
+  .row { max-width: 120rem; margin: 0 auto 2.4rem; background: var(--tile); border: 1px solid var(--line);
+         border-radius: 1.6rem; overflow: hidden; }
+  .row-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 1.2rem 2rem; padding: 2rem 2.4rem;
+              border-bottom: 1px solid var(--line); }
+  .row-head h2 { font-size: 2.2rem; font-weight: 500; }
+  .row-head .id { color: var(--fade); }
+  .row-head .verb { color: var(--body); flex: 1 1 30rem; line-height: 1.5; }
+  .stages { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .stage { position: relative; aspect-ratio: 1; border-right: 1px solid var(--line); }
+  .stage:last-child { border-right: 0; }
+  .stage > .label { position: absolute; top: 1.4rem; left: 1.6rem; color: var(--fade); z-index: 2; }
+  .stage .slot, .stage > svg.eng { position: absolute; inset: 12%; width: 76%; height: 76%; }
+  .stage svg.eng .mark { fill: var(--white); }
+  .stage.overlay svg.eng .mark { fill: none; stroke: var(--purple); stroke-width: 1.4; vector-effect: non-scaling-stroke; }
+  .stage.overlay .slot { opacity: 0.55; }
+  .foot { display: flex; flex-wrap: wrap; align-items: center; gap: 1.2rem 2rem; padding: 1.6rem 2.4rem;
+          border-top: 1px solid var(--line); }
+  .foot input[type=range] { flex: 1 1 24rem; accent-color: var(--purple-vivid); }
+  .frame { color: var(--fade); min-width: 11ch; font-variant-numeric: tabular-nums; }
+  .parity { display: flex; flex-wrap: wrap; gap: 0.6rem 2rem; padding: 0 2.4rem 1.8rem; color: var(--fade); }
+  .parity b { font-weight: 400; color: var(--white); }
+  .parity .ok { color: var(--green); } .parity .bad { color: var(--red); }
+
+  @media (max-width: 767px) {
+    body { padding: 2.4rem 1.6rem 6rem; }
+    .stages { grid-template-columns: 1fr 1fr; }
+    .stage.overlay { grid-column: 1 / -1; border-top: 1px solid var(--line); border-right: 0; aspect-ratio: 2 / 1; }
+    .stage.overlay .slot, .stage.overlay > svg.eng { inset: 6% 25%; width: 50%; height: 88%; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <span class="mono" style="color:var(--fade)">Symbol Shelter · motion pilot</span>
+    <h1>Lottie vs the new engine</h1>
+    <p>Each mark plays its current Lottie loop beside the same choreography driven directly on the mark's own SVG parts. The overlay draws the new engine in purple outline over the Lottie render; any drift shows as a gap. Scrub any row to compare frame by frame.</p>
+  </div>
+  <div class="bar">
+    <button id="playAll">Play all</button>
+    <button id="speed" aria-pressed="false">Slow 0.25×</button>
+    <button id="loop" aria-pressed="false">Loop</button>
+  </div>
+</header>
+<main id="rows"></main>
+
+<script src="/vendor/lottie.min.js"></script>
+<script src="/pilot/motion-engine.js"></script>
+<script>
+const PILOT = [
+  { id: 'SYM-010', verb: 'The tug. Both hooks yank apart, hit taut with a two-shudder clink, hold, release slow.' },
+  { id: 'SYM-024', verb: 'The close. Petals swirl inward about the heart in a staggered spiral, then unfold past rest.' },
+  { id: 'SYM-086', verb: 'The spin. The whole globe spools up and swings a half turn onto itself (two-fold symmetry).' },
+];
+let RATE = 1, LOOP = false;
+
+// the catalogue lives inline in the site's index.html: read it from there so
+// the pilot always runs on the live mark geometry
+async function catalogue() {
+  const h = await (await fetch('/index.html')).text();
+  let i = h.indexOf('[', h.indexOf('const S = [')), d = 0, j = i;
+  for (; j < h.length; j++) { const c = h[j]; if (c === '[') d++; else if (c === ']' && !--d) break; }
+  return JSON.parse(h.slice(i, j + 1));
+}
+
+// Lottie's own interpolation of a layer transform (comp coords), used as the
+// ground truth the engine is checked against
+function lottieProp(p, f) {
+  if (!p.a) return p.k;
+  const k = p.k;
+  if (f <= k[0].t) return k[0].s;
+  if (f >= k[k.length - 1].t) return k[k.length - 1].s;
+  let i = 0; while (k[i + 1].t < f) i++;
+  const a = k[i], b = k[i + 1];
+  const e = KonpoMotion.bezier([a.o.x[0], a.o.y[0], a.i.x[0], a.i.y[0]])((f - a.t) / (b.t - a.t));
+  return a.s.map((v, n) => v + (b.s[n] - v) * e);
+}
+function lottieMap(layer, f, [x, y]) {                 // mark point -> mark point
+  const ks = layer.ks, P = lottieProp(ks.p, f), A = lottieProp(ks.a, f);
+  const R = [].concat(lottieProp(ks.r, f))[0] * Math.PI / 180, S = lottieProp(ks.s, f)[0] / 100;
+  const qx = (x + 28 - A[0]) * S, qy = (y + 28 - A[1]) * S;
+  return [P[0] + qx * Math.cos(R) - qy * Math.sin(R) - 28, P[1] + qx * Math.sin(R) + qy * Math.cos(R) - 28];
+}
+function recipeMap(ts, st, [x, y]) {
+  const R = st.r * Math.PI / 180, qx = (x - ts.pivot[0]) * st.s, qy = (y - ts.pivot[1]) * st.s;
+  return [ts.pivot[0] + st.d[0] + qx * Math.cos(R) - qy * Math.sin(R), ts.pivot[1] + st.d[1] + qx * Math.sin(R) + qy * Math.cos(R)];
+}
+function browserMap(el, W, [x, y]) {                   // the transform the browser actually applied
+  const m = new DOMMatrix(getComputedStyle(el).transform);
+  const lx = (x - W.tx) / W.sc, ly = (y - W.ty) / W.sc;
+  const p = m.transformPoint({ x: lx, y: ly });
+  return [W.tx + W.sc * p.x, W.ty + W.sc * p.y];
+}
+const probe = pt => [[pt.c[0] - pt.w / 2, pt.c[1] - pt.h / 2], [pt.c[0] + pt.w / 2, pt.c[1] - pt.h / 2],
+                     [pt.c[0] - pt.w / 2, pt.c[1] + pt.h / 2], [pt.c[0] + pt.w / 2, pt.c[1] + pt.h / 2], pt.c];
+const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+
+function markSVG(s) {
+  return `<svg class="eng" viewBox="-28 -28 256 256" aria-hidden="true"><g class="mark">${s.mark}</g></svg>`;
+}
+
+async function buildRow(s, info) {
+  const n = s.id.slice(4);
+  const row = document.createElement('section');
+  row.className = 'row';
+  row.innerHTML = `
+    <div class="row-head"><span class="mono id">${s.id}</span><h2>${s.name}</h2><p class="verb">${info.verb}</p></div>
+    <div class="stages">
+      <div class="stage"><span class="mono label">Lottie (current)</span><div class="slot"></div></div>
+      <div class="stage"><span class="mono label">New engine</span>${markSVG(s)}</div>
+      <div class="stage overlay"><span class="mono label">Overlay</span><div class="slot"></div>${markSVG(s)}</div>
+    </div>
+    <div class="foot">
+      <button class="play">Play</button>
+      <input type="range" min="0" step="0.5" value="0" aria-label="Scrub ${s.name}">
+      <span class="mono frame">f 0</span>
+    </div>
+    <div class="parity mono"></div>`;
+  document.getElementById('rows').appendChild(row);
+
+  const json = await (await fetch(`/anim/sym-${n}.json`)).json();
+  const lot = [...row.querySelectorAll('.slot')].map(slot => lottie.loadAnimation({
+    container: slot, renderer: 'svg', loop: false, autoplay: false, animationData: JSON.parse(JSON.stringify(json)) }));
+  await new Promise(r => lot[0].isLoaded ? r() : lot[0].addEventListener('DOMLoaded', r));
+  lot.forEach(a => a.goToAndStop(0, true));
+
+  const svgs = row.querySelectorAll("svg.eng");
+  const eng = [...svgs].map(el => KonpoMotion.mount(el, KonpoMotion.RECIPES[s.id]));
+  const op = eng[0].op;
+  const range = row.querySelector('input'), frameEl = row.querySelector('.frame');
+  range.max = op;
+
+  // parity: recipe maths vs Lottie's own interpolation, every half frame, on
+  // each part's bbox corners + centre; then the browser's applied transform
+  // at 24 scrub points (proves the compiled keyframes interpolate the same)
+  const E = eng[0];
+  let recipeMax = 0, browserMax = 0;
+  const layersOk = json.layers.length === E.parts.length;
+  if (layersOk) {
+    for (let f = 0; f <= op; f += 0.5)
+      E.parts.forEach((pt, k) => probe(pt).forEach(q =>
+        recipeMax = Math.max(recipeMax, dist(recipeMap(E.tracks[k], E.stateAt(k, f), q), lottieMap(json.layers[k], f, q)))));
+    for (let i = 0; i <= 24; i++) {
+      const f = (op - 0.5) * i / 24; E.seek(f);   // op itself is "finished": rest, which a symmetric ender shows as 180
+      E.parts.forEach((pt, k) => probe(pt).forEach(q =>
+        browserMax = Math.max(browserMax, dist(browserMap(pt.el, E.W, q), lottieMap(json.layers[k], f, q)))));
+    }
+    E.seek(0);
+  }
+  const tag = v => `<b class="${v < 0.05 ? 'ok' : 'bad'}">${v.toFixed(3)}u</b>`;
+  row.querySelector('.parity').innerHTML = layersOk
+    ? `<span>Parts <b>${E.parts.length}</b></span><span>Length <b>${op}f · ${(E.ms / 1000).toFixed(2)}s</b></span>`
+    + `<span>Keyframes <b>${E.mode}</b></span><span>Recipe vs Lottie ${tag(recipeMax)}</span><span>Browser vs Lottie ${tag(browserMax)}</span>`
+    : `<span class="bad">Part count mismatch: Lottie ${json.layers.length}, svg ${E.parts.length}</span>`;
+
+  const setFrame = f => { frameEl.textContent = 'f ' + (+f).toFixed(1).replace(/\.0$/, ''); };
+  range.addEventListener('input', () => {
+    const f = +range.value;
+    lot.forEach(a => a.goToAndStop(f, true)); eng.forEach(c => c.seek(f)); setFrame(f);
+  });
+
+  let playing = false, raf = 0;
+  async function play() {
+    if (playing) return; playing = true;
+    row.querySelector('.play').classList.add('on');
+    const t0 = performance.now();
+    const tick = () => { const f = Math.min(op, (performance.now() - t0) / 1000 * 60 * RATE); range.value = f; setFrame(f); if (playing) raf = requestAnimationFrame(tick); };
+    raf = requestAnimationFrame(tick);
+    lot.forEach(a => { a.setSpeed(RATE); a.goToAndPlay(0, true); });
+    await Promise.all(eng.map(c => c.play(RATE)));
+    lot.forEach(a => a.goToAndStop(0, true));
+    playing = false; cancelAnimationFrame(raf); range.value = 0; setFrame(0);
+    row.querySelector('.play').classList.remove('on');
+    if (LOOP) play();
+  }
+  row.querySelector('.play').addEventListener('click', play);
+  return { play };
+}
+
+(async () => {
+  // opened straight from disk: fetch() and the absolute /vendor paths can't load
+  if (location.protocol === 'file:') {
+    document.getElementById('rows').innerHTML = '<p class="mono" style="max-width:120rem;margin:0 auto;color:var(--red)">'
+      + 'This page needs the local server. Open http://localhost:5335/pilot/ instead.</p>';
+    return;
+  }
+  const S = await catalogue();
+  const rows = [];
+  for (const p of PILOT) rows.push(await buildRow(S.find(s => s.id === p.id), p));
+  document.getElementById('playAll').onclick = () => rows.forEach(r => r.play());
+  const speed = document.getElementById('speed'), loop = document.getElementById('loop');
+  speed.onclick = () => { RATE = RATE === 1 ? 0.25 : 1; speed.classList.toggle('on', RATE !== 1); speed.setAttribute('aria-pressed', RATE !== 1); };
+  loop.onclick = () => { LOOP = !LOOP; loop.classList.toggle('on', LOOP); loop.setAttribute('aria-pressed', LOOP); if (LOOP) rows.forEach(r => r.play()); };
+})();
+</script>
+</body>
+</html>

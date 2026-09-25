@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Solid Spin Pilot</title>
+<style>
+  :root {
+    --bg: #000; --tile: #141414; --white: #fff; --fade: #858585; --line: rgba(255,255,255,0.1);
+    --purple: #9680ff;
+    --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { font-size: 62.5%; }
+  body { margin: 0; background: var(--bg); color: var(--white); font-family: var(--sans); font-size: 1.4rem; }
+  main { max-width: 90rem; margin: 0 auto; padding: 4rem 1.6rem 6rem; }
+  h1 { font-size: 2rem; font-weight: 400; margin: 0 0 0.6rem; }
+  p.lede { color: var(--fade); margin: 0 0 3.2rem; line-height: 1.5; }
+  .pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(35rem, 100%), 1fr)); gap: 1.6rem; margin-bottom: 2.4rem; }
+  .cap { font-family: var(--mono); font-size: 1.1rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fade); margin: 0 0 1rem; }
+  .tile { position: relative; aspect-ratio: 1; background: var(--tile); border-radius: 2rem; overflow: hidden; cursor: pointer; }
+  .tile svg, .tile canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .tile canvas { visibility: hidden; }
+  .tile.live canvas { visibility: visible; }
+  .tile.live svg.flat { visibility: hidden; }
+  .tile .idx { position: absolute; top: 1.6rem; left: 1.8rem; z-index: 2; font-family: var(--mono); font-size: 1.1rem; font-weight: 300; letter-spacing: 0.08em; color: rgba(255,255,255,0.45); }
+  .mark path { fill: var(--white); stroke: none; }
+  .bar { display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: center; margin-bottom: 1.4rem; }
+  .bar .lbl { font-family: var(--mono); font-size: 1.1rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fade); min-width: 10rem; }
+  .bar button {
+    font-family: var(--mono); font-size: 1.1rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--fade); background: transparent; border: 1px solid var(--line);
+    border-radius: 200rem; padding: 0.8rem 1.6rem; cursor: pointer; transition: color .3s, border-color .3s;
+  }
+  .bar button:hover { color: var(--white); border-color: rgba(255,255,255,0.3); }
+  .bar button.on { color: var(--white); border-color: var(--purple); }
+  .bar input[type=range] { accent-color: var(--purple); width: 16rem; }
+  .bar .val { font-family: var(--mono); font-size: 1.1rem; color: var(--fade); min-width: 3.6rem; }
+  .note { margin-top: 2.4rem; color: var(--fade); font-size: 1.3rem; line-height: 1.6; }
+  .note b { color: var(--white); font-weight: 400; }
+</style>
+<script type="importmap">
+  { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+  } }
+</script>
+</head>
+<body>
+<main>
+  <h1>Solid spin, pilot (Quatre)</h1>
+  <p class="lede">Left is what the site does now: flat pieces with a faked perspective. Right is the same motion with
+    every part of the mark extruded into a solid (Three.js), so it has thickness and catches light as it turns.
+    Both start and end on the resting mark. Hover a tile to play it, or use Play both.</p>
+
+  <div class="pair">
+    <div><p class="cap">Now · flat pieces</p><div class="tile" id="flatTile"></div></div>
+    <div><p class="cap">Option 3 · solid (WebGL)</p><div class="tile" id="solidTile"></div></div>
+  </div>
+
+  <div class="bar"><span class="lbl">Preset</span>
+    <button data-preset="spin3d" class="on">Spin · 3D</button><button data-preset="tumble">Tumble</button><button data-preset="turn">Logo turn</button></div>
+  <div class="bar"><span class="lbl">Thickness</span>
+    <input type="range" id="depth" min="2" max="40" value="6"><span class="val" id="depthv">6</span></div>
+  <div class="bar"><span class="lbl">Bevel</span>
+    <button data-bevel="0">None</button><button data-bevel="1" class="on">Soft</button><button data-bevel="2">Round</button></div>
+  <div class="bar"><span class="lbl">Face</span>
+    <button data-face="flat" class="on">Flat white</button><button data-face="lit">Lit</button></div>
+  <div class="bar"><span class="lbl">Edges</span>
+    <button data-edge="matte">Matte</button><button data-edge="gloss" class="on">Gloss</button><button data-edge="metal">Metal</button></div>
+  <div class="bar"><span class="lbl">Duration</span>
+    <input type="range" id="dur" min="1000" max="4000" step="100" value="2200"><span class="val" id="durv">2.2s</span>
+    <button id="playBoth">Play both</button><button id="loop">Loop</button></div>
+
+  <p class="note"><b>Cost on the site.</b> Three.js adds about 150 KB, loaded only on the first hover of a solid mark.
+    One shared 3D canvas would sit over whichever tile is spinning, so there is never more than one running.
+    Each mark's solid is built once, the first time it is hovered.</p>
+</main>
+
+<script type="module">
+import * as THREE from 'three';
+import { SVGLoader } from 'three/addons/loaders/SVGLoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const FOV = 60.8;                                   // same camera as the flat version (distance 218)
+const D = 128 / Math.tan(FOV * Math.PI / 360);
+let preset = 'spin3d', dur = 2200, looping = false;
+let depth = 6, bevel = 1, face = 'flat', edge = 'gloss';
+
+// the card's curve, cubic-bezier(0.66,0,0.34,1)
+const ease = (() => { const x1 = .66, y1 = 0, x2 = .34, y2 = 1; const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx, cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+  const sx = t => ((ax * t + bx) * t + cx) * t, dx = t => (3 * ax * t + 2 * bx) * t + cx;
+  return x => { let t = x; for (let i = 0; i < 6; i++) { const e = sx(t) - x, d = dx(t); if (Math.abs(e) < 1e-5 || !d) break; t -= e / d; } t = Math.min(1, Math.max(0, t)); return ((ay * t + by) * t + cy) * t; }; })();
+// turns per run on each axis, as [x, y, z]
+const POSES = { spin3d: k => [k, 0, k], tumble: k => [k, 0, 0], turn: k => [0, k, 0] };
+
+const marks = await fetch('spin3d-marks.json').then(r => r.json());
+const M = marks.find(m => m.id === 'SYM-013');
+const svgMarkup = `<svg viewBox="-28 -28 256 256" class="flat" aria-hidden="true"><g class="mark">${M.mark}</g></svg>`;
+
+/* ---------- left: flat pieces (the site's current routine) ---------- */
+const flatTile = document.getElementById('flatTile');
+flatTile.innerHTML = `<span class="idx">${M.id}</span>` + svgMarkup;
+const fg = flatTile.querySelector('.mark');
+const fparts = [...fg.children].map(el => { const b = el.getBBox(); return { el, cx: b.x + b.width / 2, cy: b.y + b.height / 2 }; });
+function rotM(rx, ry, rz){
+  const [a, b, c] = [rx, ry, rz].map(t => t * 2 * Math.PI);
+  const cx = Math.cos(a), sx = Math.sin(a), cy = Math.cos(b), sy = Math.sin(b), cz = Math.cos(c), sz = Math.sin(c);
+  return [[cy * cz, -cy * sz, sy], [sx * sy * cz + cx * sz, -sx * sy * sz + cx * cz, -sx * cy], [-cx * sy * cz + sx * sz, cx * sy * sz + sx * cz, cx * cy]];
+}
+function flatPose([rx, ry, rz]){
+  const R = rotM(rx, ry, rz), order = [];
+  for (const p of fparts) {
+    const ox = p.cx - 100, oy = p.cy - 100;
+    const X = R[0][0] * ox + R[0][1] * oy, Y = R[1][0] * ox + R[1][1] * oy, Z = R[2][0] * ox + R[2][1] * oy;
+    const s = D / (D - Z), a = s * R[0][0], b = s * R[1][0], c = s * R[0][1], d = s * R[1][1];
+    p.el.setAttribute('transform', `matrix(${a} ${b} ${c} ${d} ${100 + s * X - (a * p.cx + c * p.cy)} ${100 + s * Y - (b * p.cx + d * p.cy)})`);
+    order.push([Z, p.el]);
+  }
+  order.sort((m, n) => m[0] - n[0]).forEach(([, el]) => fg.appendChild(el));
+}
+const flatRest = () => fparts.forEach(p => { p.el.removeAttribute('transform'); fg.appendChild(p.el); });
+
+/* ---------- right: extruded solid ---------- */
+const solidTile = document.getElementById('solidTile');
+solidTile.innerHTML = `<span class="idx">${M.id}</span>` + svgMarkup;
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+solidTile.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
+const camera = new THREE.PerspectiveCamera(FOV, 1, 1, 2000);
+camera.position.set(0, 0, D);
+const key = new THREE.DirectionalLight(0xffffff, 2.2); key.position.set(-120, 160, 220); scene.add(key);
+const rim = new THREE.DirectionalLight(0xb8aaff, 1.2); rim.position.set(160, -80, -200); scene.add(rim);
+scene.add(new THREE.AmbientLight(0xffffff, 0.35));
+
+const group = new THREE.Group(); scene.add(group);
+const shapes = new SVGLoader().parse(`<svg xmlns="http://www.w3.org/2000/svg">${M.mark}</svg>`).paths.flatMap(p => SVGLoader.createShapes(p));
+
+function materials(){
+  const caps = face === 'flat'
+    ? new THREE.MeshBasicMaterial({ color: 0xffffff })                              // the brand's flat white face
+    : new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.45, metalness: 0 });
+  const sides = {
+    matte: new THREE.MeshStandardMaterial({ color: 0xd9d9d9, roughness: 0.95, metalness: 0 }),
+    gloss: new THREE.MeshPhysicalMaterial({ color: 0xe6e6e6, roughness: 0.18, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.08 }),
+    metal: new THREE.MeshStandardMaterial({ color: 0xdedede, roughness: 0.22, metalness: 1 }),
+  }[edge];
+  return [caps, sides];
+}
+function buildSolid(){
+  group.children.slice().forEach(m => { m.geometry.dispose(); group.remove(m); });
+  const bv = [{ bevelEnabled: false }, { bevelEnabled: true, bevelThickness: 0.9, bevelSize: 0.6, bevelOffset: -0.6, bevelSegments: 2 }, { bevelEnabled: true, bevelThickness: 2.2, bevelSize: 1.4, bevelOffset: -1.4, bevelSegments: 6 }][bevel];
+  const mats = materials();
+  for (const sh of shapes) {
+    const g = new THREE.ExtrudeGeometry(sh, { depth, curveSegments: 24, ...bv });
+    // SVG is y-down: a half turn about X flips y AND puts the z=0 cap toward the camera,
+    // so the front face sits exactly on the mark plane (rest frame = the flat drawing)
+    g.rotateX(Math.PI);
+    g.translate(-100, 100, bv.bevelEnabled ? -bv.bevelThickness : 0);
+    group.add(new THREE.Mesh(g, mats));
+  }
+}
+function sizeRenderer(){ const r = solidTile.getBoundingClientRect(); renderer.setSize(r.width, r.height, false); }
+function solidPose([rx, ry, rz]){
+  // SVG y-down vs three y-up: mirror the angles so both tiles turn the same way
+  group.rotation.set(-rx * 2 * Math.PI, ry * 2 * Math.PI, -rz * 2 * Math.PI, 'XYZ');
+  renderer.render(scene, camera);
+}
+buildSolid(); sizeRenderer(); solidPose([0, 0, 0]);
+addEventListener('resize', () => { sizeRenderer(); solidPose([0, 0, 0]); });
+
+/* ---------- playback ---------- */
+const runs = {};
+function play(which){
+  if (runs[which]) return;
+  const t0 = performance.now(), T = dur, pose = POSES[preset];
+  if (which === 'solid') solidTile.classList.add('live');
+  const step = now => {
+    const u = Math.min(1, (now - t0) / T), P = pose(ease(u));
+    if (which === 'flat') flatPose(P); else solidPose(P);
+    if (u < 1) { runs[which] = requestAnimationFrame(step); return; }
+    runs[which] = 0;
+    if (which === 'flat') flatRest(); else { solidPose([0, 0, 0]); solidTile.classList.remove('live'); }
+    if (looping) setTimeout(() => play(which), 500);
+  };
+  runs[which] = requestAnimationFrame(step);
+}
+flatTile.addEventListener('mouseenter', () => play('flat'));
+solidTile.addEventListener('mouseenter', () => play('solid'));
+flatTile.addEventListener('click', () => play('flat'));
+solidTile.addEventListener('click', () => play('solid'));
+const both = () => { play('flat'); play('solid'); };
+document.getElementById('playBoth').onclick = both;
+document.getElementById('loop').onclick = e => { looping = !looping; e.target.classList.toggle('on', looping); if (looping) both(); };
+
+const group1 = (attr, fn) => document.querySelectorAll(`[data-${attr}]`).forEach(b => b.onclick = () => {
+  document.querySelectorAll(`[data-${attr}]`).forEach(x => x.classList.toggle('on', x === b)); fn(b.dataset[attr]);
+});
+group1('preset', v => { preset = v; both(); });
+group1('bevel', v => { bevel = +v; buildSolid(); play('solid'); });
+group1('face', v => { face = v; buildSolid(); play('solid'); });
+group1('edge', v => { edge = v; buildSolid(); play('solid'); });
+const dI = document.getElementById('depth'), durI = document.getElementById('dur');
+// dragging thickness tilts the solid so the depth reads; letting go settles it back
+dI.oninput = () => { depth = +dI.value; document.getElementById('depthv').textContent = depth; buildSolid(); if (!runs.solid) { solidTile.classList.add('live'); solidPose([0.06, -0.08, 0]); } };
+dI.onchange = () => { if (!runs.solid) { solidPose([0, 0, 0]); solidTile.classList.remove('live'); } };
+durI.oninput = () => { dur = +durI.value; document.getElementById('durv').textContent = (dur / 1000).toFixed(1) + 's'; };
+window.__pilot = { play, solidPose, flatPose, renderer };
+</script>
+</body>
+</html>

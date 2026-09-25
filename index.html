@@ -3776,7 +3776,7 @@ function fillTileDetail(tile, s){
     stage.querySelectorAll(':scope > svg, :scope > .lottie-slot').forEach(el => el.style.transform = `rotate(${angle}deg)`);
   });
 
-  if (s.explode) {
+  if (s.explode && !MOBILE()) {             // phones: the card-wide mark leaves no room to explode into
     const btn = document.createElement('button'); btn.textContent = 'Explode'; controls.appendChild(btn);
     const { parts, vectors } = explodeSetup(stage, s);
     if (!vectors.some(v => v && Math.hypot(v[0], v[1]) > 1)) btn.remove();

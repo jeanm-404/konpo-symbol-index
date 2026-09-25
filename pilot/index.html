@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Motion Pilot</title>
+<style>
+  :root {
+    --bg: #000; --tile: #141414; --raise: #1b1b1b; --line: rgba(255,255,255,0.10);
+    --white: #fff; --body: rgba(255,255,255,0.70); --fade: #858585;
+    --purple: #9680ff; --purple-vivid: #ad9cff; --green: #4ade80; --red: #f87171;
+    --sans: "Neue Haas Display Pro", Arial, "Helvetica Neue", Helvetica, sans-serif;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { font-size: 62.5%; }
+  body { background: var(--bg); color: var(--white); font-family: var(--sans); font-size: 1.5rem;
+         -webkit-font-smoothing: antialiased; padding: 4rem 4rem 8rem; }
+  .mono { font-family: var(--mono); font-size: 1.1rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 2.4rem;
+           max-width: 128rem; margin: 0 auto 3.2rem; }
+  h1 { font-size: 3.2rem; font-weight: 500; letter-spacing: -0.01em; margin-top: 0.6rem; }
+  header p { color: var(--body); max-width: 64rem; margin-top: 1rem; line-height: 1.5; }
+  header a { color: var(--purple-vivid); }
+  .bar { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+  button { font-family: var(--mono); font-size: 1.1rem; letter-spacing: 0.08em; text-transform: uppercase;
+           color: var(--fade); background: transparent; border: 1px solid var(--line); border-radius: 200rem;
+           padding: 0.8rem 1.6rem; cursor: pointer; transition: color .2s, border-color .2s, background .2s; }
+  button:hover { color: var(--white); border-color: rgba(255,255,255,0.3); }
+  button.on { background: var(--white); color: #191919; border-color: var(--white); }
+  button:focus-visible, summary:focus-visible { outline: 2px solid var(--purple-vivid); outline-offset: 2px; }
+
+  .row { max-width: 128rem; margin: 0 auto 3.2rem; background: var(--tile); border: 1px solid var(--line);
+         border-radius: 1.6rem; overflow: hidden; }
+  .row-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.8rem 1.6rem; padding: 2rem 2.4rem;
+              border-bottom: 1px solid var(--line); }
+  .row-head h2 { font-size: 2.4rem; font-weight: 500; }
+  .row-head .id { color: var(--fade); }
+  .row-head .tag { color: var(--purple-vivid); border: 1px solid rgba(173,156,255,0.35); border-radius: 200rem; padding: 0.3rem 1rem; }
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.25fr); }
+  .stage { position: relative; aspect-ratio: 1; border-right: 1px solid var(--line); }
+  .stage .label { position: absolute; top: 1.4rem; left: 1.6rem; right: 1.6rem; color: var(--fade); z-index: 2; line-height: 1.6; }
+  .stage .label b { display: block; color: var(--white); font-weight: 400; }
+  .stage.new .label b { color: var(--purple-vivid); }
+  .stage .slot, .stage > svg.eng { position: absolute; inset: 16% 12% 8%; width: 76%; height: 76%; }
+  .stage svg.eng .mark { fill: var(--white); }
+  /* the stages set the row height; the notes scroll inside it (height 0 + min-height 100% keeps them out of the sizing) */
+  .notes { padding: 2.4rem; display: flex; flex-direction: column; gap: 1.8rem; overflow-y: auto; height: 0; min-height: 100%; }
+  .notes h3 { color: var(--fade); font-weight: 400; margin-bottom: 0.6rem; }
+  .notes p, .notes li { color: var(--body); line-height: 1.55; }
+  .notes .story { color: var(--white); font-size: 1.6rem; }
+  details { border-top: 1px solid var(--line); padding-top: 1.4rem; }
+  summary { cursor: pointer; color: var(--fade); list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+  summary::before { content: '+ '; } details[open] summary::before { content: '\2212  '; }
+  details > *:not(summary) { margin-top: 1rem; }
+  details ul { padding-left: 1.8rem; display: flex; flex-direction: column; gap: 0.8rem; }
+  .foot { display: flex; flex-wrap: wrap; align-items: center; gap: 1.2rem 2rem; padding: 1.6rem 2.4rem;
+          border-top: 1px solid var(--line); }
+  .foot input[type=range] { flex: 1 1 24rem; accent-color: var(--purple-vivid); }
+  .frame { color: var(--fade); min-width: 18ch; font-variant-numeric: tabular-nums; }
+
+  @media (max-width: 991px) {
+    .grid { grid-template-columns: 1fr 1fr; }
+    .notes { grid-column: 1 / -1; border-top: 1px solid var(--line); height: auto; min-height: 0; }
+    .stage:nth-child(2) { border-right: 0; }
+  }
+  @media (max-width: 600px) {
+    body { padding: 2.4rem 1.6rem 6rem; }
+    .stage .slot, .stage > svg.eng { inset: 24% 14% 6%; width: 72%; height: 72%; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <span class="mono" style="color:var(--fade)">Symbol Shelter · motion pilot · shape first</span>
+    <h1>Read the shape, then move it</h1>
+    <p>Each mark was measured and described before any motion was chosen: its parts, symmetry, construction and character. The new motion on the right grows out of that reading, and every decision is tied to a geometric fact (open the notes). The current Lottie loop plays on the left for comparison. Engine parity check lives at <a href="/pilot/port-check.html">port-check</a>.</p>
+  </div>
+  <div class="bar">
+    <button id="playAll">Play all</button>
+    <button id="speed" aria-pressed="false">Slow 0.25×</button>
+    <button id="loop" aria-pressed="false">Loop</button>
+  </div>
+</header>
+<main id="rows"></main>
+
+<script src="/vendor/lottie.min.js"></script>
+<script src="/pilot/motion-engine.js"></script>
+<script>
+const CURRENT = {
+  'SYM-010': 'The tug: hooks yank apart, clink, release',
+  'SYM-024': 'The close: staggered spiral fold',
+  'SYM-086': 'The spin: whole-mark half turn',
+};
+let RATE = 1, LOOP = false;
+
+async function catalogue() {
+  const h = await (await fetch('/index.html')).text();
+  let i = h.indexOf('[', h.indexOf('const S = [')), d = 0, j = i;
+  for (; j < h.length; j++) { const c = h[j]; if (c === '[') d++; else if (c === ']' && !--d) break; }
+  return JSON.parse(h.slice(i, j + 1));
+}
+const esc = t => String(t).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+const cap = t => t.charAt(0).toUpperCase() + t.slice(1);
+
+function notesHTML(n) {
+  return `
+    <div><h3 class="mono">The motion · ${esc(cap(n.verb))}</h3><p class="story">${esc(n.story)}</p></div>
+    <div><h3 class="mono">Reading the shape</h3><p>${esc(n.character)}</p></div>
+    <details><summary class="mono">Symmetry and construction</summary>
+      <p>${esc(n.symmetry)}</p><p>${esc(n.construction)}</p><p>${esc(n.tensions)}</p></details>
+    <details><summary class="mono">Parts (${n.parts.length})</summary>
+      <ul>${n.parts.map(p => `<li>${esc(p)}</li>`).join('')}</ul></details>
+    <details><summary class="mono">Every choice, tied to the geometry</summary>
+      <ul>${n.ties.map(t => `<li>${esc(t)}</li>`).join('')}</ul></details>
+    <details><summary class="mono">Why it loops cleanly</summary><p>${esc(n.seamless)}</p></details>
+    <details><summary class="mono">Creative-director review${n.revised ? ' (of the first draft; revised since)' : ''}</summary>
+      <p><b>Distinct.</b> ${esc(n.critic.distinct)}</p><p><b>Rooted.</b> ${esc(n.critic.rooted)}</p><p><b>Craft.</b> ${esc(n.critic.craft)}</p></details>`;
+}
+
+async function buildRow(s, n) {
+  const num = s.id.slice(4);
+  const row = document.createElement('section');
+  row.className = 'row';
+  row.innerHTML = `
+    <div class="row-head"><span class="mono id">${s.id}</span><h2>${esc(s.name)}</h2>
+      <span class="mono tag">${esc(cap(n.verb))}</span>${n.revised ? '<span class="mono id">Revised after review</span>' : ''}</div>
+    <div class="grid">
+      <div class="stage"><span class="mono label">Current · Lottie<b>${esc(CURRENT[s.id])}</b></span><div class="slot"></div></div>
+      <div class="stage new"><span class="mono label">Shape-first · new engine<b>${esc(cap(n.verb))}</b></span>
+        <svg class="eng" viewBox="-28 -28 256 256" aria-hidden="true"><g class="mark">${s.mark}</g></svg></div>
+      <div class="notes">${notesHTML(n)}</div>
+    </div>
+    <div class="foot">
+      <button class="play">Play both</button>
+      <input type="range" min="0" max="1000" step="1" value="0" aria-label="Scrub ${esc(s.name)}">
+      <span class="mono frame">0%</span>
+    </div>`;
+  document.getElementById('rows').appendChild(row);
+
+  const lot = lottie.loadAnimation({ container: row.querySelector('.slot'), renderer: 'svg', loop: false, autoplay: false,
+    path: `/anim/sym-${num}.json` });
+  await new Promise(r => lot.isLoaded ? r() : lot.addEventListener('DOMLoaded', r));
+  lot.goToAndStop(0, true);
+  const lotOp = lot.totalFrames;
+  const eng = KonpoMotion.mount(row.querySelector('svg.eng'), KonpoMotion.SHAPE[s.id]);
+
+  // one scrubber drives both at the same PROGRESS (their lengths differ)
+  const range = row.querySelector('input'), label = row.querySelector('.frame');
+  const show = k => { label.textContent = `${Math.round(k * 100)}% · new f${(k * eng.op).toFixed(0)}/${eng.op}`; };
+  range.addEventListener('input', () => {
+    const k = range.value / 1000;
+    lot.goToAndStop(k * (lotOp - 1), true); eng.seek(k * eng.op); show(k);
+  });
+
+  let playing = false, raf = 0;
+  async function play() {
+    if (playing) return; playing = true;
+    row.querySelector('.play').classList.add('on');
+    const t0 = performance.now();
+    const tick = () => { const k = Math.min(1, (performance.now() - t0) / eng.ms * RATE); range.value = k * 1000; show(k); if (playing) raf = requestAnimationFrame(tick); };
+    raf = requestAnimationFrame(tick);
+    lot.setSpeed(RATE); lot.goToAndPlay(0, true);
+    await eng.play(RATE);
+    await new Promise(r => { if (lot.isPaused || lot.currentFrame >= lotOp - 1) r(); else lot.addEventListener('complete', r, { once: true }); setTimeout(r, 4000); });
+    lot.goToAndStop(0, true);
+    playing = false; cancelAnimationFrame(raf); range.value = 0; show(0);
+    row.querySelector('.play').classList.remove('on');
+    if (LOOP) play();
+  }
+  row.querySelector('.play').addEventListener('click', play);
+  return { play };
+}
+
+(async () => {
+  if (location.protocol === 'file:') {
+    document.getElementById('rows').innerHTML = '<p class="mono" style="max-width:128rem;margin:0 auto;color:var(--red)">'
+      + 'This page needs the local server. Open http://localhost:5335/pilot/ instead.</p>';
+    return;
+  }
+  const [S, NOTES] = await Promise.all([catalogue(), fetch('/pilot/shape-notes.json').then(r => r.json())]);
+  const rows = [];
+  for (const n of NOTES) rows.push(await buildRow(S.find(s => s.id === n.id), n));
+  document.getElementById('playAll').onclick = () => rows.forEach(r => r.play());
+  const speed = document.getElementById('speed'), loop = document.getElementById('loop');
+  speed.onclick = () => { RATE = RATE === 1 ? 0.25 : 1; speed.classList.toggle('on', RATE !== 1); speed.setAttribute('aria-pressed', RATE !== 1); };
+  loop.onclick = () => { LOOP = !LOOP; loop.classList.toggle('on', LOOP); loop.setAttribute('aria-pressed', LOOP); if (LOOP) rows.forEach(r => r.play()); };
+})();
+</script>
+</body>
+</html>
