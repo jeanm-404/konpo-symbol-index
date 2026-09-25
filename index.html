@@ -4427,6 +4427,21 @@ document.getElementById('toast-case').onclick = () => {
     if (expandedTile.querySelector('.xc-controls .revive')) flipToAdopt(expandedTile, s);
     return;                                   // adopted marks have no CTA
   }
+  // on the field (desktop and phones alike) the card opens and flips to its form
+  // once it has grown; the drawer is only the parked table view's detail
+  if (VIEW !== 'list') {
+    collapseTile(true, true); closeDetail();
+    if (!focusSymbol(s.id)) return;
+    const t0 = performance.now();
+    const flipWhenSettled = () => {
+      const card = expandedTile;
+      if (!card || expandedId !== s.id) return;               // closed or switched meanwhile
+      if (!card.classList.contains('settled')) { if (performance.now() - t0 < 2000) requestAnimationFrame(flipWhenSettled); return; }
+      if (card.querySelector('.xc-controls .revive')) flipToAdopt(card, s);
+    };
+    requestAnimationFrame(flipWhenSettled);
+    return;
+  }
   if (openId !== s.id) {
     const tile = document.querySelector(`.tile[data-id="${s.id}"]`);
     if (!tile) return;
