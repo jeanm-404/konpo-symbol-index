@@ -673,6 +673,36 @@
     text-transform: uppercase; color: var(--purple-vivid); padding: 0 3.2rem 2.4rem; }
   .asent[hidden] { display: none; }
 
+  /* success: the application went out. The form clears to a clean canvas with
+     just the mark and its name (card back on desktop, the drawer on phones) */
+  .adopt-done {
+    position: absolute; inset: 0; z-index: 4;
+    background: var(--tile);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 2.4rem; padding: 3.2rem; text-align: center; outline: none;
+    opacity: 0; transition: opacity .4s ease;
+  }
+  .adopt-done.in { opacity: 1; }
+  .adopt-done > * { margin: 0; opacity: 0; filter: blur(8px); transition: opacity .6s ease, filter .6s ease; }
+  .adopt-done.in > * { opacity: 1; filter: blur(0); }
+  .adopt-done.in > :nth-child(2) { transition-delay: .12s; }
+  .adopt-done.in > :nth-child(3) { transition-delay: .24s; }
+  /* tile framing (the mark sits centred in padding), so it runs larger with the padding pulled in */
+  .adopt-done .done-mark svg { display: block; width: min(38rem, 76vw); height: min(38rem, 76vw); }
+  .adopt-done .done-mark { margin: -5rem 0 -4rem; }
+  .adopt-done .done-mark .construction { display: none; }
+  .adopt-done .done-name { font-family: var(--sans); font-size: 3.2rem; font-weight: 400; line-height: 1.1; color: var(--white); }
+  .adopt-done .done-msg {
+    display: flex; flex-direction: column; gap: 0.6rem;
+    font-family: var(--mono); font-size: 1.2rem; font-weight: 300; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--fade);
+  }
+  .adopt-done .done-msg span:first-child { color: var(--purple-vivid); }
+  .xc-face.back .adopt-done { cursor: pointer; }            /* a click turns the card back round */
+  #drawer.adopted { overflow: hidden; }                       /* the canvas holds the whole drawer */
+  #drawer .adopt-done { z-index: 5; }                         /* over the stage controls… */
+  #drawer.adopted .close { z-index: 6; }                      /* …and under the sticky close */
+
   /* ribbons thrown when an application goes out */
   #ribbons { position: fixed; inset: 0; z-index: 60; pointer-events: none; }
 
@@ -3299,10 +3329,26 @@ function rebaseCard(kx, ky){
 
 // a card waiting for the previous one to finish closing (last click wins)
 let switchTo = null;
+let flipSwitch = null;   // a card turning back from its form before a switch
 
 function expandTile(tile, s){
   if (expandedId === s.id) { collapseTile(); return; }
   const canvas = document.getElementById('canvas');
+  if (expandedTile && flipSwitch) { flipSwitch.tile = tile; flipSwitch.s = s; return; }   // still turning back: retarget
+  if (expandedTile && expandedTile.querySelector('.xc-flip.flipped')) {
+    // a card showing its form (filled or not) turns back to its front first,
+    // then the usual switch runs: it shrinks home, then the next one opens
+    const card = expandedTile, flip = card.querySelector('.xc-flip');
+    flip.style.transitionDuration = '.55s';
+    flipBack(card);
+    flipSwitch = { tile, s };
+    setTimeout(() => {
+      flip.style.transitionDuration = '';
+      const n = flipSwitch; flipSwitch = null;
+      if (n && expandedTile === card) expandTile(n.tile, n.s);   // Esc meanwhile: nothing queued
+    }, 580);
+    return;
+  }
   if (expandedTile) {
     // Switching: the open (or still opening) card goes all the way back to its
     // default state FIRST, then this one starts. A card caught mid-open
@@ -3799,6 +3845,11 @@ function flipBack(tile){
   if (!flip || !flip.classList.contains('flipped')) return false;
   flip.classList.remove('flipped');
   const back = tile.querySelector('.xc-face.back');
+  const done = back.querySelector(':scope > .adopt-done');
+  if (done) setTimeout(() => {                   // once the back has turned away
+    done.remove();
+    const f = back.querySelector('.xc-adopt'); if (f) f.reset();
+  }, 900);
   const hadFocus = back.contains(document.activeElement);
   tile.querySelector('.xc-face.front').removeAttribute('inert');
   back.setAttribute('inert', '');
@@ -3806,6 +3857,24 @@ function flipBack(tile){
   if (hadFocus) { const r = tile.querySelector('.xc-controls .revive'); if (r) r.focus({ preventScroll: true }); }
   Sound.play('toggle.off');
   return true;
+}
+
+// the success canvas: the mark, its name, the confirmation. Nothing else
+function adoptDoneHTML(s){
+  return `<div class="adopt-done" role="status" tabindex="-1">`
+    + `<div class="done-mark">${svg(s, false)}</div>`
+    + `<p class="done-name">${namedMark(s) ? s.name : s.id}</p>`
+    + `<p class="done-msg"><span>Request Successful</span><span>We’ll get back to you</span></p>`
+    + `</div>`;
+}
+function showAdoptDone(host, s){
+  host.querySelector(':scope > .adopt-done')?.remove();
+  host.insertAdjacentHTML('beforeend', adoptDoneHTML(s));
+  const done = host.lastElementChild;
+  void done.offsetWidth;
+  done.classList.add('in');
+  done.focus({ preventScroll: true });
+  return done;
 }
 
 function adoptFormHTML(s){
@@ -3867,7 +3936,8 @@ function wireAdoptForm(tile, s){
     location.href = 'mailto:hey@konpo.studio'
       + '?subject=' + encodeURIComponent(`Adopt ${s.id}${namedMark(s) ? ' — ' + s.name : ''}`)
       + '&body=' + encodeURIComponent(body);
-    form.querySelector('.asent').hidden = false;
+    const done = showAdoptDone(tile.querySelector('.xc-face.back'), s);
+    done.addEventListener('click', () => flipBack(tile));
     Ribbons.burst();
   });
 }
@@ -4116,6 +4186,9 @@ const reviveText   = document.getElementById('revive-text');
 const reviveSent   = document.getElementById('revive-sent');
 
 function resetRevive(){
+  const drawer = document.getElementById('drawer');
+  drawer.classList.remove('adopted');
+  drawer.querySelector(':scope > .adopt-done')?.remove();
   revivePanel.hidden = true;
   reviveToggle.classList.remove('on');
   reviveSent.hidden = true;
@@ -4139,7 +4212,10 @@ document.getElementById('revive-send').onclick = () => {
   location.href = 'mailto:hey@konpo.studio'
     + '?subject=' + encodeURIComponent('Adopt ' + openId + ' — Application')
     + '&body=' + encodeURIComponent(why);
-  reviveSent.hidden = false;
+  const drawer = document.getElementById('drawer');
+  const s = S.find(x => x.id === openId);
+  if (s) { drawer.scrollTop = 0; drawer.classList.add('adopted'); showAdoptDone(drawer, s); }
+  else reviveSent.hidden = false;
 };
 
 /* ---------- Footer: sign up for updates ----------
