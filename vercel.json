@@ -13,6 +13,17 @@
   ],
   "redirects": [
     {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "konpo-symbol-index.vercel.app"
+        }
+      ],
+      "destination": "https://symbols.konpo.co/",
+      "permanent": true
+    },
+    {
       "source": "/:path*",
       "has": [
         {
