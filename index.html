@@ -698,6 +698,20 @@
     transition: color .3s, border-color .3s;
   }
   #drawer .close:hover { color: var(--white); border-color: rgba(255,255,255,0.3); }
+  /* word on desktop, the card's round cross on phones and touch screens (no Esc key there) */
+  #drawer .close .k-x, footer .sub .cancel .k-x { display: none; }
+  @media (max-width: 780px), (hover: none) {
+    #drawer .close .k-word, footer .sub .cancel .k-word { display: none; }
+    #drawer .close .k-x, footer .sub .cancel .k-x { display: block; width: 100%; height: 100%; }
+    /* same object as the card's .xc-close, at a 44px touch target */
+    #drawer .close {
+      top: 1.6rem; width: 4.4rem; height: 4.4rem; padding: 1.2rem; margin: 1.6rem 0 -6rem 1.6rem;
+      border: 0; border-radius: 50%; background: rgba(255,255,255,0.08);
+      -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+    }
+    /* the chip's cross: 16px glyph inside a 44px hit area that doesn't grow the chip */
+    footer .sub .cancel { width: 1.6rem; height: 1.6rem; box-sizing: content-box; padding: 1.4rem; margin: -1.4rem; color: var(--fade); }
+  }
 
   #drawer .stage {
     position: relative; flex: 0 0 auto;
@@ -1140,7 +1154,7 @@
 
   <div id="scrim"></div>
   <aside id="drawer" aria-hidden="true" inert>
-    <button class="close" aria-label="Close">Close</button>
+    <button class="close" aria-label="Close"><span class="k-word">Close</span><svg class="k-x" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M15.5554 4.44434L4.44434 15.5554" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.44434 4.44434L15.5554 15.5554" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="content">
       <div class="stage"></div>
       <div class="ramp-slot"></div>
@@ -1188,7 +1202,7 @@
       <form class="sub" id="subForm" novalidate>
         <input id="subEmail" type="email" placeholder="your@email.com" autocomplete="email" spellcheck="false" aria-label="Email address">
         <button type="submit">Send&nbsp;&rarr;</button>
-        <button type="button" class="cancel" id="subCancel" aria-label="Cancel">Esc</button>
+        <button type="button" class="cancel" id="subCancel" aria-label="Cancel"><span class="k-word">Esc</span><svg class="k-x" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M15.5554 4.44434L4.44434 15.5554" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.44434 4.44434L15.5554 15.5554" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       </form>
     </footer>
   </div>
@@ -2537,7 +2551,8 @@ function applyGridTransform(){
     touch = e.pointerType === 'touch';
     GRID.vx = GRID.vy = 0;
     const cv = document.getElementById('canvas');
-    cv.classList.remove('reflowing');                                  // instant drag
+    // .reflowing comes off on the first real move (instant drag), not on the
+    // press: a click must not cut a card's open or close short mid-flight
     cv.querySelectorAll('.tile:not(.expanded) .notes').forEach(n => n.remove());  // clear hover notes
     cv.querySelectorAll('.tile:not(.expanded)').forEach(t => t.classList.remove('mark-anim', 'annot-ready'));
     if (GRID.raf) { cancelAnimationFrame(GRID.raf); GRID.raf = null; }
@@ -2552,6 +2567,7 @@ function applyGridTransform(){
     const dx = e.clientX - lastX, dy = e.clientY - lastY;
     lastX = e.clientX; lastY = e.clientY;
     moved += Math.abs(dx) + Math.abs(dy);
+    if (dx || dy) document.getElementById('canvas').classList.remove('reflowing');   // instant drag
     GRID.ox += dx; GRID.oy += dy;
     GRID.vx = dx; GRID.vy = dy;
     applyGridTransform();
@@ -3175,15 +3191,24 @@ const scrim  = document.getElementById('scrim');
 /* ---------- Expanded card: the clicked tile grows to 2×2 and pushes its neighbours ---------- */
 // If the pointer lingered long enough for the hover annotations to draw in, let
 // them fade back out before the card takes over — the two shouldn't cross.
+// the last click wins: a tile still fading its annotations out when another
+// is clicked is abandoned, never opened late on top of the newer one
+let pendingOpen = null;
 function expandFromTile(tile, s){
+  if (pendingOpen) {
+    clearTimeout(pendingOpen.t);
+    pendingOpen.tile.classList.remove('annot-out', 'annot-ready', 'mark-anim');
+    pendingOpen = null;
+  }
   const showing = tile.classList.contains('annot-ready');
   clearTimeout(tile._annotT);
   if (!showing) { tile.classList.remove('mark-anim'); expandTile(tile, s); return; }
   tile.classList.add('annot-out');
-  setTimeout(() => {
+  pendingOpen = { tile, t: setTimeout(() => {
+    pendingOpen = null;
     tile.classList.remove('annot-out', 'annot-ready', 'mark-anim');
     expandTile(tile, s);
-  }, 240);
+  }, 240) };
 }
 
 // Hole-free reflow around an open card: the row ABOVE stays put. The card spans
@@ -3236,28 +3261,45 @@ function rebaseCard(kx, ky){
   return true;
 }
 
+// a card waiting for the previous one to finish closing (last click wins)
+let switchTo = null;
+
 function expandTile(tile, s){
   if (expandedId === s.id) { collapseTile(); return; }
   const canvas = document.getElementById('canvas');
   if (expandedTile) {
-    // Closing the old card releases the wrap (a whole-block jump for the copy
-    // you clicked) and un-pushes its neighbours. Keep the visitor where they
-    // are: continue with whichever copy of this mark now sits nearest the spot
-    // they clicked, and pan so it stays exactly under them.
+    // Switching: the open (or still opening) card goes all the way back to its
+    // default state FIRST, then this one starts. A card caught mid-open
+    // reverses from where it is, so the wait is only as long as its way home.
+    // Closing releases the wrap, a whole-block teleport for the copy that was
+    // clicked: queue the copy whose LAYOUT slot (tiles are mid-transition)
+    // sits nearest the spot the visitor clicked.
+    const prev = expandedTile;
     const before = tile.getBoundingClientRect();
-    collapseTile(true, true);
+    collapseTile(false, true);
+    const o = canvas.getBoundingClientRect();          // wrap applied instantly: the canvas origin is final
     let best = tile, bd = Infinity;
     for (const t of canvas.querySelectorAll(`.tile[data-id="${s.id}"]`)) {
-      const r = t.getBoundingClientRect(), d = Math.hypot(r.left - before.left, r.top - before.top);
+      const d = Math.hypot(o.left + +t.dataset.x - before.left, o.top + +t.dataset.y - before.top);
       if (d < bd) { bd = d; best = t; }
     }
-    tile = best;
-    const r = tile.getBoundingClientRect();
-    if (r.left !== before.left || r.top !== before.top) {
-      GRID.ox += before.left - r.left; GRID.oy += before.top - r.top;
-      GRID.vx = GRID.vy = 0; applyGridTransform();
-    }
+    switchTo = { tile: best, s };
+    let done = false, timer = 0;
+    const go = () => {
+      if (done) return; done = true; clearTimeout(timer);
+      const next = switchTo; switchTo = null;
+      if (next && !expandedTile) expandTile(next.tile, next.s);
+    };
+    // wait on the card's own running shrink (a card clicked away in its first
+    // frames has none, so the next one starts at once); the timer is a backstop
+    const shrink = prev.getAnimations().filter(a => a.transitionProperty === 'width' || a.transitionProperty === 'height');
+    if (!shrink.length) { go(); return; }
+    Promise.all(shrink.map(a => a.finished.catch(() => {}))).then(go);
+    timer = setTimeout(go, 700);
+    return;
   }
+  // a card is still closing: this click replaces whichever one was queued
+  if (switchTo) { switchTo = { tile, s }; return; }
   releaseTileAnim(tile);                   // the card rebuilds this tile's DOM
   const cx = +tile.dataset.x, cy = +tile.dataset.y;
 
@@ -3319,7 +3361,7 @@ function expandTile(tile, s){
 }
 
 function collapseTile(immediate, silent){
-  if (!expandedTile) return;
+  if (!expandedTile) { switchTo = null; return; }   // Esc / close / a view or filter change also cancels a queued switch
   const wasOpen = expandedId;
   const canvas = document.getElementById('canvas');
   // hand the wrap back. The correction is a whole block (invisible), but the
@@ -3356,10 +3398,11 @@ function collapseTile(immediate, silent){
       if (s.status === 'Adopted') tile.classList.add('adopted-mark');
       tile.innerHTML = tileInner(s);
     }
-    canvas.classList.remove('reflowing');
+    // a newer card may be open (or opening) by now: its transitions still need the class
+    if (!expandedTile) canvas.classList.remove('reflowing');
   };
   if (immediate) restore(); else setTimeout(restore, 560);
-  if (!immediate) Sound.play('drawer.close');
+  if (!immediate && !silent) Sound.play('drawer.close');
   expandedTile = null; expandedId = null;
   focused = false;                     // hover annotations resume
   // side-effect collapses (filter, search, view flip, re-entry) leave the URL to
@@ -3941,6 +3984,7 @@ document.addEventListener('keydown', e => {
   if (!document.getElementById('filterMenu').hidden || !aboutMenu.hidden) return;
   if (e.target.closest && e.target.closest('.topbar input, footer input')) return;   // search / sign-up own their Esc
   if (expandedTile) { if (!flipBack(expandedTile)) collapseTile(); return; }
+  if (switchTo) { switchTo = null; return; }            // Esc mid-switch: don't open the queued card
   closeDetail();
 }, true);
 // Tab stays inside an open card (the tiles behind it sit off-screen and the
@@ -4013,8 +4057,6 @@ document.getElementById('revive-send').onclick = () => {
     Sound.play('toggle.off');
   }
   email.addEventListener('input', () => email.removeAttribute('aria-invalid'));
-  // no Esc key on a phone: the cancel control shows a cross there
-  if (matchMedia('(hover: none)').matches) cancel.textContent = '✕';
 
   open.addEventListener('click', show);
   open.addEventListener('keydown', e => {
