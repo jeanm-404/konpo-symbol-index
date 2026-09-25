@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 // Symbol Shelter share layer: per-mark OG images, crawler stubs, RSS/JSON feeds.
 // Run after any catalogue change:  node scripts/build-meta.mjs
+// Also keeps the mark count in index.html's share tags in step with the catalogue.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const SITE = 'https://konpo-symbol-index.vercel.app';
+const SITE = 'https://symbols.konpo.co';
 const src = fs.readFileSync(path.join(ROOT, 'symbol-index.html'), 'utf8');
 
 // ---- data ------------------------------------------------------------------
@@ -66,7 +67,7 @@ const rootSvg = `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/sv
   <rect width="1200" height="630" fill="#000"/>
   <g transform="translate(986 82) scale(2.1)" fill="#ad9cff"><path d="${KONPO_MARK.match(/d="([^"]+)"/)[1]}"/></g>
   <text x="80" y="330" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="110" fill="#fff">Symbol Shelter</text>
-  <text x="82" y="398" font-family="Menlo, monospace" font-size="27" letter-spacing="3" fill="#6c6c6c">${S.length} REJECTED LOGOS — EVERYONE HERE IS UP FOR ADOPTION</text>
+  <text x="82" y="398" font-family="Menlo, monospace" font-size="27" letter-spacing="3" fill="#6c6c6c">${S.length} REJECTED LOGOS · EVERYONE HERE IS UP FOR ADOPTION</text>
   <text x="82" y="545" font-family="Menlo, monospace" font-size="23" letter-spacing="3" fill="#ad9cff">KONPO STUDIO</text>
 </svg>`;
 
@@ -74,26 +75,31 @@ function stubHtml(s) {
   const url = `${SITE}/s/${slug(s.id)}`;
   const img = `${SITE}/og/${slug(s.id)}.png`;
   const st = statusLine(s);
-  const desc = `${st.text.charAt(0) + st.text.slice(1).toLowerCase()} — ${s.blurb}`;
+  const desc = `${st.text.charAt(0) + st.text.slice(1).toLowerCase()}. ${s.blurb}`;
+  const name = `${s.name} (${s.id})`, alt = `${s.name}, ${s.id}: ${st.text.charAt(0) + st.text.slice(1).toLowerCase()}`;
   return `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>${esc(s.name)} — Symbol Shelter</title>
+<title>${esc(name)} | Symbol Shelter</title>
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${url}">
-<meta property="og:title" content="${esc(s.name)} — ${esc(s.id)}">
+<meta name="theme-color" content="#000000">
+<meta property="og:title" content="${esc(name)} | Symbol Shelter">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:image" content="${img}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="${esc(alt)}">
 <meta property="og:url" content="${url}">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Symbol Shelter">
+<meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="${esc(s.name)} — ${esc(s.id)}">
+<meta name="twitter:title" content="${esc(name)} | Symbol Shelter">
 <meta name="twitter:description" content="${esc(desc)}">
 <meta name="twitter:image" content="${img}">
+<meta name="twitter:image:alt" content="${esc(alt)}">
 <noscript><meta http-equiv="refresh" content="0;url=/#${s.id}"></noscript>
 <script>location.replace('/#${s.id}')</script>
 </head>
@@ -107,18 +113,18 @@ const entries = [...S].sort((a, b) => (dates[b.id] + b.id).localeCompare(dates[a
 const rssItems = entries.map(s => {
   const st = statusLine(s);
   return `    <item>
-      <title>${esc(s.id)} — ${esc(s.name)}</title>
+      <title>${esc(s.name)} (${esc(s.id)})</title>
       <link>${SITE}/s/${slug(s.id)}</link>
       <guid isPermaLink="true">${SITE}/s/${slug(s.id)}</guid>
       <pubDate>${new Date(dates[s.id] + 'T12:00:00Z').toUTCString()}</pubDate>
-      <description>${esc(`${s.cat} · ${st.text} — ${s.blurb}`)}</description>
+      <description>${esc(`${s.cat} · ${st.text}. ${s.blurb}`)}</description>
     </item>`;
 }).join('\n');
 
 const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Symbol Shelter — Konpo Studio</title>
+    <title>Symbol Shelter | Konpo Studio</title>
     <link>${SITE}/</link>
     <atom:link href="${SITE}/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Rejected logo marks by Konpo Studio, catalogued and up for adoption. New intakes as they arrive.</description>
@@ -130,7 +136,7 @@ ${rssItems}
 
 const jsonFeed = {
   version: 'https://jsonfeed.org/version/1.1',
-  title: 'Symbol Shelter — Konpo Studio',
+  title: 'Symbol Shelter | Konpo Studio',
   home_page_url: `${SITE}/`,
   feed_url: `${SITE}/feed.json`,
   description: 'Rejected logo marks by Konpo Studio, catalogued and up for adoption.',
@@ -139,15 +145,35 @@ const jsonFeed = {
     return {
       id: `${SITE}/s/${slug(s.id)}`,
       url: `${SITE}/s/${slug(s.id)}`,
-      title: `${s.id} — ${s.name}`,
-      content_text: `${s.cat} · ${st.text} — ${s.blurb}`,
+      title: `${s.name} (${s.id})`,
+      content_text: `${s.cat} · ${st.text}. ${s.blurb}`,
       image: `${SITE}/og/${slug(s.id)}.png`,
       date_published: `${dates[s.id]}T12:00:00Z`,
     };
   }),
 };
 
+// ---- crawlers ----------------------------------------------------------------
+const robots = `User-agent: *\nAllow: /\n\nSitemap: ${SITE}/sitemap.xml\n`;
+const lastmod = Object.values(dates).sort().pop();
+const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>${SITE}/</loc><lastmod>${lastmod}</lastmod></url>
+${S.map(s => `  <url><loc>${SITE}/s/${slug(s.id)}</loc><lastmod>${dates[s.id]}</lastmod></url>`).join('\n')}
+</urlset>
+`;
+
+// the home page's share tags quote the catalogue size: keep them honest
+const syncCount = file => {
+  const p = path.join(ROOT, file), html = fs.readFileSync(p, 'utf8');
+  const next = html.replace(/\b\d+ rejected logo(s| marks)\b/g, (m, tail) => `${S.length} rejected logo${tail}`);
+  if (next !== html) fs.writeFileSync(p, next);
+};
+['index.html', 'symbol-index.html'].forEach(syncCount);
+
 // ---- write everything ------------------------------------------------------
+fs.writeFileSync(path.join(ROOT, 'robots.txt'), robots);
+fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), sitemap);
 fs.writeFileSync(path.join(ROOT, 'feed.xml'), rss);
 fs.writeFileSync(path.join(ROOT, 'feed.json'), JSON.stringify(jsonFeed, null, 2));
 for (const s of S) fs.writeFileSync(path.join(ROOT, 's', `${slug(s.id)}.html`), stubHtml(s));
@@ -156,4 +182,4 @@ const jobs = S.map(s => sharp(Buffer.from(ogSvg(s))).png({ compressionLevel: 9 }
 jobs.push(sharp(Buffer.from(rootSvg)).png({ compressionLevel: 9 }).toFile(path.join(ROOT, 'og', 'root.png')));
 await Promise.all(jobs);
 
-console.log(`ok: ${S.length} stubs + og images, root.png, feed.xml, feed.json`);
+console.log(`ok: ${S.length} stubs + og images, root.png, feed.xml, feed.json, robots.txt, sitemap.xml`);

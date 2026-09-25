@@ -3,15 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Symbol Shelter — Konpo Studio</title>
+<title>Symbol Shelter | Konpo Studio</title>
 <meta name="description" content="70 rejected logo marks by Konpo Studio, catalogued with construction geometry. Everyone here is up for adoption.">
-<meta property="og:title" content="Symbol Shelter — Konpo Studio">
-<meta property="og:description" content="A logo takes hundreds of proposals. Only one gets picked. This is the shelter for those who didn’t make it — everyone here is up for adoption.">
-<meta property="og:image" content="https://konpo-symbol-index.vercel.app/og/root.png">
-<meta property="og:url" content="https://konpo-symbol-index.vercel.app/">
+<link rel="canonical" href="https://symbols.konpo.co/">
+<meta name="theme-color" content="#000000">
+<meta property="og:title" content="Symbol Shelter | Konpo Studio">
+<meta property="og:description" content="A logo takes hundreds of proposals. Only one gets picked. This is the shelter for those who didn’t make it. Everyone here is up for adoption.">
+<meta property="og:image" content="https://symbols.konpo.co/og/root.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Symbol Shelter by Konpo Studio: 70 rejected logos, all up for adoption">
+<meta property="og:url" content="https://symbols.konpo.co/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Symbol Shelter">
+<meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Symbol Shelter | Konpo Studio">
+<meta name="twitter:description" content="A logo takes hundreds of proposals. Only one gets picked. This is the shelter for those who didn’t make it. Everyone here is up for adoption.">
+<meta name="twitter:image" content="https://symbols.konpo.co/og/root.png">
+<meta name="twitter:image:alt" content="Symbol Shelter by Konpo Studio: 70 rejected logos, all up for adoption">
 <link rel="alternate" type="application/rss+xml" title="Symbol Shelter" href="/feed.xml">
 <link rel="alternate" type="application/feed+json" title="Symbol Shelter" href="/feed.json">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cstyle%3Ecircle%7Bfill:%230a0a0a%7D@media(prefers-color-scheme:dark)%7Bcircle%7Bfill:%23fff%7D%7D%3C/style%3E%3Ccircle cx='50' cy='50' r='32'/%3E%3C/svg%3E">
@@ -1189,7 +1199,7 @@
       </div>
     </div>
     <div class="toolbar">
-      <button class="tbtn view-toggle" id="viewToggle" type="button" aria-label="Cycle grid / zoomed-out / list view">
+      <button class="tbtn view-toggle" id="viewToggle" type="button" aria-label="Switch between grid and zoomed-out view">
         <span class="ic-zoom"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="4.2" cy="4.2" r="1.5" fill="currentColor"/><circle cx="10" cy="4.2" r="1.5" fill="currentColor"/><circle cx="15.8" cy="4.2" r="1.5" fill="currentColor"/><circle cx="4.2" cy="10" r="1.5" fill="currentColor"/><circle cx="10" cy="10" r="1.5" fill="currentColor"/><circle cx="15.8" cy="10" r="1.5" fill="currentColor"/><circle cx="4.2" cy="15.8" r="1.5" fill="currentColor"/><circle cx="10" cy="15.8" r="1.5" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.5" fill="currentColor"/></svg></span>
         <span class="ic-list"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M1.944 6.389H18.056" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.944 13.611H18.056" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         <span class="ic-grid"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5.833 3.333V8.333" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.333 5.833H3.333" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.167 3.333V8.333" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.667 5.833H11.667" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.833 11.667V16.667" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.333 14.167H3.333" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.167 11.667V16.667" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.667 14.167H11.667" stroke="currentColor" stroke-width="1.667" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
@@ -2932,8 +2942,12 @@ function rerender(reveal){
 
 /* ---------- View switching: grid → zoomed-out grid → list ---------- */
 const VIEWS = ['grid', 'zoom', 'list'];
+// the table (list) view is parked: the toggle only switches grid and zoomed-out,
+// and a saved or linked list view opens the grid. true brings it back
+const LIST_VIEW = false;
+const CYCLE = VIEWS.filter(v => v !== 'list' || LIST_VIEW);
 function setView(v, opts){
-  if (!VIEWS.includes(v)) v = 'grid';
+  if (!VIEWS.includes(v) || (v === 'list' && !LIST_VIEW)) v = 'grid';
   VIEW = v;
   document.getElementById('grid').hidden = (v === 'list');
   document.getElementById('list').hidden = (v !== 'list');
@@ -2959,7 +2973,7 @@ function closeFilterMenu(){ filterEl.classList.remove('open'); document.getEleme
 buildFilterMenu();
 document.getElementById('viewToggle').addEventListener('click', () => {
   collapseTile(true, true); closeDetail();     // leave no card/drawer behind when the view flips
-  setView(VIEWS[(VIEWS.indexOf(VIEW) + 1) % VIEWS.length]);
+  setView(CYCLE[(CYCLE.indexOf(VIEW) + 1) % CYCLE.length]);
   syncURL();
 });
 document.getElementById('filterBtn').addEventListener('click', e => {
@@ -3034,7 +3048,14 @@ document.addEventListener('keydown', e => {
 /* ---------- Shareable URLs: ?sym=SYM-001&cat=…&q=…&view=… ---------- */
 let URL_READY = false;                    // suppress history writes until the intro hands over
 
+// the tab reads the open mark (card or drawer), matching its /s/ share page's title
+const BASE_TITLE = document.title;
+function syncTitle(){
+  const s = S.find(x => x.id === (expandedId || openId));
+  document.title = s ? `${s.name} (${s.id}) | Symbol Shelter` : BASE_TITLE;
+}
 function syncURL(replace){
+  syncTitle();
   if (!URL_READY) return;
   const p = new URLSearchParams();
   const sym = expandedId || openId;
@@ -3650,6 +3671,7 @@ function collapseTile(immediate, silent){
   if (immediate) restore(); else setTimeout(restore, 560);
   if (!immediate && !silent) Sound.play('drawer.close');
   expandedTile = null; expandedId = null;
+  syncTitle();                         // side-effect collapses skip syncURL
   focused = false;                     // hover annotations resume
   // side-effect collapses (filter, search, view flip, re-entry) leave the URL to
   // whoever triggered them; only a real close rewrites it
@@ -4211,6 +4233,7 @@ function closeDetail(){
   if (!openId) return;
   Sound.play('drawer.close');
   openId = null;
+  syncTitle();
   syncURL(true);
   drawer.classList.remove('open');
   scrim.classList.remove('open');

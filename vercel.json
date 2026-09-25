@@ -10,5 +10,18 @@
         }
       ]
     }
+  ],
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "konpo-symbol-index.vercel.app"
+        }
+      ],
+      "destination": "https://symbols.konpo.co/:path*",
+      "permanent": true
+    }
   ]
 }
