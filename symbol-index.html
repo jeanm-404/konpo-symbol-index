@@ -2489,29 +2489,22 @@ function applyGridTransform(){
   // field — pan continuously from the offset locked at expand time instead
   let wx, wy;
   if (GRID.lock) {
-    // bound the ACCUMULATOR (not wx) so wx stays block-congruent and releasing
-    // the lock on collapse remains invisible; panning stops at the field's edge
-    // instead of running out into void.
-    let maxLX = GRID.lock.ox - GRID.lock.wx;                                // wx = 0
-    let minLX = Math.min(maxLX, maxLX + innerWidth  - (GRID.cX || 1) * GRID.bW);
-    let maxLY = GRID.lock.oy - GRID.lock.wy;
-    let minLY = Math.min(maxLY, maxLY + innerHeight - (GRID.cY || 1) * GRID.bH);
-    // An open card can reach past the rendered field's own edge (its tile sits
-    // near the last row/column). Reachability beats hiding the seam: widen the
-    // bounds to admit whatever offset actually fits the card.
-    if (GRID.card) {
-      const m = 24;
-      const ox1 = GRID.lock.ox + (((innerWidth  - m) - (GRID.card.x + GRID.card.w)) - GRID.lock.wx);
-      const ox2 = GRID.lock.ox + ((m - GRID.card.x) - GRID.lock.wx);
-      minLX = Math.min(minLX, ox1, ox2); maxLX = Math.max(maxLX, ox1, ox2);
-      const oy1 = GRID.lock.oy + (((innerHeight - m) - (GRID.card.y + GRID.card.h)) - GRID.lock.wy);
-      const oy2 = GRID.lock.oy + ((m - GRID.card.y) - GRID.lock.wy);
-      minLY = Math.min(minLY, oy1, oy2); maxLY = Math.max(maxLY, oy1, oy2);
+    // wx stays block-congruent to ox, so releasing the lock on collapse is
+    // invisible. When the pan would run the rendered field out, rebase the card
+    // onto its twin one block over instead of stopping at a wall. No twin in
+    // that direction means the card sits a whole block away, off-screen: close it.
+    const fieldW = (GRID.cX || 1) * GRID.bW, fieldH = (GRID.cY || 1) * GRID.bH;
+    for (let n = 0; n < 6 && GRID.lock; n++) {
+      const lx = GRID.lock.wx + (GRID.ox - GRID.lock.ox), ly = GRID.lock.wy + (GRID.oy - GRID.lock.oy);
+      const kx = lx > 0 ? 1 : lx < innerWidth - fieldW ? -1 : 0;
+      const ky = kx ? 0 : ly > 0 ? 1 : ly < innerHeight - fieldH ? -1 : 0;
+      if (!kx && !ky) break;
+      if (rebaseCard(kx, ky)) continue;
+      if (!expandedTile) break;            // still opening (fit-pan): leave it, the next pan rebases
+      collapseTile(false, true);           // releases the lock (the wrap below takes over); neighbours ease home
     }
-    if (GRID.ox > maxLX) { GRID.ox = maxLX; GRID.vx = 0; }
-    if (GRID.ox < minLX) { GRID.ox = minLX; GRID.vx = 0; }
-    if (GRID.oy > maxLY) { GRID.oy = maxLY; GRID.vy = 0; }
-    if (GRID.oy < minLY) { GRID.oy = minLY; GRID.vy = 0; }
+  }
+  if (GRID.lock) {
     wx = GRID.lock.wx + (GRID.ox - GRID.lock.ox);
     wy = GRID.lock.wy + (GRID.oy - GRID.lock.oy);
   } else {
@@ -3193,17 +3186,84 @@ function expandFromTile(tile, s){
   }, 240);
 }
 
+// Hole-free reflow around an open card: the row ABOVE stays put. The card spans
+// `span` cells at this view's density (2 in grid, 3 zoomed out); its rows push
+// their right side clear of the card, and the clicked column pushes everything
+// below it down by the same amount. No gaps left behind.
+function pushAround(canvas, tile){
+  const cell = GRID.cell, T = 1;
+  const cx = +tile.dataset.x, cy = +tile.dataset.y;
+  const cardPx = (VIEW === 'zoom') ? 740 : 716;   // both sit flush: span*cell - gutter
+  const span = Math.ceil(cardPx / cell);
+  const shift = (span - 1) * cell;
+  for (const t of canvas.children){
+    if (t === tile) { t.style.translate = `${cx}px ${cy}px`; continue; }
+    const tx = +t.dataset.x, ty = +t.dataset.y;
+    let ox = 0, oy = 0;
+    if (ty > cy - T && ty < cy + (span - 1) * cell + T && tx > cx + T) ox = shift;
+    else if (Math.abs(tx - cx) < T && ty > cy + T) oy = shift;
+    t.style.translate = `${tx + ox}px ${ty + oy}px`;
+  }
+}
+
+// The open card ran the canvas out of field: hand it to its twin one block over
+// (same slot in the neighbouring copy, so the same mark) and shift the field back
+// by that block. On screen nothing moves, and the pan never hits a wall.
+function rebaseCard(kx, ky){
+  const canvas = document.getElementById('canvas');
+  const E = GRID.lock && GRID.lock.tile;
+  if (!E) return false;
+  const cx = +E.dataset.x, cy = +E.dataset.y;
+  const nx = cx + kx * GRID.bW, ny = cy + ky * GRID.bH;
+  const twin = [...canvas.children].find(t => t !== E
+    && Math.abs(+t.dataset.x - nx) < 1 && Math.abs(+t.dataset.y - ny) < 1);
+  if (!twin) return false;
+  twin.dataset.x = cx; twin.dataset.y = cy;
+  E.dataset.x = nx; E.dataset.y = ny;
+  GRID.lock.wx -= kx * GRID.bW; GRID.lock.wy -= ky * GRID.bH;
+  if (GRID.card) { GRID.card.x = nx; GRID.card.y = ny; }
+  // Everything jumps by exactly one block with the transitions off: the pushes
+  // around the new slot, and the canvas from wherever it is on screen right now
+  // (it may be mid-ease). The caller then sets the new target, which eases on
+  // from there as usual.
+  const had = canvas.classList.contains('reflowing');
+  const now = new DOMMatrix(getComputedStyle(canvas).transform);
+  canvas.classList.remove('reflowing');
+  pushAround(canvas, E);
+  canvas.style.transform = `translate3d(${now.m41 - kx * GRID.bW}px,${now.m42 - ky * GRID.bH}px,0)`;
+  void canvas.offsetWidth;
+  if (had) canvas.classList.add('reflowing');
+  return true;
+}
+
 function expandTile(tile, s){
   if (expandedId === s.id) { collapseTile(); return; }
-  if (expandedTile) collapseTile(true, true);
-  releaseTileAnim(tile);                   // the card rebuilds this tile's DOM
   const canvas = document.getElementById('canvas');
-  const cell = GRID.cell, T = 1;
+  if (expandedTile) {
+    // Closing the old card releases the wrap (a whole-block jump for the copy
+    // you clicked) and un-pushes its neighbours. Keep the visitor where they
+    // are: continue with whichever copy of this mark now sits nearest the spot
+    // they clicked, and pan so it stays exactly under them.
+    const before = tile.getBoundingClientRect();
+    collapseTile(true, true);
+    let best = tile, bd = Infinity;
+    for (const t of canvas.querySelectorAll(`.tile[data-id="${s.id}"]`)) {
+      const r = t.getBoundingClientRect(), d = Math.hypot(r.left - before.left, r.top - before.top);
+      if (d < bd) { bd = d; best = t; }
+    }
+    tile = best;
+    const r = tile.getBoundingClientRect();
+    if (r.left !== before.left || r.top !== before.top) {
+      GRID.ox += before.left - r.left; GRID.oy += before.top - r.top;
+      GRID.vx = GRID.vy = 0; applyGridTransform();
+    }
+  }
+  releaseTileAnim(tile);                   // the card rebuilds this tile's DOM
   const cx = +tile.dataset.x, cy = +tile.dataset.y;
 
   canvas.classList.add('reflowing');
   if (GRID.tiling) {
-    GRID.lock = { ox: GRID.ox, oy: GRID.oy,
+    GRID.lock = { ox: GRID.ox, oy: GRID.oy, tile,        // tile: the card, for rebaseCard
       wx: ((GRID.ox % GRID.bW) + GRID.bW) % GRID.bW - GRID.bW,
       wy: ((GRID.oy % GRID.bH) + GRID.bH) % GRID.bH - GRID.bH };
   }
@@ -3236,21 +3296,7 @@ function expandTile(tile, s){
     GRID.card = { x: cx, y: cy, w: cardW, h: cardH };
     if (dx || dy) { GRID.ox += dx; GRID.oy += dy; GRID.vx = GRID.vy = 0; applyGridTransform(); }
   }
-  // Hole-free reflow: the row ABOVE stays put. The card spans `span` cells at
-  // this view's density (2 in grid, 3 zoomed out); its rows push their right
-  // side clear of the card, and the clicked column pushes everything below it
-  // down by the same amount. No gaps left behind.
-  const cardPx = (VIEW === 'zoom') ? 740 : 716;   // both sit flush: span*cell - gutter
-  const span = Math.ceil(cardPx / cell);
-  const shift = (span - 1) * cell;
-  for (const t of canvas.children){
-    if (t === tile) continue;
-    const tx = +t.dataset.x, ty = +t.dataset.y;
-    let ox = 0, oy = 0;
-    if (ty > cy - T && ty < cy + (span - 1) * cell + T && tx > cx + T) ox = shift;
-    else if (Math.abs(tx - cx) < T && ty > cy + T) oy = shift;
-    t.style.translate = `${tx + ox}px ${ty + oy}px`;
-  }
+  pushAround(canvas, tile);
 
   fillTileDetail(tile, s);
   tile.classList.add('expanded');
