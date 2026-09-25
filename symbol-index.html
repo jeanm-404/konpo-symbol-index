@@ -684,7 +684,13 @@
   #drawer.open { transform: translateX(0); }
 
   #drawer .close {
-    position: absolute; top: 2rem; left: 2rem; z-index: 3;
+    /* sticky, not absolute: the drawer is the scroller, and the only way out
+       used to scroll away with the content (full-screen on phones). The
+       negative bottom margin (top gap + own height) keeps it overlaying the stage. */
+    position: sticky; top: 2rem; z-index: 3;
+    align-self: flex-start; flex: 0 0 auto;
+    box-sizing: border-box; height: 3.4rem;
+    margin: 2rem 0 -5.4rem 2rem;
     font-family: var(--mono); font-size: 1.2rem; letter-spacing: 0.08em;
     text-transform: uppercase; color: var(--fade);
     background: var(--tile); border: 1px solid var(--line);
@@ -810,6 +816,11 @@
   }
   .revive-panel textarea:focus { border-color: rgba(150,128,255,0.40); }
   .revive-panel textarea::placeholder { color: var(--fade); }
+  /* failed submits say so: red outline + placeholder, cleared on the next keystroke */
+  .revive-panel textarea[aria-invalid="true"] { border-color: rgba(248,113,113,0.6); }
+  .revive-panel textarea[aria-invalid="true"]::placeholder,
+  footer .sub input[aria-invalid="true"],
+  footer .sub input[aria-invalid="true"]::placeholder { color: #f87171; }
   .revive-send {
     justify-self: start;
     font-family: var(--mono); font-size: 1.2rem; font-weight: 300;
@@ -1177,7 +1188,7 @@
       <form class="sub" id="subForm" novalidate>
         <input id="subEmail" type="email" placeholder="your@email.com" autocomplete="email" spellcheck="false" aria-label="Email address">
         <button type="submit">Send&nbsp;&rarr;</button>
-        <button type="button" class="cancel" id="subCancel">Esc</button>
+        <button type="button" class="cancel" id="subCancel" aria-label="Cancel">Esc</button>
       </form>
     </footer>
   </div>
@@ -3877,10 +3888,27 @@ function openDetail(tile, s){
 
 drawer.querySelector('.close').onclick = closeDetail;
 scrim.onclick = closeDetail;
+// capture phase: runs before the menus' own Esc handlers close them, so one
+// Esc peels one layer: an open menu, then the adoption form, then the card
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
-  if (expandedTile && flipBack(expandedTile)) return;    // Esc turns the form back; the card itself
-  closeDetail();                                         // only closes via its close button
+  if (!document.getElementById('filterMenu').hidden || !aboutMenu.hidden) return;
+  if (e.target.closest && e.target.closest('.topbar input, footer input')) return;   // search / sign-up own their Esc
+  if (expandedTile) { if (!flipBack(expandedTile)) collapseTile(); return; }
+  closeDetail();
+}, true);
+// Tab stays inside an open card (the tiles behind it sit off-screen and the
+// canvas is locked); Esc or the close button is the way out
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Tab' || !expandedTile || !expandedTile.contains(document.activeElement)) return;
+  const f = [...expandedTile.querySelectorAll('button, a[href], input, textarea')]
+    .filter(el => !el.closest('[inert]') && el.getClientRects().length);
+  if (!f.length) return;
+  const i = f.indexOf(document.activeElement);
+  const next = e.shiftKey ? (i <= 0 ? f[f.length - 1] : f[i - 1])
+                          : (i === -1 || i === f.length - 1 ? f[0] : f[i + 1]);
+  e.preventDefault();
+  next.focus();   // may scroll the adoption form; the grid's own scroll is reset by its guard
 });
 
 /* ---------- Revive request ---------- */
@@ -3894,7 +3922,9 @@ function resetRevive(){
   reviveToggle.classList.remove('on');
   reviveSent.hidden = true;
   reviveText.value = '';
+  reviveText.removeAttribute('aria-invalid');
 }
+reviveText.addEventListener('input', () => reviveText.removeAttribute('aria-invalid'));
 
 reviveToggle.onclick = () => {
   const opening = revivePanel.hidden;
@@ -3906,7 +3936,7 @@ reviveToggle.onclick = () => {
 
 document.getElementById('revive-send').onclick = () => {
   const why = reviveText.value.trim();
-  if (!why) { reviveText.focus(); return; }
+  if (!why) { reviveText.setAttribute('aria-invalid', 'true'); Sound.play('state.error'); reviveText.focus(); return; }
   Sound.play('action.send');
   location.href = 'mailto:hey@konpo.studio'
     + '?subject=' + encodeURIComponent('Adopt ' + openId + ' — Application')
@@ -3933,8 +3963,12 @@ document.getElementById('revive-send').onclick = () => {
   function hide(){
     foot.classList.remove('subscribing');
     email.value = '';
+    email.removeAttribute('aria-invalid');
     Sound.play('toggle.off');
   }
+  email.addEventListener('input', () => email.removeAttribute('aria-invalid'));
+  // no Esc key on a phone: the cancel control shows a cross there
+  if (matchMedia('(hover: none)').matches) cancel.textContent = '✕';
 
   open.addEventListener('click', show);
   open.addEventListener('keydown', e => {
@@ -3949,7 +3983,7 @@ document.getElementById('revive-send').onclick = () => {
   form.addEventListener('submit', e => {
     e.preventDefault();
     const v = email.value.trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { email.focus(); Sound.play('state.error'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { email.setAttribute('aria-invalid', 'true'); email.focus(); Sound.play('state.error'); return; }
     Sound.play('action.send');
     location.href = 'mailto:hey@konpo.studio'
       + '?subject=' + encodeURIComponent('Symbol Shelter — sign me up')
