@@ -636,6 +636,8 @@
   .afield textarea { resize: vertical; min-height: 9rem; }
   .afield input::placeholder, .afield textarea::placeholder { color: var(--fade); }
   .afield:focus-within label { color: var(--purple-vivid); }
+  /* a failed submit names what's missing, on the field itself */
+  .afield:has([aria-invalid="true"]) label { color: #f87171; }
   .aband {
     margin-top: auto; position: sticky; bottom: 0; z-index: 3;
     font-family: var(--mono); font-size: 1.2rem; letter-spacing: 0.08em; text-transform: uppercase;
@@ -764,9 +766,12 @@
     border: 1px solid var(--line); border-radius: 0.8rem;
     padding: 1rem 1.4rem; pointer-events: none;
     opacity: 0; transform: translateY(0.4rem); filter: blur(6px);
-    transition: opacity .3s, transform .3s, filter .3s;
+    /* hidden, not just transparent: the link inside opts back into pointer
+       events, and at rest the toast sits over the wordmark */
+    visibility: hidden;
+    transition: opacity .3s, transform .3s, filter .3s, visibility 0s .3s;
   }
-  #copyright-toast.show { opacity: 1; transform: none; filter: blur(0); }
+  #copyright-toast.show { opacity: 1; transform: none; filter: blur(0); visibility: visible; transition-delay: 0s; }
   #copyright-toast .c { color: var(--purple-vivid); }
   #copyright-toast a {
     pointer-events: auto; cursor: pointer;
@@ -2602,16 +2607,50 @@ function applyGridTransform(){
   // Tab-focusing an off-screen tile would scroll the overflow:hidden grid box and
   // desync every pan calculation — pan the canvas to it instead
   grid.addEventListener('scroll', () => { grid.scrollLeft = 0; grid.scrollTop = 0; });
+  const onScreen = el => {
+    const b = el.getBoundingClientRect();
+    return b.right > 0 && b.left < innerWidth && b.bottom > 0 && b.top < innerHeight;
+  };
+  let quietFocus = false;
   grid.addEventListener('focusin', e => {
+    if (quietFocus) return;
     const t = e.target.closest('.tile');
     if (!t || t.classList.contains('expanded') || expandedTile) return;
     const r = t.getBoundingClientRect(), m = 24;
+    // clear the top bar when the viewport has the room, so the ring isn't under the search field
+    const bar = document.querySelector('.topbar').getBoundingClientRect().bottom + 12;
+    const mTop = (innerHeight - bar - m) >= r.height ? bar : m;
     let dx = 0, dy = 0;
     if (r.left < m) dx = m - r.left;
     else if (r.right > innerWidth - m) dx = (innerWidth - m) - r.right;
-    if (r.top < m) dy = m - r.top;
+    if (r.top < mTop) dy = mTop - r.top;
     else if (r.bottom > innerHeight - m) dy = (innerHeight - m) - r.bottom;
     if (dx || dy) { GRID.ox += dx; GRID.oy += dy; GRID.vx = GRID.vy = 0; applyGridTransform(); }
+    // the wrap re-normalises the offset by whole blocks, so the copy that took
+    // focus can land a block away while another copy fills the spot we panned
+    // to. Hand focus to the copy the visitor can actually see.
+    if (GRID.tiling && !onScreen(t)) {
+      const twin = [...grid.querySelectorAll(`.tile[data-id="${t.dataset.id}"]`)].find(onScreen);
+      if (twin) { quietFocus = true; twin.focus({ preventScroll: true }); quietFocus = false; }
+    }
+  });
+  // Focus can now rest on a copy outside the tab ring, so the browser's own
+  // Tab order would jump. Step through the marks in ring order ourselves.
+  grid.addEventListener('keydown', e => {
+    if (e.key !== 'Tab' || expandedTile || !GRID.tiling) return;
+    const t = e.target.closest('.tile');
+    if (!t || e.target !== t) return;
+    const ring = [...grid.querySelectorAll('.tile[tabindex="0"]')];
+    const i = ring.findIndex(x => x.dataset.id === t.dataset.id);
+    const next = ring[i + (e.shiftKey ? -1 : 1)];
+    if (!next) {
+      // leaving the field: continue the browser's Tab from the ring copy so
+      // focus exits to the toolbar or the footer, not into the middle of the grid
+      if (ring[i] && ring[i] !== t) { quietFocus = true; ring[i].focus({ preventScroll: true }); quietFocus = false; }
+      return;
+    }
+    e.preventDefault();
+    next.focus({ preventScroll: true });   // focusin pans to it and hands off to its visible copy
   });
 
   grid.addEventListener('mouseover', e => {
@@ -2839,8 +2878,11 @@ function syncURL(replace){
     const qs = p.toString();
     url = '/' + (qs ? '?' + qs : '');
   }
-  if (url === location.pathname + location.search) return;
-  history[replace ? 'replaceState' : 'pushState']({ sym: sym || null }, '', url);
+  // the view rides in history state too: the /s/ stub path and a bare / can't
+  // carry it, and a phone's default view isn't grid
+  const state = { sym: sym || null, view: VIEW };
+  if (url === location.pathname + location.search) { history.replaceState(state, '', url); return; }
+  history[replace ? 'replaceState' : 'pushState'](state, '', url);
 }
 
 // Bring a mark into view and open it, wherever it happens to sit on the infinite canvas.
@@ -2915,16 +2957,22 @@ function applyURLState(){
     if (sym) focusSymbol(sym);
     return;
   }
+  // ?view= first, then the view this entry was recorded in (history state)
+  const view = p.get('view') || (history.state && history.state.view) || null;
   if (!applyURLState._first
       && cat === FILTER && q === QUERY
-      && (!p.has('view') || p.get('view') === VIEW)
-      && (sym || null) === (expandedId || openId)) return;
+      && (!view || view === VIEW)) {
+    if ((sym || null) === (expandedId || openId)) return;
+    // Back out of an open mark: just close it. A full re-render would throw
+    // away the canvas pan, and on phones Back is how the drawer gets closed.
+    if (!sym) { collapseTile(); closeDetail(); return; }
+  }
 
   collapseTile(true, true);
   closeDetail();
-  // no ?view= means grid — except on the very first pass, where the visitor's
-  // saved preference wins. A Back/Forward restore never rewrites that preference.
-  if (p.has('view')) setView(p.get('view'), { norender: true, persist: false });
+  // no view recorded means grid, except on the very first pass, where the
+  // visitor's saved preference wins. A Back/Forward restore never rewrites that preference.
+  if (view) setView(view, { norender: true, persist: false });
   else if (!applyURLState._first) setView('grid', { norender: true, persist: false });
 
   FILTER = filterItems().some(([c]) => c === cat) ? cat : 'All';
@@ -3542,15 +3590,19 @@ function flipBack(tile){
   const flip = tile.querySelector('.xc-flip');
   if (!flip || !flip.classList.contains('flipped')) return false;
   flip.classList.remove('flipped');
+  const back = tile.querySelector('.xc-face.back');
+  const hadFocus = back.contains(document.activeElement);
   tile.querySelector('.xc-face.front').removeAttribute('inert');
-  tile.querySelector('.xc-face.back').setAttribute('inert', '');
+  back.setAttribute('inert', '');
+  // inerting the form drops focus to <body>; hand it to the button that opened it
+  if (hadFocus) { const r = tile.querySelector('.xc-controls .revive'); if (r) r.focus({ preventScroll: true }); }
   Sound.play('toggle.off');
   return true;
 }
 
 function adoptFormHTML(s){
   const f = (id, label, ph, type) =>
-      `<div class="afield"><label for="${id}">${label}</label>`
+      `<div class="afield"><label for="${id}">${label}<span class="aerr"></span></label>`
     + `<input id="${id}" type="${type}" placeholder="${ph}" autocomplete="${type === 'email' ? 'email' : 'off'}"></div>`;
   return `<form class="xc-adopt" novalidate>`
     + `<button type="button" class="aback">Back</button>`
@@ -3560,7 +3612,7 @@ function adoptFormHTML(s){
     + f('a-name', 'Name', 'Your name', 'text')
     + f('a-org', 'Organization', 'Studio, company, or just you', 'text')
     + f('a-email', 'Email', 'you@example.com', 'email')
-    + `<div class="afield"><label for="a-case">Make your case</label>`
+    + `<div class="afield"><label for="a-case">Make your case<span class="aerr"></span></label>`
     +   `<textarea id="a-case" placeholder="Why this mark, and why you…"></textarea></div>`
     + `<p class="asent mono" hidden>Application drafted — send it from your mail app.</p>`
     + `<button type="submit" class="aband">Submit Application</button>`
@@ -3578,14 +3630,28 @@ function wireAdoptForm(tile, s){
     e.stopPropagation();
     if (e.key === 'Escape') flipBack(tile);
   });
+  // a field flagged by a failed submit clears as soon as it's edited
+  const markField = (el, err) => {
+    el.setAttribute('aria-invalid', err ? 'true' : 'false');
+    el.closest('.afield').querySelector('.aerr').textContent = err ? ' · ' + err : '';
+  };
+  form.addEventListener('input', e => {
+    if (e.target.getAttribute('aria-invalid') === 'true') markField(e.target, false);
+  });
   form.addEventListener('submit', e => {
     e.preventDefault();
     const name = $('#a-name').value.trim(), org = $('#a-org').value.trim();
     const email = $('#a-email').value.trim(), why = $('#a-case').value.trim();
-    const bad = !name || !why || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const checks = [
+      ['#a-name',  !name && 'required'],
+      ['#a-email', !email ? 'required' : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && 'check the address'],
+      ['#a-case',  !why && 'required'],
+    ];
+    checks.forEach(([sel, err]) => markField($(sel), err));
+    const bad = checks.find(([, err]) => err);
     if (bad) {
       Sound.play('state.error');
-      (!name ? $('#a-name') : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? $('#a-email') : $('#a-case')).focus();
+      $(bad[0]).focus();
       return;
     }
     Sound.play('action.send');
@@ -3980,6 +4046,8 @@ document.getElementById('toast-case').onclick = () => {
     setTimeout(() => {                                          // then the index + footer
       URL_READY = true;
       applyURLState();                                          // ?sym / ?cat / ?q / ?view / #SYM
+      // stamp the landing entry with the view it opened in, so Back to it restores that view
+      history.replaceState({ ...(history.state || {}), view: VIEW }, '', location.pathname + location.search);
       document.body.classList.add('t3');
     }, 1200 * rm);
   }
