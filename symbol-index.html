@@ -2371,15 +2371,17 @@ function renderGrid(reveal){
   // enough of it — a search down to two marks would just wallpaper the same tile.
   // Below two screenfuls the set lays out once, centred, and pans within its bounds.
   const screenful = Math.ceil(vpW / cell) * Math.ceil(vpH / cell);
-  // the zoomed-out view exists to roam the whole field: it wallpapers whenever
-  // the set isn't tiny, regardless of how many cells fit one screen
-  GRID.tiling = VIEW === 'zoom' ? N >= 12 : N >= screenful * 2;
-
   let COLS = Math.max(2, Math.round(Math.sqrt(N * (vpW / vpH))));
   COLS = Math.min(COLS, N);
   const ROWS = Math.ceil(N / COLS);
   const bW = COLS * cell, bH = ROWS * cell;
   GRID.bW = bW; GRID.bH = bH;
+  // the zoomed-out view exists to roam the whole field: it wallpapers whenever
+  // the set isn't tiny, regardless of how many cells fit one screen. A set whose
+  // block outsizes the screen both ways also wallpapers: no repeat can show on
+  // one screen, and a big display (the full catalogue is under two screenfuls
+  // there) would otherwise pan straight off the end of the set
+  GRID.tiling = VIEW === 'zoom' ? N >= 12 : (N >= screenful * 2 || (bW >= vpW && bH >= vpH));
 
   // the reveal wave starts ON the centre-most card in the viewport and radiates
   // outwards ring by ring — a pulse of cards, not a gradient. Rings are capped
@@ -2513,6 +2515,7 @@ function applyGridTransform(){
       const kx = lx > 0 ? 1 : lx < innerWidth - fieldW ? -1 : 0;
       const ky = kx ? 0 : ly > 0 ? 1 : ly < innerHeight - fieldH ? -1 : 0;
       if (!kx && !ky) break;
+      if (GRID.lock.closing) { GRID.lock = null; canvas.classList.remove('reflowing'); break; }   // mid-close: settle, re-wrap below
       if (rebaseCard(kx, ky)) continue;
       if (!expandedTile) break;            // still opening (fit-pan): leave it, the next pan rebases
       collapseTile(false, true);           // releases the lock (the wrap below takes over); neighbours ease home
@@ -2567,7 +2570,11 @@ function applyGridTransform(){
     const dx = e.clientX - lastX, dy = e.clientY - lastY;
     lastX = e.clientX; lastY = e.clientY;
     moved += Math.abs(dx) + Math.abs(dy);
-    if (dx || dy) document.getElementById('canvas').classList.remove('reflowing');   // instant drag
+    if (dx || dy) {                                                 // instant drag
+      const cv = document.getElementById('canvas');
+      cv.classList.remove('reflowing');
+      if (GRID.lock && GRID.lock.closing) releaseLock(cv);
+    }
     GRID.ox += dx; GRID.oy += dy;
     GRID.vx = dx; GRID.vy = dy;
     applyGridTransform();
@@ -3305,7 +3312,9 @@ function expandTile(tile, s){
 
   canvas.classList.add('reflowing');
   if (GRID.tiling) {
-    GRID.lock = { ox: GRID.ox, oy: GRID.oy, tile,        // tile: the card, for rebaseCard
+    const L = GRID.lock && GRID.lock.closing ? GRID.lock : null;   // a close still easing: keep its wrap
+    GRID.lock = L ? { ox: L.ox, oy: L.oy, wx: L.wx, wy: L.wy, tile }
+      : { ox: GRID.ox, oy: GRID.oy, tile,                // tile: the card, for rebaseCard
       wx: ((GRID.ox % GRID.bW) + GRID.bW) % GRID.bW - GRID.bW,
       wy: ((GRID.oy % GRID.bH) + GRID.bH) % GRID.bH - GRID.bH };
   }
@@ -3360,19 +3369,50 @@ function expandTile(tile, s){
   syncURL();                               // the open mark is the shareable thing
 }
 
-function collapseTile(immediate, silent){
-  if (!expandedTile) { switchTo = null; return; }   // Esc / close / a view or filter change also cancels a queued switch
-  const wasOpen = expandedId;
-  const canvas = document.getElementById('canvas');
-  // hand the wrap back. The correction is a whole block (invisible), but the
-  // canvas still carries .reflowing's .55s transform transition, so suppress it
-  // or the whole field would slide across while the card shrinks.
-  GRID.lock = null; GRID.card = null;
+// .reflowing comes off only once the field is truly at rest: a newer card may
+// be open, queued (switchTo) or still reversing when an older close's restore
+// fires, and pulling the class then snaps it mid-flight
+function settleReflow(canvas){
+  if (expandedTile || switchTo) return;
+  const busy = canvas.getAnimations({ subtree: true })
+    .filter(a => /^(width|height|translate|transform)$/.test(a.transitionProperty));
+  if (busy.length) { Promise.all(busy.map(a => a.finished.catch(() => {}))).then(() => settleReflow(canvas)); return; }
+  if (GRID.lock && GRID.lock.closing) releaseLock(canvas);
+  canvas.classList.remove('reflowing');
+}
+
+// drop the wrap lock: the canvas re-wraps by whole blocks, instantly (only
+// called with the field at rest, where that is invisible)
+function releaseLock(canvas){
+  GRID.lock = null;
   const _tr = canvas.style.transition;
   canvas.style.transition = 'none';
   applyGridTransform();
   void canvas.offsetWidth;
   canvas.style.transition = _tr;
+}
+
+function collapseTile(immediate, silent){
+  if (!expandedTile) { switchTo = null; return; }   // Esc / close / a view or filter change also cancels a queued switch
+  const wasOpen = expandedId;
+  const canvas = document.getElementById('canvas');
+  // hand the wrap back. When the card's fit-pan crossed a block boundary the
+  // re-wrap is a whole-block teleport: invisible at rest, but mid-close it swaps
+  // the shrinking card and its easing neighbours for twins already at rest (a
+  // visible snap). So while the close animates the lock stays on, marked
+  // closing; settleReflow or a drag hands it back, and a card opened meanwhile
+  // inherits it. The canvas itself is never touched here, so a fit-pan a fast
+  // click cut short eases on instead of snapping to its end.
+  GRID.card = null;
+  if (GRID.lock) {
+    const L = GRID.lock;
+    const wx = ((GRID.ox % GRID.bW) + GRID.bW) % GRID.bW - GRID.bW;
+    const wy = ((GRID.oy % GRID.bH) + GRID.bH) % GRID.bH - GRID.bH;
+    const same = Math.abs(L.wx + (GRID.ox - L.ox) - wx) < 0.5 && Math.abs(L.wy + (GRID.oy - L.oy) - wy) < 0.5;
+    if (same) GRID.lock = null;                                   // nothing to re-wrap
+    else if (!immediate && canvas.classList.contains('reflowing')) { L.closing = true; L.tile = null; }
+    else releaseLock(canvas);
+  } else applyGridTransform();          // short set: the clamp may widen back; it eases
   document.body.classList.remove('card-open');
   const tile = expandedTile;
   const s = S.find(x => x.id === tile.dataset.id);
@@ -3398,8 +3438,7 @@ function collapseTile(immediate, silent){
       if (s.status === 'Adopted') tile.classList.add('adopted-mark');
       tile.innerHTML = tileInner(s);
     }
-    // a newer card may be open (or opening) by now: its transitions still need the class
-    if (!expandedTile) canvas.classList.remove('reflowing');
+    settleReflow(canvas);
   };
   if (immediate) restore(); else setTimeout(restore, 560);
   if (!immediate && !silent) Sound.play('drawer.close');
