@@ -6,3 +6,4 @@ scripts
 package.json
 package-lock.json
 pilot/
+*.md

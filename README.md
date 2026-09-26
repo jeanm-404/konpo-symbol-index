@@ -8,12 +8,13 @@ A logo takes hundreds of proposals. Only one gets picked. The rest get killed
 for reasons like "too circular" or "a CEO who hates circles", and usually end
 up in a folder called "old."
 
-Symbol Shelter is a public archive of 70 of those rejected marks. Each one is
+Symbol Shelter is a public archive of 69 of those rejected marks. Each one is
 drawn to a strict coordinate contract, annotated with its construction
 geometry, and **up for adoption**. Every mark has a name, a category, a
 rejection reason, and an Adopt button that opens an application: who you are,
-what you're building, and why this mark should live with you. Adopted marks
-show their adopter, their case, and a link to the new home.
+what you're building, and why this mark should live with you. The data also
+supports Adopted marks (adopter, case, link to the new home); none are adopted
+yet. `OVERVIEW.md` has the philosophy and the full feature list.
 
 ## Where the marks come from
 
@@ -46,7 +47,7 @@ UI sounds are synthesized live in WebAudio, with no audio files.
 
 - id        "SYM-001"…"SYM-096" with gaps. Removed from the index: 003, 008,
   009, 025, 031, 032, 033, 034, 036, 037, 047, 051, 054, 057, 060, 063, 064,
-  065, 066, 070, 071, 076, 087, 088, 091, 092. Ids keep their numbers: a
+  065, 066, 070, 071, 076, 080, 087, 088, 091, 092. Ids keep their numbers: a
   retired number is never reused. Array order is curated, not chronological: the twelve
   best marks lead (089, 050, 010, 012, 015, 026, 024, 022, 038, 048, 095,
   086, which get the slow one-by-one reveal), the rest follow in catalogue
@@ -121,8 +122,9 @@ The shell is the draggable-canvas redesign contributed in PR #1 (search,
 filters, view toggle, expand cards) carrying the Shelter's catalogue.
 
 - Intro: black screen, two lines typed in word-by-word (blur-in), the count
-  and then the shelter, ~10s total. It plays once per browser (localStorage);
-  returning visitors, deep links, and reduced-motion all skip it. Click/Esc/
+  and then the shelter, ~10s total. It currently plays on every load
+  (`INTRO_EVERY_LOAD = true`; set false for once per browser via localStorage);
+  deep links and reduced-motion skip it. On phones each sentence holds one line. Click/Esc/
   Enter skips too. Then the staged reveal: top bar, then canvas + footer.
 - The index is an infinite draggable canvas (pointer drag with momentum,
   trackpad pan; on touch, a 14px tap threshold keeps swipes from opening
@@ -131,8 +133,11 @@ filters, view toggle, expand cards) carrying the Shelter's catalogue.
   wallpapers whenever the set isn't tiny. Top bar: a "Symbol Shelter"
   wordmark that opens an about dropdown (what this is, one line on Konpo,
   and links to Instagram / X / Substack / konpo.studio), a view toggle
-  cycling grid → zoomed-out grid
-  (24rem tiles) → list whose icon shows the current view, search (`/`
+  cycling grid → zoomed out → far, whose icon morphs between the three
+  (the list view still exists behind `LIST_VIEW = false`); switching zooms
+  about the screen centre, and pressing with a card open closes it first,
+  then zooms. In the far view labels and hover step aside and a tap zooms in
+  and opens the mark. Also: search (`/`
   focuses; matches id / name / category / spec / reason / status), category
   filter whose label counts what's actually on screen. Arrival plays a
   centre-out reveal: the wave starts on the centre-most card and radiates
@@ -163,16 +168,24 @@ filters, view toggle, expand cards) carrying the Shelter's catalogue.
   Name / Organization / Email / Make your case → Submit Application drafts a
   mailto to hey@konpo.studio ("Adopt SYM-0XX: application") and throws
   ribbons from both side edges. Back/Esc flips it back.
-- List view: compact index table (glyph, id, name, category, spec, status);
+- List view (off, `LIST_VIEW = false`): compact index table (glyph, id, name, category, spec, status);
   a row opens the right drawer: Notes/Turn/Explode/Play stage, scale ramp
   (96/64/44/28/16px), Status/Reason/Category/Intake/Attachment, the
   "Adopted by" section on adopted marks, and the adopt panel.
 - The Konpo logomark card closes the untouched catalogue (accent purple,
   playing the Konpo Notes four-dot dance on loop (anim/konpo.json); the
   fifth, center circle is tile-colored so it reads as cutting the dots).
-  Links to konpo.studio. Searches and filters set it aside.
-- Bottom-right chip (styled like the search bar): "Get notified when we add
-  more" opens an inline email field that drafts a mail (no backend by design).
+  Links to konpo.studio; hover inverts it (oklab mix, 0.6s in, 0.8s out).
+  Searches and filters set it aside.
+- Color: the moon icon opens a one-hue ramp on a random hue that recolors the
+  marks, tiles and 3D; Select locks it in, a second press on the icon keeps
+  it, Original returns to black. Every visit starts on black (no persistence).
+- Menus (about, All filter, color) share one glass style and one motion
+  (`menuMotion`: ease-in drop, reversible mid-flight). Desktop glass uses the
+  `#glass-lens` refraction; touch devices get a plain frost.
+- Bottom-right chip (styled like the search bar): "New marks soon. Notify me"
+  ("Notify me" on phones) opens an inline email field that drafts a mail (no
+  backend by design).
 - Card text (name, description, meta, controls, close) blurs in only after
   the card finishes growing (~580ms); until then the chrome is also
   non-interactive so a hasty second tap can't hit the invisible close button.
@@ -219,18 +232,18 @@ lottie-web is self-hosted at `/vendor/lottie.min.js` (no CDN dependency);
 
 ## Known state / pending
 
-- Rich per-mark construction geometry (orbits, radii, pitches) exists for
-  001–015 and the curated twelve (022, 024, 026, 038, 048, 050, 086, 089, 095
-  were derived from measured anatomy); other marks carry baseline
-  auto-annotations (bbox frame, axes, center, dims, part count).
-- Rejection reasons are set on the 13 originally-catalogued marks; the rest
-  read "Unknown" pending their paperwork.
-- Current adopters (Tessera, Swarm) are placeholder fiction pending real ones.
-- Category filters were removed at 15 marks; at 70 with four real categories
-  they likely earn their way back (chips CSS still exists, unused).
+- Every mark has a full record (2026-09-26): reason, intake, attachment and a
+  geometry spec, with the corner notes synced to the spec. Drawn construction
+  layers are richest on 001–015 and the curated twelve; the rest carry
+  baseline auto-annotations (bbox frame, axes, center, dims, part count).
+- No marks are adopted; the old placeholder adopters were removed.
+- The category filter is live in the All menu (four families).
 - Known dead CSS from the canvas port (`.featured`, `.chip(s)`, `.views`,
   `.controls`, `.tile.hide`) is harmless but could be swept.
-- "Sign up for updates" in the footer is not wired to anything yet (the RSS
-  feed covers the subscribe case for now).
+- "Notify me" drafts an email; there is no list behind it yet (the RSS feed
+  covers the subscribe case for now).
+- Phones: cards open at roughly 30 to 40 fps; a FLIP overlay card is proposed,
+  not built.
+- No analytics yet.
 - Fonts fall back to Helvetica Neue; the real Neue Haas webfont would tighten
   the header noticeably.
