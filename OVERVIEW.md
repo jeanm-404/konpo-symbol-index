@@ -68,10 +68,10 @@ Every mark has an id (`SYM-001` to `SYM-096`; retired numbers are never reused),
 ### The card
 - **Opens in place.** A tile grows into a card and pushes its neighbours aside. The canvas can still pan while it's open.
 - **What it shows:** the mark, its description and its full record.
-- **Turn:** rotates the mark as a solid 3D object (Three.js, cumulative 90° turns).
+- **Turn:** the mark stands up as its 3D solid (Three.js) and you spin it by dragging, with a short glide when you let go. One finger or the mouse; no pinch, no zoom. Turn again lays it back into the drawing.
 - **Explode:** pulls the mark apart into its parts.
 - **Notes:** replays the construction layer with the spec written as corner notes.
-- **Play:** runs the mark's own motion cycle on the fifteen animated marks. Each loop comes from the mark's path data and has its own verb: the Link tugs taut, the Dahlia blooms petal by petal, the Turbine's hemispheres shear past each other.
+- **The controls take turns.** Turn reassembles an exploded mark and clears the notes first; Explode and Notes lay a spinning mark back down before they act.
 - **Adopt:** the card flips over to an application (name, organization, email, "make your case"), which drafts an email to Konpo.
 
 ### Color

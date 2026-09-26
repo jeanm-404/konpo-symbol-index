@@ -476,6 +476,9 @@
   .xc-stage.solid-live > svg .mark { visibility: hidden; }
   .xc-stage.solid-live.solid-handback > svg .mark { visibility: visible; }
   .xc-stage.solid-handback > .solid-canvas { opacity: 0; transition: opacity .18s ease; }
+  /* Turn: the solid is spun by hand, one pointer, no pinch or page zoom */
+  .xc-stage.solid-held { cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
+  .xc-stage.solid-held.grabbing { cursor: grabbing; }
   .tile:not(.expanded).mark-anim .mark > * {
     animation: settle .46s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
@@ -4353,8 +4356,9 @@ const X_MARK =
   + '</svg>';
 
 // the card's controls act on the drawing: they hold until a turn still running on the
-// card's mark has landed (the press still counts, it just lands after)
-const afterTurn = (tile, fn) => (SOLID ? SOLID.whenLanded(tile) : Promise.resolve())
+// card's mark has landed, and a mark held up in 3D folds back first (the press still
+// counts, it just lands after)
+const afterTurn = (tile, fn) => (SOLID ? (SOLID.holding(tile) ? SOLID.letGo(tile) : SOLID.whenLanded(tile)) : Promise.resolve())
   .then(() => { if (tile.classList.contains('expanded')) fn(); });
 
 // Phones: the card's mark is drawn at 40% of the text column. Marks sit on an 80-90u frame
@@ -4396,13 +4400,31 @@ function fillTileDetail(tile, s){
 
   const controls = tile.querySelector('.xc-controls');
 
+  // Turn: the mark stands up as its 3D solid, spun by hand; Turn again lays it back down.
+  // It works on the whole drawing, so an exploded mark reassembles and the notes step aside first
   const tBtn = document.createElement('button'); tBtn.textContent = 'Turn'; controls.appendChild(tBtn);
-  let angle = 0;
-  tBtn.onclick = () => afterTurn(tile, () => {
-    angle += 90;
-    // rotate the static svg and any mounted lottie slot together
-    stage.querySelectorAll(':scope > svg, :scope > .lottie-slot').forEach(el => el.style.transform = `rotate(${angle}deg)`);
-  });
+  let angle = 0, turnPending = false;
+  const findBtn = label => [...controls.querySelectorAll('button')].find(b => b.textContent === label);
+  tBtn.onclick = () => {
+    if (SOLID && SOLID.holding(tile)) { SOLID.letGo(tile); tBtn.classList.remove('active'); return; }
+    if (turnPending) return;
+    turnPending = true; tBtn.classList.add('active');
+    const xBtn = findBtn('Assemble'), wasExploded = !!xBtn && stage.classList.contains('exploded');
+    if (wasExploded) xBtn.click();                                          // parts travel home (1.4s)
+    const nBtn = findBtn('Notes'); if (nBtn && nBtn.classList.contains('active')) nBtn.click();
+    Promise.all([loadSolid(), new Promise(r => setTimeout(r, wasExploded ? 1450 : 0))]).then(() => {
+      turnPending = false;
+      if (!tile.classList.contains('expanded')) return;
+      if (stage.classList.contains('exploded') || (nBtn && nBtn.classList.contains('active'))) { tBtn.classList.remove('active'); return; }   // pressed again meanwhile
+      if (!SOLID) {                                                         // no WebGL: the flat quarter turn
+        tBtn.classList.remove('active');
+        angle += 90; stage.querySelectorAll(':scope > svg').forEach(el => el.style.transform = `rotate(${angle}deg)`);
+        return;
+      }
+      SOLID.hold(tile, s, () => tBtn.classList.remove('active'));
+      Sound.play('toggle.on');
+    });
+  };
 
   if (s.explode && !MOBILE()) {             // phones: the card-wide mark leaves no room to explode into
     const btn = document.createElement('button'); btn.textContent = 'Explode'; controls.appendChild(btn);
@@ -4422,6 +4444,7 @@ function fillTileDetail(tile, s){
   const aBtn = document.createElement('button'); aBtn.textContent = 'Notes'; controls.appendChild(aBtn);
   let annotOn = false;
   aBtn.onclick = () => {
+    if (SOLID && SOLID.busy(tile)) { afterTurn(tile, () => aBtn.onclick()); return; }   // notes measure the drawing: a turn lands first
     const svgEl = stage.querySelector(':scope > svg'), nEl = stage.querySelector('.notes');
     if (annotOn) {                                   // hide
       svgEl.classList.remove('show-construction'); if (nEl) nEl.classList.remove('on');
@@ -4448,49 +4471,6 @@ function fillTileDetail(tile, s){
       annotOn = true;
     }
   };
-
-  // Play: the mark's motion cycle, mounted under the static svg on demand
-  if (ANIMATED.has(s.id) && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const pBtn = document.createElement('button'); pBtn.textContent = 'Play'; controls.appendChild(pBtn);
-    let cardAnim = null, cycling = false;
-    const startPlay = () => {
-      if (!window.lottie) { loadLottie().then(startPlay, () => {}); return; }   // first Play fetches the player
-      if (!tile.classList.contains('expanded')) return;             // card closed while we waited
-      if (!cardAnim) {
-        const slot = document.createElement('div');
-        slot.className = 'lottie-slot';
-        const svgEl = stage.querySelector(':scope > svg');
-        slot.style.transform = svgEl.style.transform;   // inherit any Turn rotation
-        stage.insertBefore(slot, svgEl);                // under the svg: construction stays on top
-        cardAnim = lottie.loadAnimation({
-          container: slot, renderer: 'svg', loop: false, autoplay: false,
-          path: '/anim/sym-' + s.id.slice(4) + '.json'
-        });
-        cardAnim.addEventListener('complete', () => {
-          cycling = false;
-          cardAnim.goToAndStop(0, true);   // frame 0 == final frame: invisible reset
-          pBtn.classList.remove('active');
-        });
-        tile._cardAnim = cardAnim;         // owned by the card: destroyed on collapse
-        gridAnims.push(cardAnim);
-      }
-      stage.classList.add('lottie-live');
-      cycling = true;
-      cardAnim.goToAndPlay(0, true);
-    };
-    pBtn.onclick = () => {
-      if (cycling) return;                              // mid-cycle: let it finish
-      if (stage.classList.contains('exploded')) {
-        const xBtn = [...controls.querySelectorAll('button')].find(b => b.textContent === 'Assemble');
-        if (xBtn) xBtn.click();
-        pBtn.classList.add('active');
-        setTimeout(startPlay, 1500);                    // wait out the reassembly travel
-        return;
-      }
-      pBtn.classList.add('active');
-      startPlay();
-    };
-  }
 
   if (!adopted) {
     const rBtn = document.createElement('button'); rBtn.className = 'revive'; rBtn.textContent = adoptLabel(s); controls.appendChild(rBtn);
@@ -4821,55 +4801,6 @@ function fillDrawer(s){
         el.style.transform = on ? `translate(${dx}px, ${dy}px)${rot}` : '';
       });
       btn.textContent = on ? 'Assemble' : 'Explode';
-    };
-  }
-
-  // Play: run the mark's motion cycle on the stage
-  if (ANIMATED.has(s.id) && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const pBtn = document.createElement('button');
-    pBtn.textContent = 'Play';
-    controls.appendChild(pBtn);
-    let cycling = false;
-    const ensureMounted = () => {
-      if (drawerAnim) return drawerAnim;
-      const slot = document.createElement('div');
-      slot.className = 'lottie-slot';
-      const svgEl = stage.querySelector(':scope > svg');
-      slot.style.transform = svgEl.style.transform; // inherit any Turn rotation
-      stage.insertBefore(slot, svgEl);              // under the svg: construction stays on top
-      drawerAnim = lottie.loadAnimation({
-        container: slot, renderer: 'svg', loop: false, autoplay: false,
-        path: '/anim/sym-' + s.id.slice(4) + '.json'
-      });
-      drawerAnim.addEventListener('complete', () => {
-        cycling = false;
-        drawerAnim.goToAndStop(0, true); // frame 0 == final frame: invisible reset
-        pBtn.classList.remove('active');
-      });
-      return drawerAnim;
-    };
-    let pendingPlay = false;
-    const startPlay = () => {
-      if (!window.lottie) { loadLottie().then(startPlay, () => {}); return; } // first Play fetches the player
-      // stage picked up new motion (or got re-exploded) while we waited: wait again
-      if (Date.now() < stageBusyUntil || stage.classList.contains('exploded')) {
-        setTimeout(startPlay, Math.max(60, stageBusyUntil - Date.now() + 60));
-        return;
-      }
-      pendingPlay = false;
-      const anim = ensureMounted();
-      stage.classList.add('lottie-live');
-      cycling = true;
-      anim.goToAndPlay(0, true);
-    };
-    pBtn.onclick = () => {
-      if (cycling || pendingPlay) return; // mid-cycle or queued: let it finish
-      const xBtn = [...controls.querySelectorAll('button')].find(b => b.textContent === 'Assemble');
-      if (xBtn) xBtn.click(); // reassemble first; the wait below covers the travel
-      pBtn.classList.add('active');
-      const delay = Math.max(0, stageBusyUntil - Date.now());
-      if (delay > 0) { pendingPlay = true; setTimeout(startPlay, delay + 60); }
-      else startPlay();
     };
   }
 

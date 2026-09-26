@@ -121,6 +121,7 @@ export function createSolid(){
     roundTint.copy(hex ? c.clone().multiplyScalar(lum > 0.5 ? 0.55 : 0.5) : new THREE.Color(0xe8e8e8));
     hemi.groundColor.set(hex && lum <= 0.5 ? 0x808080 : 0x1a1a1a);
     rounds.forEach(m => { m.color.copy(roundTint); m.emissive.copy(c); });
+    if (cur && cur.held) cur.dirty = true;
   }
 
   // a mark builds part by part: build() runs it through at once (a hover that needs it now),
@@ -244,6 +245,7 @@ export function createSolid(){
       canvas.remove(); canvas.style.cssText = ''; scene.remove(c.b.group);
     }
     const nx = queued; queued = null;
+    if (c && c.held) c.unbind();
     if (nx && nx.ok()) play(nx.tile, nx.s, nx.done, nx.ok);
     else if (nx) release(nx.tile);                          // dropped: nothing left to wait for
     if (c && !(cur && cur.tile === c.tile)) release(c.tile);
@@ -404,12 +406,118 @@ export function createSolid(){
     if (waving && waveTake) waveTake(tile);                // a card over the field ends the wave
     return false;
   }
+  // Turn in a card: the mark stands up as a solid the viewer spins by hand (one finger or the
+  // mouse; no pinch, no zoom). It inflates out of the drawing into a three-quarter pose, follows
+  // the drag with a short glide on release, and folds back into the drawing on letGo().
+  // While it is held, turns asked for elsewhere queue behind it like any other run
+  const PRESENT = new THREE.Quaternion().setFromEuler(new THREE.Euler(-0.32, 0.5, 0));
+  const ease = bez(0.66, 0.34);
+  function holding(tile){ return !!(cur && cur.held && cur.tile === tile && !cur.leaving); }
+  function hold(tile, s, onEnd){
+    const go = () => {
+      if (!tile.classList.contains('expanded')) return;
+      if (waving && waveTake) waveTake(tile);                // a turn already in flight lands first
+      if ((cur && cur.tile === tile) || (waving && waving.has(tile))) { whenLanded(tile).then(go); return; }
+      if (cur) { queued = null; finish(); }
+      queued = null;
+      start();
+    };
+    const start = () => {
+      const b = build(s), still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const run = cur = { tile, b, host: null, held: true, dirty: true, leaving: null, onEnd,
+        q: REST.clone(), light: 0, intro: { t0: performance.now(), dur: still ? 0 : 700 }, drag: null, w: [0, 0], tLast: 0 };
+      bufSize = 0;
+      if (!place(run)) { cur = null; return; }
+      scene.add(b.group);
+      const host = run.host;
+      host.classList.add('solid-held');
+      const dq = new THREE.Quaternion(), ax = new THREE.Vector3();
+      const spin = (dx, dy) => {                             // drag right turns it right, drag down tips it toward you
+        const k = Math.PI / Math.max(200, host.clientWidth), a = Math.hypot(dx, dy) * k;
+        if (!a) return;
+        ax.set(dy, dx, 0).normalize();
+        run.q.premultiply(dq.setFromAxisAngle(ax, a)); run.dirty = true;
+      };
+      const down = e => {
+        if (run.drag || run.leaving || (e.button && e.button !== 0)) return;   // one pointer: a second finger is ignored
+        e.preventDefault();
+        run.intro = null; run.light = Math.max(run.light, 0.001);
+        run.drag = { id: e.pointerId, x: e.clientX, y: e.clientY, t: performance.now() }; run.w = [0, 0];
+        try { host.setPointerCapture(e.pointerId); } catch (_) {}
+        host.classList.add('grabbing');
+      };
+      const move = e => {
+        const d = run.drag; if (!d || e.pointerId !== d.id) return;
+        const now = performance.now(), dx = e.clientX - d.x, dy = e.clientY - d.y, dt = Math.max(1, now - d.t);
+        spin(dx, dy);
+        run.w = [0.6 * run.w[0] + 0.4 * dx / dt, 0.6 * run.w[1] + 0.4 * dy / dt];   // px/ms, smoothed
+        d.x = e.clientX; d.y = e.clientY; d.t = now;
+      };
+      const up = e => {
+        const d = run.drag; if (!d || e.pointerId !== d.id) return;
+        if (performance.now() - d.t > 80) run.w = [0, 0];   // held still before letting go: no glide
+        run.drag = null; run.tLast = performance.now();
+        host.classList.remove('grabbing');
+      };
+      const stopGesture = e => e.preventDefault();          // Safari's pinch gesture events
+      host.addEventListener('pointerdown', down);
+      host.addEventListener('pointermove', move);
+      host.addEventListener('pointerup', up); host.addEventListener('pointercancel', up);
+      host.addEventListener('gesturestart', stopGesture); host.addEventListener('gesturechange', stopGesture);
+      run.unbind = () => {
+        host.removeEventListener('pointerdown', down); host.removeEventListener('pointermove', move);
+        host.removeEventListener('pointerup', up); host.removeEventListener('pointercancel', up);
+        host.removeEventListener('gesturestart', stopGesture); host.removeEventListener('gesturechange', stopGesture);
+        host.classList.remove('solid-held', 'grabbing');
+        if (run.onEnd) run.onEnd();
+      };
+      const step = now => {
+        if (cur !== run) return;
+        if (!tile.isConnected || !host.isConnected || !tile.classList.contains('expanded')) { finish(); return; }
+        const size = bufSize; fit(run); if (bufSize !== size) run.dirty = true;
+        if (run.leaving) {                                   // fold back into the drawing
+          const L = run.leaving, u = L.dur ? Math.min(1, (now - L.t0) / L.dur) : 1;
+          run.q.copy(L.q).slerp(REST, ease(u)); run.light = L.light * (1 - smooth(u)); run.dirty = true;
+          if (u >= 1) {
+            pose(b, REST, 0); host.classList.add('solid-handback');
+            setTimeout(() => { if (cur === run) finish(); }, 200);
+            return;
+          }
+        } else if (run.intro) {                              // stand up out of the drawing
+          const u = run.intro.dur ? Math.min(1, (now - run.intro.t0) / run.intro.dur) : 1;
+          run.q.copy(REST).slerp(PRESENT, ease(u)); run.light = smooth(u); run.dirty = true;
+          if (u >= 1) run.intro = null;
+        } else if (!run.drag && (run.w[0] || run.w[1])) {    // glide after a flick
+          const dt = Math.min(48, now - (run.tLast || now)); run.tLast = now;
+          spin(run.w[0] * dt, run.w[1] * dt);
+          const f = Math.exp(-dt / 320); run.w = [run.w[0] * f, run.w[1] * f];
+          if (Math.hypot(run.w[0], run.w[1]) < 0.004) run.w = [0, 0];
+        }
+        if (run.light < 1 && !run.intro && !run.leaving) { run.light = Math.min(1, run.light + 0.08); run.dirty = true; }
+        if (run.dirty) { run.dirty = false; pose(b, run.q, run.light); }
+        requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+    go();
+  }
+  // fold a held mark back into its drawing; resolves once the drawing is back
+  function letGo(tile){
+    if (!(cur && cur.held && cur.tile === tile)) return whenLanded(tile);
+    const run = cur;
+    if (!run.leaving) {
+      const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      run.drag = null; run.intro = null; run.w = [0, 0];
+      run.leaving = { t0: performance.now(), dur: still ? 0 : 650, q: run.q.clone(), light: run.light };
+    }
+    return whenLanded(tile);
+  }
   // resolves once no turn is running (or waiting to run) on this tile: the card's
   // controls act on the drawing, so they hold until the canvas has handed back
+  const busy = tile => !!((cur && cur.tile === tile) || (queued && queued.tile === tile) || (waving && waving.has(tile)));
   function whenLanded(tile){
-    const busy = (cur && cur.tile === tile) || (queued && queued.tile === tile) || (waving && waving.has(tile));
-    if (!busy) return Promise.resolve();
+    if (!busy(tile)) return Promise.resolve();
     return new Promise(r => { if (!waiters.has(tile)) waiters.set(tile, []); waiters.get(tile).push(r); });
   }
-  return { play, prepare, prepareIdle, wave, carry, whenLanded, tint, ready };
+  return { play, prepare, prepareIdle, wave, carry, whenLanded, busy, hold, letGo, holding, tint, ready };
 }

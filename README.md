@@ -156,9 +156,14 @@ filters, view toggle, expand cards) carrying the Shelter's catalogue.
   on itself), the Cradle's dome lifts and touches back down, and the
   Turbine's hemispheres shear past each other.
 - Click a tile → the card grows to 2×2 in place, pushing neighbours aside
-  hole-free. Controls: Turn (cumulative 90°), Explode (auto-vectors;
-  suppressed for single-compound or centered-part marks), Notes (annotation
-  replay), Play on the animated marks, and "Adopt <name>". A card collapses
+  hole-free. Controls: Turn (the 3D solid, spun by one-pointer drag with a
+  glide on release, no pinch or zoom; `SOLID.hold` / `letGo` in solid.js; Turn
+  again folds it back; without WebGL it falls back to a flat 90° turn),
+  Explode (auto-vectors; suppressed for single-compound or centered-part
+  marks), Notes (annotation replay), and "Adopt <name>". Controls act on the
+  drawing: Turn assembles and clears notes first; Explode and Notes wait for a
+  held solid to fold back (`afterTurn`). Play was removed 2026-09-26; the
+  lottie cycles remain in /anim. A card collapses
   via its close button or by opening another card; drags and empty-space
   clicks leave it alone. The canvas still pans with a card open. Adopted
   marks show Status "Rejected" struck through, the adopter in the meta grid
@@ -169,7 +174,7 @@ filters, view toggle, expand cards) carrying the Shelter's catalogue.
   mailto to hey@konpo.studio ("Adopt SYM-0XX: application") and throws
   ribbons from both side edges. Back/Esc flips it back.
 - List view (off, `LIST_VIEW = false`): compact index table (glyph, id, name, category, spec, status);
-  a row opens the right drawer: Notes/Turn/Explode/Play stage, scale ramp
+  a row opens the right drawer: Notes/Turn/Explode stage, scale ramp
   (96/64/44/28/16px), Status/Reason/Category/Intake/Attachment, the
   "Adopted by" section on adopted marks, and the adopt panel.
 - The Konpo logomark card closes the untouched catalogue (accent purple,
@@ -211,7 +216,7 @@ Tuned for cheap phones: tiles carry `content-visibility: auto` (off-screen
 copies skip style/layout/paint); hidden views are never built (list renders
 lazily, boot renders the grid exactly once); the reveal only animates tiles
 near the viewport; off-screen Konpo dance copies pause via
-IntersectionObserver; the card's Play animation is destroyed on collapse;
+IntersectionObserver; a held 3D solid is dropped the moment its card closes;
 height-only resizes (soft keyboard) don't rebuild the canvas; drawer blur
 applies to the viewport-sized `.grid`, not the huge canvas layer; touch
 devices drop backdrop-filter chips and use 16px inputs (no iOS focus zoom);
