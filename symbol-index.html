@@ -25,7 +25,6 @@
 <link rel="alternate" type="application/rss+xml" title="Symbol Shelter" href="/feed.xml">
 <link rel="alternate" type="application/feed+json" title="Symbol Shelter" href="/feed.json">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cstyle%3Ecircle%7Bfill:%230a0a0a%7D@media(prefers-color-scheme:dark)%7Bcircle%7Bfill:%23fff%7D%7D%3C/style%3E%3Ccircle cx='50' cy='50' r='32'/%3E%3C/svg%3E">
-<script defer src="/vendor/lottie.min.js"></script>
 <!-- Three.js for the solid 3D hover (solid.js): nothing is fetched until the first hover dwell -->
 <script type="importmap">
   { "imports": {
@@ -2448,11 +2447,31 @@ const ANIMATED = new Set(['SYM-001', 'SYM-002', 'SYM-004', 'SYM-010', 'SYM-012',
   'SYM-086', 'SYM-089', 'SYM-095']);
 // lottie-web loads deferred from a CDN; when the intro is skipped (returning
 // visitors, deep links) the canvas can render before it executes — wait for it
-function whenLottie(cb){
-  if (window.lottie) { cb(); return; }
-  const t = setInterval(() => { if (window.lottie) { clearInterval(t); cb(); } }, 100);
-  setTimeout(() => clearInterval(t), 15000); // CDN never came: static marks stand
+// lottie-web (300KB, about 0.25s of script on a phone) loads on first need instead of at
+// parse: a card's Play asks for it right away, the Konpo tile's dance once the reveal settles.
+// If it never arrives the static marks stand.
+let lottieP = null;
+function loadLottie(){
+  if (window.lottie) return Promise.resolve();
+  if (!lottieP) lottieP = new Promise((res, rej) => {
+    const sc = document.createElement('script');
+    sc.src = '/vendor/lottie.min.js'; sc.async = true; sc.onload = res;
+    sc.onerror = () => { lottieP = null; rej(); };
+    document.head.appendChild(sc);
+  });
+  return lottieP;
 }
+function whenLottie(cb){ if (window.lottie) { cb(); return; } loadLottie().then(cb, () => {}); }
+// not needed for the first impression: wait out the reveal, then take an idle moment
+function lottieSoon(cb){
+  if (window.lottie) { cb(); return; }
+  const idle = window.requestIdleCallback || (f => setTimeout(f, 0));
+  setTimeout(() => idle(() => whenLottie(cb), { timeout: 2000 }), 2500);
+}
+// every Konpo tile copy plays the same file: fetch it once, parse a fresh copy per player
+// (lottie writes into the data it is given)
+let konpoText = null;
+const konpoData = () => konpoText || (konpoText = fetch('/anim/konpo.json').then(r => { if (!r.ok) throw 0; return r.text(); }));
 const ramp = (s) => `<div class="ramp">${[96, 64, 44, 28, 16].map(px =>
   `<div class="step">${markOnly(s, px)}<span>${px}</span></div>`).join('')}</div>`;
 const notes = (s) => { if (!s._t) s._t = typeset(s.con); return `<div class="notes">${s._t.notes}</div>`; };
@@ -2496,9 +2515,11 @@ const konpoInner = () =>
 // marks in view all turn once as the reveal ends; without WebGL the CSS settle plays instead. The Lottie cycles (tileCycle) are parked for hover: cards still use them
 let SOLID = null, solidP = null;
 function loadSolid(){
-  if (!solidP) solidP = import('/solid.js').then(m => {
-    SOLID = m.createSolid() || false;
-    if (SOLID && SCHEME != null) SOLID.tint(schemeColors(SCHEME).ink);
+  // the engine is handed out only once its warm-up (lighting, shaders) has run in small steps
+  if (!solidP) solidP = import('/solid.js').then(async m => {
+    const s = m.createSolid();
+    if (s) { try { await s.ready; } catch (e) {} if (SCHEME != null) s.tint(schemeColors(SCHEME).ink); }
+    SOLID = s || false;
   }).catch(() => { SOLID = false; });
   return solidP;
 }
@@ -2515,13 +2536,26 @@ function warmSolid(){
   // the marks in view first (the arrival wave needs them), then the rest
   const seen = new Set(), order = [];
   [...tilesInView().map(([, s]) => s), ...S].forEach(s => { if (!seen.has(s.id)) { seen.add(s.id); order.push(s); } });
+  const nView = Math.min(order.length, tilesInView().length);
+  let viewDone; warmView = new Promise(r => { viewDone = r; });
   loadSolid().then(() => {
-    if (!SOLID) return;
-    let i = 0;                                   // one mark per idle slice
-    const next = () => { if (i < order.length) { SOLID.prepare(order[i++]); idle(next); } };
+    if (!SOLID) { viewDone(); return; }
+    let i = 0;
+    if (!nView) viewDone();
+    // part by part, only while the idle slice has time left (a fallback slice gets 8ms)
+    const next = deadline => {
+      const t0 = performance.now();
+      const left = () => deadline && deadline.timeRemaining ? deadline.timeRemaining() : 8 - (performance.now() - t0);
+      while (i < order.length && left() > 3) {
+        if (!SOLID.prepareIdle(order[i], left)) break;
+        if (++i === nView) viewDone();
+      }
+      if (i < order.length) idle(next); else viewDone();
+    };
     idle(next);
   });
 }
+let warmView = Promise.resolve();   // settles once the marks in view are built (the wave draws them)
 // once, on arrival: when the reveal pulse ends, every mark in view turns together.
 // Hovers wait at the gate until then, so a mark under the pointer joins the wave
 // (its annotations follow when it lands) instead of taking the renderer first
@@ -2530,7 +2564,9 @@ function holdForWave(){ openWave(); waveGate = new Promise(r => { waveOpen = r; 
 function openWave(){ if (waveOpen) { waveOpen(); waveOpen = null; } }
 function waveSolid(){
   if (matchMedia('(prefers-reduced-motion: reduce)').matches || VIEW === 'list') { openWave(); return; }
-  loadSolid().then(() => {
+  // the wave waits for the in-view marks to finish building in idle time (at most 1.5s more),
+  // so it never builds them all in one frame
+  loadSolid().then(() => Promise.race([warmView, new Promise(r => setTimeout(r, 1500))])).then(() => {
     if (SOLID && !document.querySelector('.tile.expanded')) SOLID.wave(tilesInView(), document.getElementById('grid'));
     openWave();
   });
@@ -2698,20 +2734,20 @@ function renderGrid(reveal){
           if (a) (en.isIntersecting ? a.play() : a.pause());
         }))
       : null;
-    canvas.querySelectorAll('.tile.konpo').forEach(k => whenLottie(() => {
-      if (!k.isConnected) return;
+    canvas.querySelectorAll('.tile.konpo').forEach(k => lottieSoon(() => konpoData().then(txt => {
+      if (!k.isConnected || k._konpoAnim) return;
       const slot = document.createElement('div');
       slot.className = 'lottie-slot';
       k.appendChild(slot);
       const anim = lottie.loadAnimation({
         container: slot, renderer: 'svg', loop: true, autoplay: !io,
-        path: '/anim/konpo.json'
+        animationData: JSON.parse(txt)
       });
       anim.addEventListener('DOMLoaded', () => k.classList.add('lottie-live'));
       k._konpoAnim = anim;
       if (io) io.observe(k);
       gridAnims.push(anim);
-    }));
+    }, () => {})));
   }
 }
 
@@ -3108,7 +3144,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeFilterM
    (S100 L84) and the ground a deep tone whose hue runs 30° ahead, the way the reference pairs
    do (#D3A5FF / #531B5E, #A5D2FF / #281B5E), pushed down near the original black so the page
    keeps its night feel. Moving the ramp moves the pair. */
-const SCHEME_KEY = 'shelter-scheme-hue', INK_SHIFT = 30;
+const INK_SHIFT = 30;
 const SCHEME_VARS = ['--bg', '--tile', '--tile-raise', '--white', '--body', '--fade', '--line',
   '--purple', '--purple-vivid', '--green', '--red', '--on-ink'];
 let SCHEME = null;   // the hue, or null for the original black page
@@ -3130,7 +3166,7 @@ const schemeEl = document.getElementById('scheme'), schemeRamp = document.getEle
   schemeRamp.style.setProperty('--ramp-bg', `linear-gradient(to right, ${stops('ink')})`);
   schemeRamp.style.setProperty('--ramp-ink', `linear-gradient(to right, ${stops('tile')})`);
 })();
-function applyScheme(h, save = true){
+function applyScheme(h){
   const root = document.documentElement.style;
   SCHEME = h == null ? null : Math.round(((h % 360) + 360) % 360);
   schemeEl.classList.toggle('on', SCHEME != null);
@@ -3160,24 +3196,28 @@ function applyScheme(h, save = true){
       b.querySelector('span').textContent = hex.toUpperCase();
     });
   }
-  // a per-viewer convenience only: the page renders fine without it
-  if (save) try { SCHEME == null ? localStorage.removeItem(SCHEME_KEY) : localStorage.setItem(SCHEME_KEY, SCHEME); } catch (_) {}
 }
-try { const h = localStorage.getItem(SCHEME_KEY); if (h !== null && h !== '' && !isNaN(+h)) applyScheme(+h, false); } catch (_) {}
+// a scheme is a look for this visit only: every load starts on the original black page
+try { localStorage.removeItem('shelter-scheme-hue'); } catch (_) {}   // clears what earlier builds saved
 
 function openSchemeMenu(){ schemeEl.classList.add('open'); document.getElementById('schemeMenu').hidden = false; document.getElementById('schemeBtn').setAttribute('aria-expanded', 'true'); }
 function closeSchemeMenu(){ schemeEl.classList.remove('open'); document.getElementById('schemeMenu').hidden = true; document.getElementById('schemeBtn').setAttribute('aria-expanded', 'false'); }
+// the button is the on/off switch: opening starts a random hue (or keeps the one already
+// set), pressing it again closes the ramp and returns the page to the original black
 document.getElementById('schemeBtn').addEventListener('click', e => {
   e.stopPropagation();
-  if (schemeEl.classList.contains('open')) return closeSchemeMenu();
+  if (schemeEl.classList.contains('open')) { closeSchemeMenu(); applyScheme(null); return; }
   closeFilterMenu(); openSchemeMenu();
-  if (SCHEME == null) applyScheme(270);   // first open lands on the lilac reference
+  if (SCHEME == null) applyScheme(Math.floor(Math.random() * 360));
 });
 const rampHue = e => { const r = schemeRamp.getBoundingClientRect(); return Math.max(0, Math.min(359, (e.clientX - r.left) / r.width * 360)); };
 schemeRamp.addEventListener('pointerdown', e => {
   schemeRamp.setPointerCapture(e.pointerId); applyScheme(rampHue(e));
-  const move = ev => applyScheme(rampHue(ev), false);
-  const up = ev => { schemeRamp.removeEventListener('pointermove', move); schemeRamp.removeEventListener('pointerup', up); schemeRamp.removeEventListener('pointercancel', up); applyScheme(SCHEME); };
+  // pointer moves outpace frames and every recolor restyles the whole page:
+  // keep only the latest hue and apply it once per frame
+  let want = null, raf = 0;
+  const move = ev => { want = rampHue(ev); if (!raf) raf = requestAnimationFrame(() => { raf = 0; applyScheme(want); }); };
+  const up = ev => { schemeRamp.removeEventListener('pointermove', move); schemeRamp.removeEventListener('pointerup', up); schemeRamp.removeEventListener('pointercancel', up); };
   schemeRamp.addEventListener('pointermove', move); schemeRamp.addEventListener('pointerup', up); schemeRamp.addEventListener('pointercancel', up);
 });
 schemeRamp.addEventListener('keydown', e => {
@@ -3192,7 +3232,9 @@ schemeEl.querySelectorAll('.sw').forEach(b => b.addEventListener('click', () => 
   try { navigator.clipboard.writeText(hex.toUpperCase()).then(done, () => {}); } catch (_) {}
 }));
 document.getElementById('schemeOff').addEventListener('click', () => { applyScheme(null); closeSchemeMenu(); });
-document.addEventListener('click', e => { if (!schemeEl.contains(e.target)) closeSchemeMenu(); });
+// a press anywhere else closes the ramp and keeps the hue (the grid's drag handling swallows
+// its clicks, so this listens for the press itself)
+document.addEventListener('pointerdown', e => { if (!schemeEl.contains(e.target)) closeSchemeMenu(); }, true);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSchemeMenu(); });
 
 /* ---------- About dropdown under the wordmark ---------- */
@@ -3989,7 +4031,7 @@ function fillTileDetail(tile, s){
     const pBtn = document.createElement('button'); pBtn.textContent = 'Play'; controls.appendChild(pBtn);
     let cardAnim = null, cycling = false;
     const startPlay = () => {
-      if (!window.lottie) { setTimeout(startPlay, 150); return; }   // CDN still arriving
+      if (!window.lottie) { loadLottie().then(startPlay, () => {}); return; }   // first Play fetches the player
       if (!tile.classList.contains('expanded')) return;             // card closed while we waited
       if (!cardAnim) {
         const slot = document.createElement('div');
@@ -4385,7 +4427,7 @@ function fillDrawer(s){
     };
     let pendingPlay = false;
     const startPlay = () => {
-      if (!window.lottie) { setTimeout(startPlay, 150); return; } // CDN still arriving
+      if (!window.lottie) { loadLottie().then(startPlay, () => {}); return; } // first Play fetches the player
       // stage picked up new motion (or got re-exploded) while we waited: wait again
       if (Date.now() < stageBusyUntil || stage.classList.contains('exploded')) {
         setTimeout(startPlay, Math.max(60, stageBusyUntil - Date.now() + 60));

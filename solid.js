@@ -91,13 +91,14 @@ export function createSolid(){
   let renderer;
   try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); } catch (e) { return null; }
   renderer.localClippingEnabled = true;
+  // no per-program status queries: each one makes the page wait on the GPU (the shaders are fixed and known good)
+  renderer.debug.checkShaderErrors = false;
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   const canvas = renderer.domElement;
   canvas.className = 'solid-canvas';
   canvas.setAttribute('aria-hidden', 'true');
   const scene = new THREE.Scene();
-  scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
   const camera = new THREE.PerspectiveCamera(FOV, 1, 1, 2000); camera.position.set(0, 0, D);
   // a soft key high-left, a sky-to-floor fill (spheres shade top to bottom) and a purple rim from behind
   const key = new THREE.DirectionalLight(0xffffff, 1.5); key.position.set(-140, 180, 200); scene.add(key);
@@ -122,8 +123,24 @@ export function createSolid(){
     rounds.forEach(m => { m.color.copy(roundTint); m.emissive.copy(c); });
   }
 
+  // a mark builds part by part: build() runs it through at once (a hover that needs it now),
+  // prepareIdle() advances it only while the idle slice has time, resuming in the next one
+  const pending = new Map();
   function build(s){
     if (built.has(s.id)) return built.get(s.id);
+    const g = pending.get(s.id) || buildSteps(s); pending.delete(s.id);
+    let r; do { r = g.next(); } while (!r.done);
+    return r.value;
+  }
+  function prepareIdle(s, timeLeft){
+    if (built.has(s.id)) return true;
+    let g = pending.get(s.id); if (!g) { g = buildSteps(s); pending.set(s.id, g); }
+    try {
+      while (timeLeft() > 3) { if (g.next().done) { pending.delete(s.id); return true; } }
+    } catch (e) { pending.delete(s.id); return true; }      // a mark that can't build just stays flat
+    return false;
+  }
+  function* buildSteps(s){
     const group = new THREE.Group(), lit = [], clips = [];
     // round forms only read through light; at rest they glow flat white like the drawing
     const roundMat = () => { const m = new THREE.MeshPhysicalMaterial({ color: roundTint.clone(), roughness: 0.3, clearcoat: 1,
@@ -131,7 +148,9 @@ export function createSolid(){
     const g3 = p => new THREE.Vector3(p.x - 100, -(p.y - 100), 0);
     // the site draws .stroked parts as outlines through a class, which SVGLoader can't see
     const src = s.mark.replace(/class="stroked"/g, 'fill="none" stroke="#fff"');
-    for (const path of new SVGLoader().parse(`<svg xmlns="http://www.w3.org/2000/svg">${src}</svg>`).paths) {
+    const paths = new SVGLoader().parse(`<svg xmlns="http://www.w3.org/2000/svg">${src}</svg>`).paths;
+    yield;
+    for (const path of paths) {
       const style = path.userData.style;
       if (style.fill === 'none' && style.stroke && style.stroke !== 'none') {
         // an outline becomes round wire: flattened at rest it is a ribbon exactly the stroke's width
@@ -143,6 +162,7 @@ export function createSolid(){
           if (closed) pts.pop();
           const curve = new THREE.CatmullRomCurve3(pts, closed, 'catmullrom', 0);   // tension 0: straight through the samples
           group.add(new THREE.Mesh(new THREE.TubeGeometry(curve, pts.length * 2, w / 2, 12, closed), roundMat()));
+          yield;
         }
         continue;
       }
@@ -167,6 +187,7 @@ export function createSolid(){
             c.cap = new THREE.Mesh(new THREE.CircleGeometry(1, 96), m); group.add(c.cap);
           });
           clips.push(...cuts);
+          yield;
         } else {
           // the bevel scales with the part's stroke width (2·area/perimeter)
           const area = Math.abs(THREE.ShapeUtils.area(sh.getPoints(64))) - sh.holes.reduce((t, h) => t + Math.abs(THREE.ShapeUtils.area(h.getPoints(64))), 0);
@@ -176,7 +197,9 @@ export function createSolid(){
           g.rotateX(Math.PI);               // y-down to y-up, front cap onto the mark plane
           g.translate(-100, 100, bs > 0.05 ? -bt : 0);
           group.add(new THREE.Mesh(g, [faceMat, sideMat]));
+          yield;
         }
+        if (disc) yield;
       }
     }
     const b = { group, lit, clips, sig: signature(s.id) };
@@ -345,6 +368,34 @@ export function createSolid(){
 
   // build a mark's geometry ahead of time (idle time after the reveal, or on hover)
   const prepare = s => { try { build(s); } catch (e) {} };
+
+  // warm-up, one heavy step per task so none holds the page for long: the lighting
+  // environment, then (where the driver compiles in parallel) every shader program the marks
+  // use and one tiny frame to upload what's left. The page waits on `ready`.
+  const nextTask = () => new Promise(r => (self.requestIdleCallback || (f => setTimeout(f, 16)))(() => r(), { timeout: 400 }));
+  const warmMats = [];                                      // kept (never disposed) so their programs stay cached
+  const ready = (async () => {
+    await nextTask();
+    const pm = new THREE.PMREMGenerator(renderer);
+    scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture;
+    pm.dispose();
+    // precompiling only pays where the driver links in parallel; elsewhere it would just move
+    // the same compiles earlier (plus variants a mark may never use), so they stay lazy
+    if (!renderer.extensions.has('KHR_parallel_shader_compile')) return;
+    await nextTask();
+    const plane = () => new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+    const round = (side, planes) => { const m = new THREE.MeshPhysicalMaterial({ roughness: 0.3, clearcoat: 1, emissive: 0xffffff, emissiveIntensity: 1 });
+      m.side = side; if (planes) m.clippingPlanes = Array.from({ length: planes }, plane); warmMats.push(m); return m; };
+    // the variants build() makes: extruded face + edge, round (front), and the sliced ball and caps (both sides, 0-2 cuts)
+    const geo = new THREE.BoxGeometry(1, 1, 1);
+    const tmp = [new THREE.Mesh(geo, [faceMat, sideMat]), new THREE.Mesh(geo, round(THREE.FrontSide)),
+      ...[0, 1, 2].map(n => new THREE.Mesh(geo, round(THREE.DoubleSide, n)))];
+    tmp.forEach(m => { m.position.z = -10; scene.add(m); });
+    try { await renderer.compileAsync(scene, camera); } catch (e) {}
+    await nextTask();
+    renderer.setSize(4, 4, false); renderer.render(scene, camera); bufSize = 0;
+    tmp.forEach(m => scene.remove(m)); geo.dispose();
+  })();
   // called the moment a tile opens into its card, so the turn moves over without a frame
   // of the flat drawing in between. True when the tile was turning
   function carry(tile){
@@ -360,5 +411,5 @@ export function createSolid(){
     if (!busy) return Promise.resolve();
     return new Promise(r => { if (!waiters.has(tile)) waiters.set(tile, []); waiters.get(tile).push(r); });
   }
-  return { play, prepare, wave, carry, whenLanded, tint };
+  return { play, prepare, prepareIdle, wave, carry, whenLanded, tint, ready };
 }
