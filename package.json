@@ -7,6 +7,6 @@
   },
   "scripts": {
     "build": "cp index.html symbol-index.html && node scripts/build-meta.mjs",
-    "deploy": "npm run build && vercel --prod --yes"
+    "deploy": "npm run build && npx vercel --prod --yes"
   }
 }
