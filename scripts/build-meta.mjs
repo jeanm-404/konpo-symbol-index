@@ -55,7 +55,7 @@ function ogSvg(s) {
   return `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
   <style>${MARK_CSS}</style>
   <rect width="1200" height="630" fill="#141414"/>
-  <svg x="285" y="0" width="630" height="630" viewBox="10 10 180 180"><g class="mark">${s.mark}</g></svg>
+  <svg x="411" y="126" width="378" height="378" viewBox="10 10 180 180"><g class="mark">${s.mark}</g></svg>
 </svg>`;
 }
 
