@@ -2813,6 +2813,38 @@ function applyGridTransform(){
       GRID.raf = requestAnimationFrame(momentum);
     else GRID.raf = null;
   }
+  // Smooth panning (Lenis-style, no parallax): wheel and drag input add to a pending offset
+  // and one frame loop eases the canvas toward it; a fling's momentum feeds the same loop.
+  // The wheel eases gently, a drag tighter so the canvas stays under the pointer. Anything
+  // else that moves the canvas (a focus pan, a reset, a card's fit-pan) wins: the loop sees
+  // the offset change under it and lets go. Reduced motion keeps the direct pan.
+  const SMOOTH = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const LERP = { wheel: 0.12, drag: 0.3 };
+  const pend = { x: 0, y: 0, k: LERP.wheel };
+  let last = 0, mine = null, fx = 0, fy = 0, moveT = 0;
+  function pan(dx, dy, kind){
+    if (!SMOOTH) { GRID.ox += dx; GRID.oy += dy; applyGridTransform(); return; }
+    pend.x += dx; pend.y += dy; pend.k = LERP[kind];
+    if (!GRID.raf) { last = performance.now(); mine = null; GRID.raf = requestAnimationFrame(glide); }
+  }
+  function glide(now){
+    GRID.raf = null;
+    if (mine && (GRID.ox !== mine.x || GRID.oy !== mine.y)) { pend.x = pend.y = 0; GRID.vx = GRID.vy = 0; return; }
+    const f = Math.min(4, (now - last) / 16.667); last = now;     // frames elapsed, so 120Hz eases like 60Hz
+    if (GRID.vx || GRID.vy) {
+      pend.x += GRID.vx * f; pend.y += GRID.vy * f;
+      const d = Math.pow(0.92, f); GRID.vx *= d; GRID.vy *= d;
+      if (Math.abs(GRID.vx) < 0.15 && Math.abs(GRID.vy) < 0.15) GRID.vx = GRID.vy = 0;
+    }
+    const k = 1 - Math.pow(1 - pend.k, f);
+    let mx = pend.x * k, my = pend.y * k;
+    if (Math.abs(pend.x) < 0.3 && Math.abs(pend.y) < 0.3 && !GRID.vx && !GRID.vy) { mx = pend.x; my = pend.y; }
+    pend.x -= mx; pend.y -= my;
+    GRID.ox += mx; GRID.oy += my;
+    applyGridTransform();
+    mine = { x: GRID.ox, y: GRID.oy };
+    if (pend.x || pend.y || GRID.vx || GRID.vy) GRID.raf = requestAnimationFrame(glide);
+  }
   let downOutsideCard = false;
   grid.addEventListener('pointerdown', e => {
     if (e.button && e.button !== 0) return;
@@ -2829,7 +2861,8 @@ function applyGridTransform(){
     // press: a click must not cut a card's open or close short mid-flight
     cv.querySelectorAll('.tile:not(.expanded) .notes').forEach(n => n.remove());  // clear hover notes
     cv.querySelectorAll('.tile:not(.expanded)').forEach(t => t.classList.remove('mark-anim', 'annot-ready'));
-    if (GRID.raf) { cancelAnimationFrame(GRID.raf); GRID.raf = null; }
+    if (GRID.raf) { cancelAnimationFrame(GRID.raf); GRID.raf = null; }   // a grab stops any glide dead
+    pend.x = pend.y = 0; fx = fy = 0;
     const t = e.target.closest('.tile');
     downId = t ? t.dataset.id : null;
     downTile = t || null;
@@ -2846,6 +2879,7 @@ function applyGridTransform(){
       cv.classList.remove('reflowing');
       if (GRID.lock && GRID.lock.closing) releaseLock(cv);
     }
+    if (SMOOTH) { pan(dx, dy, 'drag'); fx = dx; fy = dy; moveT = performance.now(); return; }   // the fling reads the last move
     GRID.ox += dx; GRID.oy += dy;
     GRID.vx = dx; GRID.vy = dy;
     applyGridTransform();
@@ -2870,7 +2904,9 @@ function applyGridTransform(){
       // phones too: the card grows in place to the viewport width (the drawer is
       // the parked table view's detail)
       if (s) expandFromTile(downTile, s);                        // annotations fade, then it grows
-    } else if (Math.abs(GRID.vx) > 0.5 || Math.abs(GRID.vy) > 0.5){
+    } else if (SMOOTH && performance.now() - moveT < 80 && (Math.abs(fx) > 0.5 || Math.abs(fy) > 0.5)){   // held still first: no throw
+      GRID.vx = fx; GRID.vy = fy; pan(0, 0, 'drag');            // fling: the glide carries it
+    } else if (!SMOOTH && (Math.abs(GRID.vx) > 0.5 || Math.abs(GRID.vy) > 0.5)){
       GRID.raf = requestAnimationFrame(momentum);               // fling
     }
     downId = null; downTile = null; downOutsideCard = false;
@@ -2884,8 +2920,8 @@ function applyGridTransform(){
     const sc = e.target.closest('.xc-adopt, .xc-inner');
     if (sc && sc.scrollHeight > sc.clientHeight + 1) return;
     e.preventDefault();
-    GRID.ox -= e.deltaX; GRID.oy -= e.deltaY;
-    applyGridTransform();
+    const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerHeight : 1;   // line / page wheels
+    pan(-e.deltaX * unit, -e.deltaY * unit, 'wheel');
   }, { passive: false });
 
   // hover a tile → the mark settles first, then its construction drafts in
