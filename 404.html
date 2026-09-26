@@ -13,56 +13,54 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
     --bg: #000;
-    --tile: #141414;
     --white: #fff;
-    --body: rgba(255,255,255,0.70);
-    --fade: #858585;
-    --line: rgba(255,255,255,0.10);
+    --on-ink: #191919;
     --purple-vivid: #ad9cff;
     --sans: "Neue Haas Display Pro", Arial, "Helvetica Neue", Helvetica, sans-serif;
     --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Mono", Menlo, monospace;
   }
   body {
-    min-height: 100vh; min-height: 100dvh;
-    display: grid; place-items: center; padding: 1.6rem;
-    background: var(--bg); color: var(--white); font-family: var(--sans);
+    min-height: 100vh; min-height: 100dvh; padding: 1.6rem;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2.4rem;
+    background: var(--bg); color: var(--white); font-family: var(--sans); text-align: center;
   }
-  .card {
-    position: relative; width: min(35rem, 100%); aspect-ratio: 1;
-    background: var(--tile); border-radius: 2rem;
-    display: flex; flex-direction: column; justify-content: space-between;
-    padding: 1.6rem 1.8rem;
-    opacity: 0; scale: 0.88; animation: in .6s cubic-bezier(0.22, 1, 0.36, 1) .1s forwards;
-  }
-  @keyframes in { 60% { opacity: 1; } to { opacity: 1; scale: 1; } }
-  .idx { font-family: var(--mono); font-size: 1.3rem; font-weight: 300; letter-spacing: 0.08em; color: var(--fade); }
-  .ring {
-    position: absolute; left: 0; right: 0; top: 19%; margin: 0 auto; width: 30%; aspect-ratio: 1;
-    border: 1px dashed var(--line); border-radius: 50%;
-  }
-  .foot { display: flex; flex-direction: column; gap: 0.8rem; }
-  h1 { font-size: 2.4rem; font-weight: 400; line-height: 1.1; }
-  p { font-size: 1.4rem; line-height: 1.45; color: var(--body); }
+  /* the Konpo dance; the static mark holds the spot until (or instead of) the lottie */
+  .mark { position: relative; width: 44rem; height: 44rem; margin: -17rem 0 -16rem; pointer-events: none; }
+  .mark > svg, .mark .slot { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .mark > svg path { fill: var(--purple-vivid); }
+  .mark.live > svg { visibility: hidden; }
+  .slot [fill="rgb(20,20,20)"] { fill: var(--bg); }   /* the center circle cuts the dots against the page */
+  h1 { font-size: 3.2rem; font-weight: 400; line-height: 1.1; }
   a {
-    align-self: flex-start; margin-top: 0.4rem;
-    font-family: var(--mono); font-size: 1.2rem; letter-spacing: 0.08em; text-transform: uppercase;
-    color: var(--white); text-decoration: none; border-bottom: 1px solid currentColor; padding-bottom: 0.2rem;
-    transition: color .3s;
+    font-family: var(--mono); font-size: 1.1rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--on-ink); background: var(--white); border: 1px solid var(--white);
+    border-radius: 200rem; padding: 0.8rem 1.6rem; text-decoration: none;
+    transition: opacity .3s;
   }
-  a:hover { color: var(--purple-vivid); }
+  a:hover { opacity: 0.85; }
   a:focus-visible { outline: 2px solid var(--purple-vivid); outline-offset: 3px; }
-  @media (prefers-reduced-motion: reduce) { .card { animation: none; opacity: 1; scale: 1; } }
+  body > * { opacity: 0; filter: blur(8px); animation: in .6s ease forwards; }
+  h1 { animation-delay: .12s; } a { animation-delay: .24s; }
+  @keyframes in { to { opacity: 1; filter: blur(0); } }
+  @media (prefers-reduced-motion: reduce) { body > * { animation: none; opacity: 1; filter: none; } }
 </style>
 </head>
 <body>
-  <main class="card">
-    <span class="idx">SYM-404</span>
-    <div class="ring" aria-hidden="true"></div>
-    <div class="foot">
-      <h1>Nothing sheltered here</h1>
-      <p>No mark lives at this address. It may have moved, or it never made it in.</p>
-      <a href="/">Back to the shelter</a>
-    </div>
-  </main>
+  <div class="mark" id="mark" aria-hidden="true"><svg viewBox="-28 -28 256 256"><g transform="translate(88 88) scale(0.387)"><path d="M13.5752 33.9356C21.0719 33.9356 27.1493 40.0131 27.1494 47.5098C27.1494 55.0066 21.072 61.084 13.5752 61.084C6.07832 61.084 0.000976562 55.0067 0.000976562 47.5098C0.00114046 40.0131 6.07843 33.9356 13.5752 33.9356ZM37.9141 37.9112C43.213 32.609 51.8074 32.612 57.1094 37.9112C62.4114 43.2105 62.4112 51.8059 57.1094 57.1084C51.8104 62.411 43.2161 62.4078 37.9141 57.1084C32.612 51.809 32.612 43.2137 37.9141 37.9112ZM13.5742 3.8115e-05C20.6616 3.8115e-05 26.4782 5.43181 27.0928 12.3594C21.0431 13.8702 16.5617 19.3408 16.5615 25.8584C16.5615 26.1783 16.5725 26.4961 16.5938 26.8106C15.6226 27.0312 14.6121 27.1485 13.5742 27.1485C6.07738 27.1484 0 21.0711 0 13.5743C3.55627e-05 6.07744 6.0774 7.36788e-05 13.5742 3.8115e-05ZM37.9131 3.97562C43.212 -1.32673 51.8064 -1.32368 57.1084 3.97562C62.4105 9.27503 62.4105 17.8704 57.1084 23.1729C53.6507 26.6329 48.7901 27.8329 44.3564 26.7774C44.3762 26.4737 44.3887 26.1671 44.3887 25.8584C44.3885 19.388 39.9714 13.9493 33.9883 12.3926C34.2552 9.32257 35.5632 6.32569 37.9131 3.97562Z"/></g></svg></div>
+  <h1>Nothing here!</h1>
+  <a href="/">Shelter</a>
+<script>
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const box = document.getElementById('mark');
+    const sc = document.createElement('script');
+    sc.src = '/vendor/lottie.min.js'; sc.async = true;
+    sc.onload = () => fetch('/anim/konpo.json').then(r => r.json()).then(data => {
+      const slot = document.createElement('div'); slot.className = 'slot'; box.appendChild(slot);
+      const a = lottie.loadAnimation({ container: slot, renderer: 'svg', loop: true, autoplay: true, animationData: data });
+      a.addEventListener('DOMLoaded', () => box.classList.add('live'));
+    }).catch(() => {});
+    document.head.appendChild(sc);
+  }
+</script>
 </body>
 </html>
