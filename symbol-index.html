@@ -1385,7 +1385,7 @@
     </div>
     <div class="toolbar">
       <div class="scheme" id="scheme">
-        <button class="tbtn scheme-btn" id="schemeBtn" type="button" aria-label="Color scheme" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.25" stroke="currentColor" stroke-width="1.5"/><path d="M10 2.75a7.25 7.25 0 0 1 0 14.5z" fill="currentColor"/></svg></button>
+        <button class="tbtn scheme-btn" id="schemeBtn" type="button" aria-label="Color scheme" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.25" stroke="currentColor" stroke-width="1.5"/><path id="schemeFill" d="M10 2.75A7.25 7.25 0 0 1 10 17.25A0 7.25 0 0 1 10 2.75z" fill="currentColor"/></svg></button>
         <div class="scheme-menu" id="schemeMenu" hidden>
           <div class="ramp" id="schemeRamp" role="slider" tabindex="0" aria-label="Scheme hue" aria-valuemin="0" aria-valuemax="359" aria-valuenow="0"><span class="thumb"></span></div>
           <div class="pair">
@@ -3433,10 +3433,32 @@ const schemeEl = document.getElementById('scheme'), schemeRamp = document.getEle
   schemeRamp.style.setProperty('--ramp-bg', `linear-gradient(to right, ${stops('ink')})`);
   schemeRamp.style.setProperty('--ramp-ink', `linear-gradient(to right, ${stops('tile')})`);
 })();
+// the switch icon waxes like a moon: half filled at rest, the flat edge bows out to a full
+// disc while a scheme is on (the second arc's x radius runs 0 -> 7.25), same easing as the view icon
+const schemeIcon = (() => {
+  const path = document.getElementById('schemeFill');
+  const ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  let cur = 0, raf = 0;
+  const draw = k => path.setAttribute('d', `M10 2.75A7.25 7.25 0 0 1 10 17.25A${(k * 7.25).toFixed(3)} 7.25 0 0 1 10 2.75z`);
+  return on => {
+    const to = on ? 1 : 0, from = cur;
+    if (to === cur && !raf) return;
+    cancelAnimationFrame(raf); raf = 0;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { cur = to; draw(cur); return; }
+    const t0 = performance.now(), dur = 500;
+    const step = now => {
+      const e = ease(Math.min(1, (now - t0) / dur));
+      cur = from + (to - from) * e; draw(cur);
+      raf = e < 1 ? requestAnimationFrame(step) : 0;
+    };
+    raf = requestAnimationFrame(step);
+  };
+})();
 function applyScheme(h){
   const root = document.documentElement.style;
   SCHEME = h == null ? null : Math.round(((h % 360) + 360) % 360);
   schemeEl.classList.toggle('on', SCHEME != null);
+  schemeIcon(SCHEME != null);
   document.body.classList.toggle('schemed', SCHEME != null);
   const meta = document.querySelector('meta[name="theme-color"]');
   if (SCHEME == null) {
