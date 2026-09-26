@@ -1239,6 +1239,14 @@
   body.schemed .tile.konpo .mark path,
   body.schemed .tile.konpo .lottie-slot [fill="rgb(173,156,255)"] { fill: #fff; }
   body.schemed .tile.konpo .lottie-slot [fill="rgb(20,20,20)"] { fill: var(--tile); }
+  /* hover inverts this one tile: purple ground, white mark (its cut circle follows the ground) */
+  .tile.konpo { transition: filter .5s cubic-bezier(0.4, 0, 0.2, 1), background-color .35s ease; }
+  .tile.konpo .mark path, .tile.konpo .lottie-slot [fill] { transition: fill .35s ease; }
+  .tile.konpo:hover, body.schemed .tile.konpo:hover { background-color: var(--purple-vivid); }
+  .tile.konpo:hover .mark path,
+  .tile.konpo:hover .lottie-slot [fill="rgb(173,156,255)"] { fill: #fff; }
+  .tile.konpo:hover .lottie-slot [fill="rgb(20,20,20)"],
+  body.schemed .tile.konpo:hover .lottie-slot [fill="rgb(20,20,20)"] { fill: var(--purple-vivid); }
 
   /* --- the reveal: tiles pulse in from the centre of the screen outwards ---
      `scale` (the individual property) composes with the inline translate3d
@@ -2437,7 +2445,7 @@ const ANIMATED = new Set(['SYM-001', 'SYM-002', 'SYM-004', 'SYM-010', 'SYM-012',
 // lottie-web loads deferred from a CDN; when the intro is skipped (returning
 // visitors, deep links) the canvas can render before it executes — wait for it
 // lottie-web (300KB, about 0.25s of script on a phone) loads on first need instead of at
-// parse: a card's Play asks for it right away, the Konpo tile's dance once the reveal settles.
+// parse: a card's Play asks for it right away, the Konpo tile's dance during the arrival reveal.
 // If it never arrives the static marks stand.
 let lottieP = null;
 function loadLottie(){
@@ -2451,12 +2459,6 @@ function loadLottie(){
   return lottieP;
 }
 function whenLottie(cb){ if (window.lottie) { cb(); return; } loadLottie().then(cb, () => {}); }
-// not needed for the first impression: wait out the reveal, then take an idle moment
-function lottieSoon(cb){
-  if (window.lottie) { cb(); return; }
-  const idle = window.requestIdleCallback || (f => setTimeout(f, 0));
-  setTimeout(() => idle(() => whenLottie(cb), { timeout: 2000 }), 2500);
-}
 // every Konpo tile copy plays the same file: fetch it once, parse a fresh copy per player
 // (lottie writes into the data it is given)
 let konpoText = null;
@@ -2544,6 +2546,7 @@ function warmSolid(){
     idle(next);
   });
 }
+let revealDone = Promise.resolve();   // settles when the arrival pulse's last on-screen card lands
 let warmView = Promise.resolve();   // settles once the marks in view are built (the wave draws them)
 // once, on arrival: when the reveal pulse ends, every mark in view turns together.
 // Hovers wait at the gate until then, so a mark under the pointer joins the wave
@@ -2655,12 +2658,14 @@ function renderGrid(reveal){
   const maxRing = Math.ceil(Math.hypot(vpW / 2 + cell, vpH / 2 + cell) / cell);
   // only tiles near the viewport actually animate (class rv) — a cheap phone
   // shouldn't run three hundred simultaneous animations for off-screen copies
+  let visRing = 0;                                 // the last ring with a tile actually on screen
   const rdelay = (x, y) => {
     if (!reveal) return '';
     const sx = x + wx, sy = y + wy;
     if (sx < -cell || sx > vpW + cell || sy < -cell || sy > vpH + cell) return '';
     const ring = Math.min(maxRing,
       Math.round(Math.hypot(sx + cell / 2 - originX, sy + cell / 2 - originY) / cell));
+    if (sx + cell > 0 && sx < vpW && sy + cell > 0 && sy < vpH) visRing = Math.max(visRing, ring);
     return `;--rd:${ring * RING_MS}ms`;
   };
 
@@ -2701,16 +2706,21 @@ function renderGrid(reveal){
   applyGridTransform();
   // the pulse: run the wave once, then hand the tiles back to the hover styles
   canvas.classList.remove('revealing');
-  clearTimeout(renderGrid._revealT);
+  clearTimeout(renderGrid._revealT); clearTimeout(renderGrid._landT);
   openWave();                                      // a cut-short arrival pulse never holds hovers
+  if (revealDone.open) revealDone.open();
   if (reveal && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
     void canvas.offsetWidth;                       // restart the animation cleanly
     canvas.classList.add('revealing');
     if (!renderGrid._waved) holdForWave();
-    renderGrid._revealT = setTimeout(() => {
-      canvas.classList.remove('revealing');
+    let open; revealDone = new Promise(r => { open = r; }); revealDone.open = open;
+    // the logos start moving the moment the last card on screen has landed (tile-in is .6s);
+    // the copies just off-screen finish their pulse unseen
+    renderGrid._landT = setTimeout(() => {
+      open(); revealDone.open = null;
       if (!renderGrid._waved) { renderGrid._waved = true; waveSolid(); }   // the arrival pulse only
-    }, maxRing * RING_MS + 700);
+    }, visRing * RING_MS + 600);
+    renderGrid._revealT = setTimeout(() => canvas.classList.remove('revealing'), maxRing * RING_MS + 700);
   }
   // every copy of the Konpo card dances (the fifth, center circle is tile-colored
   // in the scene itself, so it reads as cutting the dots) — but each copy only
@@ -2723,7 +2733,9 @@ function renderGrid(reveal){
           if (a) (en.isIntersecting ? a.play() : a.pause());
         }))
       : null;
-    canvas.querySelectorAll('.tile.konpo').forEach(k => lottieSoon(() => konpoData().then(txt => {
+    // fetched while the cards pulse in, so the dance starts as the reveal lands
+    const konpoReady = Promise.all([loadLottie(), konpoData(), revealDone]);
+    canvas.querySelectorAll('.tile.konpo').forEach(k => konpoReady.then(([, txt]) => {
       if (!k.isConnected || k._konpoAnim) return;
       const slot = document.createElement('div');
       slot.className = 'lottie-slot';
@@ -2736,7 +2748,7 @@ function renderGrid(reveal){
       k._konpoAnim = anim;
       if (io) io.observe(k);
       gridAnims.push(anim);
-    }, () => {})));
+    }, () => {}));
   }
 }
 
