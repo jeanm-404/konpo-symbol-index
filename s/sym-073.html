@@ -1292,13 +1292,15 @@
   @property --kp-h { syntax: '<number>'; inherits: true; initial-value: 0; }
   .tile.konpo {
     --kp-rest-ink: var(--purple-vivid);
-    --kp-ground: color-mix(in srgb, var(--purple-vivid) calc(var(--kp-h) * 100%), var(--tile));
-    --kp-ink: color-mix(in srgb, #fff calc(var(--kp-h) * 100%), var(--kp-rest-ink));
+    /* mixed in oklab so the ground brightens evenly instead of dipping through a dull
+       purple and brightening late; eases in over .6s, lets go a little slower */
+    --kp-ground: color-mix(in oklab, var(--purple-vivid) calc(var(--kp-h) * 100%), var(--tile));
+    --kp-ink: color-mix(in oklab, #fff calc(var(--kp-h) * 100%), var(--kp-rest-ink));
     background-color: var(--kp-ground);
-    transition: filter .5s cubic-bezier(0.4, 0, 0.2, 1), --kp-h .35s ease;
+    transition: filter .5s cubic-bezier(0.4, 0, 0.2, 1), --kp-h .8s cubic-bezier(0.4, 0, 0.2, 1);
   }
   body.schemed .tile.konpo { --kp-rest-ink: #fff; }
-  .tile.konpo:hover { --kp-h: 1; }
+  .tile.konpo:hover { --kp-h: 1; transition: filter .5s cubic-bezier(0.4, 0, 0.2, 1), --kp-h .6s cubic-bezier(0.25, 0.1, 0.25, 1); }
   .tile.konpo .mark path,
   .tile.konpo .lottie-slot [fill="rgb(173,156,255)"] { fill: var(--kp-ink); }
   .tile.konpo .lottie-slot [fill="rgb(20,20,20)"] { fill: var(--kp-ground); }
