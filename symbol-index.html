@@ -97,8 +97,8 @@
     transition: transform .3s, color .3s;
   }
   .logo.wordmark .chev svg { width: 100%; height: 100%; display: block; }
-  .logo.wordmark:hover .chev { color: var(--white); }
-  .logo.wordmark:hover { background: color-mix(in srgb, var(--tile) 55%, color-mix(in srgb, var(--white) 6%, transparent)); }
+  @media (hover: hover) { .logo.wordmark:hover .chev { color: var(--white); } }
+  @media (hover: hover) { .logo.wordmark:hover { background: color-mix(in srgb, var(--tile) 55%, color-mix(in srgb, var(--white) 6%, transparent)); } }
   .about.open .logo.wordmark .chev { transform: rotate(180deg); color: var(--white); }
   /* every dropdown wears the shell's glass, with a heavier tint and frost so its text stays readable */
   .about-menu, .filter-menu, .scheme-menu {
@@ -132,7 +132,7 @@
     letter-spacing: 0.08em; text-transform: uppercase;
     color: var(--fade); text-decoration: none; transition: color .2s;
   }
-  .about-menu nav a:hover { color: var(--white); }
+  @media (hover: hover) { .about-menu nav a:hover { color: var(--white); } }
   .toolbar { display: flex; align-items: center; gap: 2.5rem; }
   /* Liquid glass on the shell's controls (konpo-studio/glass-buttons, tuned for the dark
      shelter): frost, then a light lens that refracts and colour-fringes the marks sliding
@@ -158,7 +158,7 @@
     text-transform: uppercase; white-space: nowrap;
     transition: color .3s, background-color .3s;
   }
-  .tbtn:hover { color: var(--white); background: color-mix(in srgb, var(--tile) 55%, color-mix(in srgb, var(--white) 6%, transparent)); }
+  @media (hover: hover) { .tbtn:hover { color: var(--white); background: color-mix(in srgb, var(--tile) 55%, color-mix(in srgb, var(--white) 6%, transparent)); } }
   .view-toggle { padding: 1rem; }
   .view-toggle svg { display: block; width: 2rem; height: 2rem; }
   /* the icon shows the CURRENT view; clicking cycles grid → zoomed-out → list */
@@ -205,12 +205,13 @@
     text-transform: uppercase; color: var(--fade);
     transition: color .2s, background-color .2s;
   }
-  .filter-menu button:hover { color: var(--white); background: var(--tile-raise); }
+  @media (hover: hover) { .filter-menu button:hover { color: var(--white); background: var(--tile-raise); } }
   .filter-menu button.active { color: var(--white); }
   .filter-menu button .n { color: var(--fade); }
 
   /* ---------- Color scheme (one hue; saturation and lightness stay locked) ---------- */
   .scheme { position: relative; }
+  html.recolor *, html.recolor *::before, html.recolor *::after { transition: none !important; }
   .scheme-btn { padding: 1rem; }
   .scheme-btn svg { display: block; width: 2rem; height: 2rem; }
   .scheme-menu {
@@ -237,11 +238,11 @@
     font-family: var(--mono); font-size: 1.1rem; letter-spacing: 0.08em; text-transform: uppercase;
     transition: color .2s, border-color .2s;
   }
-  .scheme-menu .off:hover { color: var(--white); border-color: color-mix(in srgb, var(--white) 30%, transparent); }
+  @media (hover: hover) { .scheme-menu .off:hover { color: var(--white); border-color: color-mix(in srgb, var(--white) 30%, transparent); } }
   .scheme-menu .pick, .scheme-menu .off { justify-content: center; }
   /* Select locks the hue in and closes: the menu's one filled button */
   .scheme-menu .pick { color: var(--on-ink); background: var(--white); border-color: var(--white); transition: opacity .2s; }
-  .scheme-menu .pick:hover { opacity: 0.85; }
+  @media (hover: hover) { .scheme-menu .pick:hover { opacity: 0.85; } }
   .scheme:not(.on) .scheme-menu .pick, .scheme:not(.on) .scheme-menu .off { display: none; }
   /* Play motions ship as white fills; a scheme redraws them in its ink */
   body.schemed .xc-stage .lottie-slot svg [fill]:not([fill="none"]),
@@ -269,7 +270,7 @@
     color: var(--fade); font-family: var(--mono); font-size: 1.4rem; line-height: 1;
     transition: color .2s;
   }
-  .search .clear:hover { color: var(--white); }
+  @media (hover: hover) { .search .clear:hover { color: var(--white); } }
   .search.has-q .clear { display: block; }
 
   /* ---------- Empty state ---------- */
@@ -1027,10 +1028,16 @@
   .revive-sent { color: var(--purple-vivid); }
 
   @media (pointer: coarse) {
-    /* frosted chips re-blur every pan frame on mobile GPUs — trade for opacity */
-    .tbtn, .search, footer, .xc-close {
+    /* frosted chips re-blur every pan frame on mobile GPUs — trade for opacity; the wordmark
+       matches its neighbours (it kept the lens and hitched the first About open) */
+    .tbtn, .search, footer, .xc-close, .logo.wordmark {
       -webkit-backdrop-filter: none; backdrop-filter: none;
       background: color-mix(in srgb, var(--tile) 88%, transparent);
+    }
+    /* the dropdowns keep their frost without the lens: its noise field is computed on the CPU and
+       re-ran every frame of the open */
+    .about-menu, .filter-menu, .scheme-menu {
+      -webkit-backdrop-filter: blur(16px) saturate(140%); backdrop-filter: blur(16px) saturate(140%);
     }
     /* sub-16px inputs make iOS Safari zoom the whole page on focus */
     .search input, footer .sub input, #revive-text,
@@ -1060,12 +1067,12 @@
     pointer-events: none; white-space: nowrap;
     transition: background-color .3s;
   }
-  footer:has(.cta:hover) { background: color-mix(in srgb, var(--tile) 55%, color-mix(in srgb, var(--white) 6%, transparent)); }
+  @media (hover: hover) { footer:has(.cta:hover) { background: color-mix(in srgb, var(--tile) 55%, color-mix(in srgb, var(--white) 6%, transparent)); } }
   footer .msg { color: var(--fade); }
   /* phones keep only the call itself: the chip stays a third of the width, not most of it */
   @media (max-width: 780px) { footer .msg .lead { display: none; } }
   footer .cta { color: var(--white); pointer-events: auto; cursor: pointer; transition: color .3s; }
-  footer .cta:hover { color: var(--purple-vivid); }
+  @media (hover: hover) { footer .cta:hover { color: var(--purple-vivid); } }
   footer .sub { display: none; align-items: center; gap: 1.2rem; pointer-events: auto; }
   /* touch screens: solid, not frosted (see the pointer:coarse block above). Restated
      here because the footer's own rule comes later and would win the tie: a white mark
@@ -1085,7 +1092,7 @@
     color: var(--white); font-family: var(--mono); font-size: inherit; letter-spacing: inherit;
     transition: color .2s;
   }
-  footer .sub button:hover { color: var(--purple-vivid); }
+  @media (hover: hover) { footer .sub button:hover { color: var(--purple-vivid); } }
   footer .sub .cancel { color: var(--fade); }
 
   /* ---------- Responsive ---------- */
@@ -1118,10 +1125,11 @@
     .search:focus-within input, .search.has-q input { width: 9rem; margin-left: 0.8rem; }
     .filter-btn .cnt { display: none; }   /* the per-category counts are in the menu */
     .about-menu { width: calc(100vw - 3.2rem); }
-    /* an open search needs the wordmark's room: the field grows by 9.8rem and the bar would run
-       off the right edge */
-    .topbar:has(.search:focus-within, .search.has-q) .about { display: none; }
-    .topbar:has(.search:focus-within, .search.has-q) { justify-content: flex-end; }
+    /* an open search needs the wordmark's room (the field grows by 9.8rem): the wordmark fades
+       and yields its width as the field grows, so nothing jumps */
+    .about { min-width: 0; transition: opacity .25s ease; }
+    .logo.wordmark { min-width: 0; overflow: hidden; }
+    .topbar:has(.search:focus-within, .search.has-q) .about { opacity: 0; pointer-events: none; }
   }
   /* phone search reads like the All chip (1.1rem mono): the field keeps its 1.6rem font so iOS
      doesn't zoom the page on focus, and is drawn at 1.1/1.6 of it; the negative margin gives back
@@ -3561,8 +3569,16 @@ const schemeIcon = (() => {
     raf = requestAnimationFrame(step);
   };
 })();
+let recolorT = 0;
 function applyScheme(h){
   const root = document.documentElement.style;
+  // touch screens: switch colours without their transitions (each one re-ran on the whole page
+  // for .3s, 13 slow frames per switch); the class comes off once the new colours have painted
+  if (matchMedia('(hover: none)').matches) {
+    document.documentElement.classList.add('recolor');
+    cancelAnimationFrame(recolorT);
+    recolorT = requestAnimationFrame(() => { recolorT = requestAnimationFrame(() => document.documentElement.classList.remove('recolor')); });
+  }
   SCHEME = h == null ? null : Math.round(((h % 360) + 360) % 360);
   schemeEl.classList.toggle('on', SCHEME != null);
   schemeIcon(SCHEME != null);
@@ -3985,6 +4001,9 @@ const Sound = (() => {
       role.hits.forEach(h => renderHit(at + (h.dt || 0), role, h));
     } catch (e) { /* sound is a bonus layer, never the message */ }
   }
+  // building the graph (context, reverb impulse, noise) stalled the first tap's frame by ~40ms on a
+  // phone: build it at the first press instead, which lands before that tap's click
+  addEventListener('pointerdown', () => { try { init(); } catch (e) {} }, { capture: true, once: true, passive: true });
 
   return { play };
 })();
