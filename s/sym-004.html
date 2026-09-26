@@ -87,9 +87,10 @@
   .about { position: relative; }
   .logo.wordmark {
     display: flex; align-items: center; gap: 0.8rem; height: 4rem;
-    background: transparent; border: 0; padding: 0; cursor: pointer;
+    border: 0; padding: 0 1.6rem; border-radius: var(--radius-sm, 0.8rem); cursor: pointer;
+    transition: background-color .3s;
     font-family: var(--sans); font-size: 1.8rem; font-weight: 400;
-    letter-spacing: -0.01em; color: var(--white);
+    letter-spacing: -0.01em; color: var(--white); white-space: nowrap;
   }
   .logo.wordmark .chev {
     display: flex; width: 1.6rem; height: 1.6rem; color: var(--fade);
@@ -97,17 +98,26 @@
   }
   .logo.wordmark .chev svg { width: 100%; height: 100%; display: block; }
   .logo.wordmark:hover .chev { color: var(--white); }
+  .logo.wordmark:hover { background: color-mix(in srgb, var(--tile) 55%, color-mix(in srgb, var(--white) 6%, transparent)); }
   .about.open .logo.wordmark .chev { transform: rotate(180deg); color: var(--white); }
   .about-menu {
     position: absolute; top: calc(100% + 0.8rem); left: 0; width: 36rem;
     max-width: calc(100vw - 4rem);
-    background: color-mix(in srgb, var(--tile) 92%, transparent);
-    -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
-    border: 1px solid var(--line); border-radius: var(--radius-sm, 0.8rem);
+    /* the shell's glass, with a heavier tint and frost so the paragraphs stay readable */
+    background: color-mix(in srgb, var(--tile) 78%, transparent);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    backdrop-filter: blur(16px) saturate(140%);
+    backdrop-filter: blur(16px) url(#glass-lens) saturate(140%);
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, var(--white) 14%, transparent),
+      inset 0 -1px 0 color-mix(in srgb, var(--white) 5%, transparent),
+      0 8px 28px rgba(0, 0, 0, 0.45);
+    border: 1px solid color-mix(in srgb, var(--white) 6%, transparent); border-radius: var(--radius-sm, 0.8rem);
     padding: 2rem; z-index: 21;
     display: flex; flex-direction: column; gap: 1.4rem;
   }
   .about-menu[hidden] { display: none; }
+  .about-menu { transform-origin: 1.6rem 0; }
   .about-menu p { font-size: 1.4rem; line-height: 1.6; color: var(--body); }
   .about-menu p.k { color: var(--fade); }
   .about-menu nav {
@@ -125,8 +135,8 @@
      shelter): frost, then a light lens that refracts and colour-fringes the marks sliding
      underneath (Chromium; Safari and Firefox keep the frost), and a faint lit rim. The tint
      and the rim follow the colour scheme; the symbol cards stay flat. */
-  .tbtn, footer {
-    background: color-mix(in srgb, var(--tile) 40%, transparent);
+  .tbtn, footer, .logo.wordmark {
+    background: color-mix(in srgb, var(--tile) 55%, transparent);
     -webkit-backdrop-filter: blur(8px) saturate(140%);
     backdrop-filter: blur(8px) saturate(140%);
     backdrop-filter: blur(8px) url(#glass-lens) saturate(140%);
@@ -144,7 +154,7 @@
     text-transform: uppercase; white-space: nowrap;
     transition: color .3s, background-color .3s;
   }
-  .tbtn:hover { color: var(--white); background: color-mix(in srgb, var(--tile) 40%, color-mix(in srgb, var(--white) 6%, transparent)); }
+  .tbtn:hover { color: var(--white); background: color-mix(in srgb, var(--tile) 55%, color-mix(in srgb, var(--white) 6%, transparent)); }
   .view-toggle { padding: 1rem; }
   .view-toggle svg { display: block; width: 2rem; height: 2rem; }
   /* the icon shows the CURRENT view; clicking cycles grid → zoomed-out → list */
@@ -153,9 +163,13 @@
   body.view-list .view-toggle .ic-list { display: block; }
   /* zoomed-out view: smaller tiles, more of the shelter on screen */
   body.view-zoom .tile:not(.expanded) { width: 24rem; height: 24rem; }
+  /* corners scale with the tile (2rem at 35rem), so one density scaled onto the next is exact */
+  body.view-zoom .tile:not(.expanded) { border-radius: calc(2rem * 250 / 366); }
+  body.view-far .tile:not(.expanded) { border-radius: calc(2rem * 150 / 366); }
   /* furthest out (the far view also carries view-zoom): the whole field at a glance */
   body.view-far .tile:not(.expanded) { width: 14.4rem; height: 14.4rem; }
-  body.view-far .tile:not(.expanded) .idx { opacity: 0; }   /* just the marks this far out */
+  body.view-far .tile:not(.expanded) .idx { opacity: 0; }   /* just the marks this far out: */
+  body.view-far .tile:not(.expanded) .meta { display: none; } /* no labels, no hover info */
   /* the expanded card fills its 3-cell hole flush (3 x 25rem - 1rem gutter) */
   body.view-zoom .tile.expanded {
     width: min(74rem, calc(100vw - 2.4rem));
@@ -362,12 +376,10 @@
     -webkit-user-select: none; user-select: none;   /* dragging the canvas must not select tile labels */
   }
   .grid.dragging { cursor: grabbing; }
-  /* switching grid <-> zoomed-out scales the view about the screen centre; the tile corners
-     counter-animate so they keep their radius on screen, and the labels step aside (text
-     would snap size at the hand-over) */
-  @property --tile-r { syntax: '<length>'; inherits: true; initial-value: 20px; }
+  /* changing density scales the view about the screen centre (corners are proportional per
+     density, so the scaled layout matches the next exactly); the labels step aside (text would
+     snap size at the hand-over) */
   .grid.zooming { pointer-events: none; }
-  .grid.zooming .tile:not(.expanded) { border-radius: var(--tile-r); }
   .grid.zooming .tile .idx, .grid.zooming .tile.konpo .ext { opacity: 0; transition: opacity .15s ease; }
   /* the expanded card is readable content again */
   .grid .tile.expanded { -webkit-user-select: text; user-select: text; }
@@ -1046,7 +1058,7 @@
     pointer-events: none; white-space: nowrap;
     transition: background-color .3s;
   }
-  footer:has(.cta:hover) { background: color-mix(in srgb, var(--tile) 40%, color-mix(in srgb, var(--white) 6%, transparent)); }
+  footer:has(.cta:hover) { background: color-mix(in srgb, var(--tile) 55%, color-mix(in srgb, var(--white) 6%, transparent)); }
   footer .msg { color: var(--fade); }
   footer .cta { color: var(--white); pointer-events: auto; cursor: pointer; transition: color .3s; }
   footer .cta:hover { color: var(--purple-vivid); }
@@ -1094,7 +1106,7 @@
   @media (max-width: 480px) {
     .topbar { padding: 1.6rem; }
     .toolbar { gap: 0.8rem; }
-    .logo.wordmark { font-size: 1.5rem; }
+    .logo.wordmark { font-size: 1.5rem; padding: 0 1.2rem; }
     .search, .filter-btn { padding: 1.2rem; }
     .search { gap: 0; }
     .search input { width: 0; }                       /* icon only — never a clipped word */
@@ -1165,11 +1177,11 @@
       background: linear-gradient(to bottom, var(--bg) 0%, color-mix(in srgb, var(--bg) 82%, transparent) 62%, color-mix(in srgb, var(--bg) 0%, transparent) 100%);
     }
     /* zoomed out on a phone: 40% smaller than the desktop zoom (cell 150 in renderGrid) */
-    body.view-zoom .tile:not(.expanded) { width: 14.4rem; height: 14.4rem; }
+    body.view-zoom .tile:not(.expanded) { width: 14.4rem; height: 14.4rem; border-radius: calc(2rem * 150 / 366); }
     /* the small tiles keep only the name: the category label ran past the tile edge */
     body.view-zoom .tile:not(.expanded) .meta .sub { display: none; }
     /* far on a phone: 8.4rem tiles (cell 90) */
-    body.view-far .tile:not(.expanded) { width: 8.4rem; height: 8.4rem; }
+    body.view-far .tile:not(.expanded) { width: 8.4rem; height: 8.4rem; border-radius: calc(2rem * 90 / 366); }
     /* the scheme popover spans the bar instead of hanging off the icon */
     .scheme { position: static; }
     .scheme-menu { position: fixed; top: 7.2rem; left: 1.6rem; right: 1.6rem; width: auto; }
@@ -3089,7 +3101,7 @@ function applyGridTransform(){
   const HOVER_DWELL = 120;
   let dwellT = 0, dwellTile = null;
   grid.addEventListener('mouseover', e => {
-    if (dragging || focused) return;
+    if (dragging || focused || VIEW === 'far') return;   // far out: just the marks, no turn or notes
     const t = e.target.closest('.tile');
     if (!t || t === dwellTile || t.classList.contains('expanded') || t.querySelector('.notes')) return;
     clearTimeout(dwellT);
@@ -3305,8 +3317,9 @@ document.getElementById('viewToggle').addEventListener('click', () => stepView()
 // layout is the one that scales, always up from 1, so the screen stays covered: zooming out
 // renders it first and shrinks it into place, zooming in blows the current one up and swaps at
 // the end. The mark nearest the centre is the anchor both sides agree on. The labels ease out
-// before and back in after (text would snap size at the hand-over), and presses that land
-// mid-zoom wait their turn.
+// before the move and back in after it lands, never during it (fading 300 labels repaints the
+// whole field every frame, and the zoom would drop frames), and presses that land mid-zoom
+// wait their turn.
 let zoomBusy = false, zoomQueue = 0;
 function stepView(){
   if (zoomBusy) { zoomQueue = Math.min(zoomQueue + 1, 2); return; }
@@ -3354,7 +3367,7 @@ function zoomView(v, o = {}){
     GRID.oy = C.y + r * (P.y - C.y) - (b1.y + iy * c1);
     applyGridTransform();
   };
-  const R = 20, DUR = 600, opts = { duration: DUR, easing: 'cubic-bezier(0.65, 0, 0.35, 1)' };
+  const DUR = 600, opts = { duration: DUR, easing: 'cubic-bezier(0.65, 0, 0.35, 1)' };
   g.style.transformOrigin = `${C.x}px ${C.y}px`;
   zoomBusy = true; g.classList.add('zooming');   // pauses input; the labels ease out
   viewIcon(v, DUR);
@@ -3367,12 +3380,20 @@ function zoomView(v, o = {}){
   if (r < 1) {                                  // zoom out: the denser layout shrinks into place
     setTimeout(() => {
       setView(v); syncURL(); land();
-      const a = g.animate([{ scale: 1 / r, '--tile-r': R * r + 'px' }, { scale: 1, '--tile-r': R + 'px' }], opts);
-      a.onfinish = () => { done(); after(C); };
+      // hold the new layout at the old one's size until it has painted once (that paint is the
+      // slow frame), so the move starts on its first frame instead of skipping ahead
+      g.style.scale = String(1 / r);
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        g.style.scale = '';
+        const a = g.animate([{ scale: 1 / r }, { scale: 1 }], opts);
+        a.onfinish = () => { done(); after(C); };
+      }));
     }, 150);
   } else {                                      // zoom in: the current layout grows, then hands over
-    const a = g.animate([{ scale: 1, '--tile-r': R + 'px' }, { scale: r, '--tile-r': R / r + 'px' }], { ...opts, fill: 'forwards' });
-    a.onfinish = () => { setView(v); syncURL(); land(); done(); after(C); };
+    setTimeout(() => {
+      const a = g.animate([{ scale: 1 }, { scale: r }], { ...opts, fill: 'forwards' });
+      a.onfinish = () => { setView(v); syncURL(); land(); done(); after(C); };
+    }, 150);
   }
 }
 document.getElementById('filterBtn').addEventListener('click', e => {
@@ -3488,19 +3509,32 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSchemeM
 const aboutEl = document.getElementById('about');
 const aboutMenu = document.getElementById('aboutMenu');
 const aboutBtn = document.getElementById('aboutBtn');
+// the dropdown eases open from under the wordmark (rise, grow, fade) and folds back the same
+// way; it only takes \`hidden\` once the close has played, and a press mid-close reopens it
+const ABOUT_IN = [{ opacity: 0, transform: 'translateY(-0.8rem) scale(0.97)' }, { opacity: 1, transform: 'none' }];
+let aboutAnim = null;
+function showAbout(open){
+  aboutEl.classList.toggle('open', open);
+  aboutBtn.setAttribute('aria-expanded', String(open));
+  if (open) aboutMenu.hidden = false;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { aboutMenu.hidden = !open; return; }
+  // a press mid-motion turns the running animation around from where it is
+  if (aboutAnim && aboutAnim.playState === 'running') { aboutAnim.reverse(); return; }
+  aboutAnim = aboutMenu.animate(ABOUT_IN, { duration: open ? 320 : 200, easing: open ? 'cubic-bezier(0.22, 1, 0.36, 1)' : 'cubic-bezier(0.64, 0, 0.78, 0)', direction: open ? 'normal' : 'reverse', fill: 'both' });
+  aboutAnim.onfinish = () => {
+    if (!aboutEl.classList.contains('open')) aboutMenu.hidden = true;
+    aboutAnim.cancel(); aboutAnim = null;
+  };
+}
 function closeAbout(){
-  if (aboutMenu.hidden) return;
-  aboutEl.classList.remove('open');
-  aboutMenu.hidden = true;
-  aboutBtn.setAttribute('aria-expanded', 'false');
+  if (aboutMenu.hidden || !aboutEl.classList.contains('open')) return;
+  showAbout(false);
 }
 aboutBtn.addEventListener('click', e => {
   e.stopPropagation();
-  const opening = aboutMenu.hidden;
+  const opening = !aboutEl.classList.contains('open');
   closeFilterMenu();
-  aboutEl.classList.toggle('open', opening);
-  aboutMenu.hidden = !opening;
-  aboutBtn.setAttribute('aria-expanded', String(opening));
+  showAbout(opening);
   Sound.play(opening ? 'toggle.on' : 'toggle.off');
 });
 document.addEventListener('click', e => { if (!aboutEl.contains(e.target)) closeAbout(); });
