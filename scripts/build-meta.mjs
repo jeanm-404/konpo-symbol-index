@@ -50,7 +50,7 @@ function statusLine(s) {
 }
 
 // The share card is the tile as it sits in the grid: the mark centered and large on the
-// tile color, four mono labels in the corners (inset so a feed's domain chip clears the name)
+// tile color; the name, id and site in mono in three corners (the bottom left stays clear for a feed's domain chip)
 const MONO = 'Menlo, monospace';
 const label = (x, y, t, fill = '#858585', end = false) =>
   `<text x="${x}" y="${y}" font-family="${MONO}" font-size="24" letter-spacing="3"${end ? ' text-anchor="end"' : ''} fill="${fill}">${esc(t)}</text>`;
@@ -60,10 +60,9 @@ function ogSvg(s) {
   <style>${MARK_CSS}</style>
   <rect width="1200" height="630" fill="#141414"/>
   <svg x="285" y="0" width="630" height="630" viewBox="10 10 180 180"><g class="mark">${s.mark}</g></svg>
-  ${label(72, 116, s.id)}
-  ${label(1128, 116, 'SYMBOL SHELTER', '#858585', true)}
-  ${label(72, 512, s.name, '#fff')}
-  ${label(1128, 512, (s.cat || '').toUpperCase(), '#858585', true)}
+  ${label(72, 116, s.name.toUpperCase(), '#fff')}
+  ${label(1128, 116, s.id, '#858585', true)}
+  ${label(1128, 512, 'SYMBOL SHELTER', '#858585', true)}
 </svg>`;
 }
 
