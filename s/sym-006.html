@@ -1062,6 +1062,8 @@
   }
   footer:has(.cta:hover) { background: color-mix(in srgb, var(--tile) 55%, color-mix(in srgb, var(--white) 6%, transparent)); }
   footer .msg { color: var(--fade); }
+  /* phones keep only the call itself: the chip stays a third of the width, not most of it */
+  @media (max-width: 780px) { footer .msg .lead { display: none; } }
   footer .cta { color: var(--white); pointer-events: auto; cursor: pointer; transition: color .3s; }
   footer .cta:hover { color: var(--purple-vivid); }
   footer .sub { display: none; align-items: center; gap: 1.2rem; pointer-events: auto; }
@@ -1500,7 +1502,7 @@
 
   <div class="wrap">
     <footer class="mono" id="footer">
-      <span class="msg">We&rsquo;ll be adding more. <span class="cta" id="subOpen" role="button" tabindex="0">Get Notified.</span></span>
+      <span class="msg"><span class="lead">New marks soon. </span><span class="cta" id="subOpen" role="button" tabindex="0">Notify me</span></span>
       <form class="sub" id="subForm" novalidate>
         <input id="subEmail" type="email" placeholder="your@email.com" autocomplete="email" spellcheck="false" aria-label="Email address">
         <button type="submit">Send&nbsp;&rarr;</button>
