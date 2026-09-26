@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Symbol Shelter share layer: per-mark OG images, crawler stubs, RSS/JSON feeds.
-// Run after any catalogue change:  node scripts/build-meta.mjs
+// Vercel runs this on every deploy (npm run build), so the mark pages never serve an old
+// copy of index.html; run it locally too (npm run build) to keep the committed files in step.
 // Also keeps the mark count in index.html's share tags in step with the catalogue.
 import fs from 'node:fs';
 import path from 'node:path';
