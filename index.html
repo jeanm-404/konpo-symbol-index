@@ -1224,7 +1224,6 @@
   /* the shelter's own tile: Konpo logomark in accent purple, links home;
      the label wears the same grey as every other index number */
   .tile.konpo { cursor: pointer; }
-  .tile.konpo .mark path { fill: var(--purple-vivid); }
   /* hover hints that this one opens a new tab */
   .tile.konpo .ext {
     position: absolute; top: 1.6rem; right: 1.8rem;
@@ -1234,19 +1233,27 @@
     transition: opacity .3s, transform .3s, color .3s;
   }
   .tile.konpo:hover .ext { opacity: 1; transform: none; color: var(--white); }
-  /* under a color scheme the Konpo mark stays white so it stands apart from the catalogue;
-     its center circle (drawn in the tile color to cut the dots) follows the scheme's tile */
-  body.schemed .tile.konpo .mark path,
-  body.schemed .tile.konpo .lottie-slot [fill="rgb(173,156,255)"] { fill: #fff; }
-  body.schemed .tile.konpo .lottie-slot [fill="rgb(20,20,20)"] { fill: var(--tile); }
-  /* hover inverts this one tile: purple ground, white mark (its cut circle follows the ground) */
-  .tile.konpo { transition: filter .5s cubic-bezier(0.4, 0, 0.2, 1), background-color .35s ease; }
-  .tile.konpo .mark path, .tile.konpo .lottie-slot [fill] { transition: fill .35s ease; }
-  .tile.konpo:hover, body.schemed .tile.konpo:hover { background-color: var(--purple-vivid); }
-  .tile.konpo:hover .mark path,
-  .tile.konpo:hover .lottie-slot [fill="rgb(173,156,255)"] { fill: #fff; }
-  .tile.konpo:hover .lottie-slot [fill="rgb(20,20,20)"],
-  body.schemed .tile.konpo:hover .lottie-slot [fill="rgb(20,20,20)"] { fill: var(--purple-vivid); }
+  /* One hover amount (0 at rest, 1 hovered) drives the ground, the dots and the lottie's center
+     circle (drawn in the tile color to cut the dots), so the three can never drift apart
+     mid-transition. Hover inverts this one tile: purple ground, white mark. Under a color scheme
+     the mark rests white so it stands apart from the catalogue, and the ground follows the scheme. */
+  @property --kp-h { syntax: '<number>'; inherits: true; initial-value: 0; }
+  .tile.konpo {
+    --kp-rest-ink: var(--purple-vivid);
+    --kp-ground: color-mix(in srgb, var(--purple-vivid) calc(var(--kp-h) * 100%), var(--tile));
+    --kp-ink: color-mix(in srgb, #fff calc(var(--kp-h) * 100%), var(--kp-rest-ink));
+    background-color: var(--kp-ground);
+    transition: filter .5s cubic-bezier(0.4, 0, 0.2, 1), --kp-h .35s ease;
+  }
+  body.schemed .tile.konpo { --kp-rest-ink: #fff; }
+  .tile.konpo:hover { --kp-h: 1; }
+  .tile.konpo .mark path,
+  .tile.konpo .lottie-slot [fill="rgb(173,156,255)"] { fill: var(--kp-ink); }
+  .tile.konpo .lottie-slot [fill="rgb(20,20,20)"] { fill: var(--kp-ground); }
+  /* the konpo.studio label darkens with the ground so it still reads on the purple */
+  .tile.konpo .meta .sub {
+    color: color-mix(in srgb, color-mix(in srgb, var(--tile) 70%, var(--purple-vivid)) calc(var(--kp-h) * 100%), var(--fade));
+  }
 
   /* --- the reveal: tiles pulse in from the centre of the screen outwards ---
      `scale` (the individual property) composes with the inline translate3d
