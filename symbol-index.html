@@ -3376,7 +3376,7 @@ document.addEventListener('keydown', e => {
 let URL_READY = false;                    // suppress history writes until the intro hands over
 
 // the tab reads the open mark (card or drawer), matching its /s/ share page's title
-const BASE_TITLE = document.title;
+const BASE_TITLE = 'Symbol Shelter | Konpo Studio';   // fixed: a mark's own page loads with that mark's title
 function syncTitle(){
   const s = S.find(x => x.id === (expandedId || openId));
   document.title = s ? `${s.name} (${s.id}) | Symbol Shelter` : BASE_TITLE;

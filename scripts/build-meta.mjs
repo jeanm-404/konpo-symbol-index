@@ -73,42 +73,34 @@ const ver = svg => crypto.createHash('sha1').update(svg).digest('hex').slice(0, 
 const ogUrl = s => `${SITE}/og/${slug(s.id)}.png?v=${ver(ogSvg(s))}`;
 const rootUrl = `${SITE}/og/root.png?v=${ver(rootSvg)}`;
 
-function stubHtml(s) {
+// Each mark's address serves the whole shelter with that card open (the app reads /s/<id>
+// on boot and writes / when the card closes), so there is no redirect: the page carries the
+// mark's own title, description, canonical and share tags, and the text for crawlers.
+const head = (html, re, to) => { if (!re.test(html)) throw new Error('share tag not found: ' + re); return html.replace(re, to); };
+function stubHtml(s, page) {
   const url = `${SITE}/s/${slug(s.id)}`;
   const img = ogUrl(s);
   const st = statusLine(s);
-  const desc = `${st.text.charAt(0) + st.text.slice(1).toLowerCase()}. ${s.blurb}`;
-  const name = `${s.name} (${s.id})`, alt = `${s.name}, ${s.id}: ${st.text.charAt(0) + st.text.slice(1).toLowerCase()}`;
-  return `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<title>${esc(name)} | Symbol Shelter</title>
-<meta name="description" content="${esc(desc)}">
-<link rel="canonical" href="${url}">
-<meta name="theme-color" content="#000000">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<meta property="og:title" content="${esc(name)} | Symbol Shelter">
-<meta property="og:description" content="${esc(desc)}">
-<meta property="og:image" content="${img}">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="${esc(alt)}">
-<meta property="og:url" content="${url}">
-<meta property="og:type" content="article">
-<meta property="og:site_name" content="Symbol Shelter">
-<meta property="og:locale" content="en_US">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="${esc(name)} | Symbol Shelter">
-<meta name="twitter:description" content="${esc(desc)}">
-<meta name="twitter:image" content="${img}">
-<meta name="twitter:image:alt" content="${esc(alt)}">
-<noscript><meta http-equiv="refresh" content="0;url=/#${s.id}"></noscript>
-<script>location.replace('/#${s.id}')</script>
-</head>
-<body></body>
-</html>
-`;
+  const desc = esc(`${st.text.charAt(0) + st.text.slice(1).toLowerCase()}. ${s.blurb}`);
+  const title = esc(`${s.name} (${s.id}) | Symbol Shelter`);
+  const alt = esc(`${s.name} (${s.id}), a rejected logo mark in the Symbol Shelter`);
+  let h = page;
+  h = head(h, /<title>[^<]*<\/title>/, `<title>${title}</title>`);
+  h = head(h, /<meta name="description" content="[^"]*">/, `<meta name="description" content="${desc}">`);
+  h = head(h, /<link rel="canonical" href="[^"]*">/, `<link rel="canonical" href="${url}">`);
+  h = head(h, /<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${title}">`);
+  h = head(h, /<meta property="og:description" content="[^"]*">/, `<meta property="og:description" content="${desc}">`);
+  h = head(h, /<meta property="og:image" content="[^"]*">/, `<meta property="og:image" content="${img}">`);
+  h = head(h, /<meta property="og:image:alt" content="[^"]*">/, `<meta property="og:image:alt" content="${alt}">`);
+  h = head(h, /<meta property="og:url" content="[^"]*">/, `<meta property="og:url" content="${url}">`);
+  h = head(h, /<meta property="og:type" content="[^"]*">/, `<meta property="og:type" content="article">`);
+  h = head(h, /<meta name="twitter:title" content="[^"]*">/, `<meta name="twitter:title" content="${title}">`);
+  h = head(h, /<meta name="twitter:description" content="[^"]*">/, `<meta name="twitter:description" content="${desc}">`);
+  h = head(h, /<meta name="twitter:image" content="[^"]*">/, `<meta name="twitter:image" content="${img}">`);
+  h = head(h, /<meta name="twitter:image:alt" content="[^"]*">/, `<meta name="twitter:image:alt" content="${alt}">`);
+  const facts = [['Status', s.status], ['Reason', s.reason], ['Category', s.cat]].filter(([, v]) => v && v !== '—');
+  const fallback = `<noscript><main><h1>${esc(s.name)}</h1><p>${esc(s.blurb)}</p><dl>${facts.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('')}</dl><p><a href="/">Symbol Shelter</a></p></main></noscript>`;
+  return head(h, /<body>/, `<body>\n${fallback}`);
 }
 
 // ---- feeds -----------------------------------------------------------------
@@ -180,7 +172,8 @@ fs.writeFileSync(path.join(ROOT, 'robots.txt'), robots);
 fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), sitemap);
 fs.writeFileSync(path.join(ROOT, 'feed.xml'), rss);
 fs.writeFileSync(path.join(ROOT, 'feed.json'), JSON.stringify(jsonFeed, null, 2));
-for (const s of S) fs.writeFileSync(path.join(ROOT, 's', `${slug(s.id)}.html`), stubHtml(s));
+const page = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');   // after syncCount
+for (const s of S) fs.writeFileSync(path.join(ROOT, 's', `${slug(s.id)}.html`), stubHtml(s, page));
 
 const jobs = S.map(s => sharp(Buffer.from(ogSvg(s))).png({ compressionLevel: 9 }).toFile(path.join(ROOT, 'og', `${slug(s.id)}.png`)));
 jobs.push(sharp(Buffer.from(rootSvg)).png({ compressionLevel: 9 }).toFile(path.join(ROOT, 'og', 'root.png')));
