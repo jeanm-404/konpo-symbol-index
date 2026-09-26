@@ -2826,6 +2826,20 @@ function applyGridTransform(){
   const pend = { x: 0, y: 0, k: LERP.wheel };
   let last = 0, mine = null, fx = 0, fy = 0, moveT = 0;
   const cvEl = () => document.getElementById('canvas');
+  // a card's fit-pan (the canvas easing so the grown card sits in view) runs in this same loop,
+  // on the card's own growth curve (cubic-bezier .66,0,.34,1 over .55s), so a scroll while the
+  // card opens adds to it instead of cutting it short
+  const easeCard = (() => { const x1 = 0.66, x2 = 0.34, cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx;
+    const sx = t => ((ax * t + bx) * t + cx) * t, dx = t => (3 * ax * t + 2 * bx) * t + cx, sy = t => t * t * (3 - 2 * t);
+    return x => { let t = x; for (let i = 0; i < 6; i++) { const e = sx(t) - x, d = dx(t); if (Math.abs(e) < 1e-5 || !d) break; t -= e / d; } return sy(Math.min(1, Math.max(0, t))); }; })();
+  let tween = null;
+  GRID.panTween = (dx, dy, dur) => {
+    if (!SMOOTH) { GRID.ox += dx; GRID.oy += dy; applyGridTransform(); return; }   // the .reflowing transition eases it
+    if (tween) { GRID.ox += tween.dx * (1 - tween.done); GRID.oy += tween.dy * (1 - tween.done); }   // a new card: finish the last fit
+    tween = { dx, dy, t0: null, dur, done: 0 };   // the clock starts on the first painted frame: the open's own work can stall the first one
+    mine = null;
+    if (!GRID.raf) { last = performance.now(); cvEl().classList.add('gliding'); GRID.raf = requestAnimationFrame(glide); }
+  };
   function pan(dx, dy, kind){
     if (!SMOOTH) { GRID.ox += dx; GRID.oy += dy; applyGridTransform(); return; }
     pend.x += dx; pend.y += dy; pend.k = LERP[kind];
@@ -2833,21 +2847,27 @@ function applyGridTransform(){
   }
   function glide(now){
     GRID.raf = null;
-    if (mine && (GRID.ox !== mine.x || GRID.oy !== mine.y)) { pend.x = pend.y = 0; GRID.vx = GRID.vy = 0; cvEl().classList.remove('gliding'); return; }
+    if (mine && (GRID.ox !== mine.x || GRID.oy !== mine.y)) { pend.x = pend.y = 0; GRID.vx = GRID.vy = 0; tween = null; cvEl().classList.remove('gliding'); return; }
     const f = Math.min(4, (now - last) / 16.667); last = now;     // frames elapsed, so 120Hz eases like 60Hz
     if (GRID.vx || GRID.vy) {
       pend.x += GRID.vx * f; pend.y += GRID.vy * f;
       const d = Math.pow(0.92, f); GRID.vx *= d; GRID.vy *= d;
       if (Math.abs(GRID.vx) < 0.15 && Math.abs(GRID.vy) < 0.15) GRID.vx = GRID.vy = 0;
     }
+    if (tween) {
+      if (tween.t0 == null) tween.t0 = now - 16.667;
+      const p = easeCard(Math.min(1, (now - tween.t0) / tween.dur)), inc = p - tween.done;
+      tween.done = p; GRID.ox += tween.dx * inc; GRID.oy += tween.dy * inc;
+      if (p >= 1) tween = null;
+    }
     const k = 1 - Math.pow(1 - pend.k, f);
     let mx = pend.x * k, my = pend.y * k;
-    if (Math.abs(pend.x) < 0.3 && Math.abs(pend.y) < 0.3 && !GRID.vx && !GRID.vy) { mx = pend.x; my = pend.y; }
+    if (Math.abs(pend.x) < 0.3 && Math.abs(pend.y) < 0.3 && !GRID.vx && !GRID.vy) { mx = pend.x; my = pend.y; }   // settle exactly
     pend.x -= mx; pend.y -= my;
     GRID.ox += mx; GRID.oy += my;
     applyGridTransform();
     mine = { x: GRID.ox, y: GRID.oy };
-    if (pend.x || pend.y || GRID.vx || GRID.vy) GRID.raf = requestAnimationFrame(glide);
+    if (pend.x || pend.y || GRID.vx || GRID.vy || tween) GRID.raf = requestAnimationFrame(glide);
     else cvEl().classList.remove('gliding');
   }
   let downOutsideCard = false;
@@ -2867,7 +2887,9 @@ function applyGridTransform(){
     cv.querySelectorAll('.tile:not(.expanded) .notes').forEach(n => n.remove());  // clear hover notes
     cv.querySelectorAll('.tile:not(.expanded)').forEach(t => t.classList.remove('mark-anim', 'annot-ready'));
     if (GRID.raf) { cancelAnimationFrame(GRID.raf); GRID.raf = null; }   // a grab stops any glide dead
-    pend.x = pend.y = 0; fx = fy = 0; cvEl().classList.remove('gliding');
+    pend.x = pend.y = 0; fx = fy = 0;
+    if (tween) { last = performance.now(); GRID.raf = requestAnimationFrame(glide); }   // a card's fit-pan carries on under the grab
+    else cvEl().classList.remove('gliding');
     const t = e.target.closest('.tile');
     downId = t ? t.dataset.id : null;
     downTile = t || null;
@@ -2950,8 +2972,12 @@ function applyGridTransform(){
     return b.right > 0 && b.left < innerWidth && b.bottom > 0 && b.top < innerHeight;
   };
   let quietFocus = false;
+  // a press focuses the tile too, but the card's own fit-pan places it; panning here
+  // first could cross a wrap edge and send the card a block away mid-open
+  let pressFocus = false;
+  grid.addEventListener('pointerdown', () => { pressFocus = true; requestAnimationFrame(() => { pressFocus = false; }); }, true);
   grid.addEventListener('focusin', e => {
-    if (quietFocus) return;
+    if (quietFocus || pressFocus) return;
     const t = e.target.closest('.tile');
     if (!t || t.classList.contains('expanded') || expandedTile) return;
     const r = t.getBoundingClientRect(), m = 24;
@@ -3781,14 +3807,19 @@ function expandTile(tile, s){
   canvas.classList.add('reflowing');
   if (GRID.tiling) {
     const L = GRID.lock && GRID.lock.closing ? GRID.lock : null;   // a close still easing: keep its wrap
+    // the wrap block nearest to what's on screen: when the offset has just crossed a
+    // block edge (a glide still settling as the click lands) the plain wrap picks the
+    // copy one block over, and the fit-pan would then chase the card across the field
+    const shown = new DOMMatrix(getComputedStyle(canvas).transform);
+    const near = (o, b, at) => { const w = ((o % b) + b) % b - b; return w + b * Math.round((at - w) / b); };
     GRID.lock = L ? { ox: L.ox, oy: L.oy, wx: L.wx, wy: L.wy, tile }
       : { ox: GRID.ox, oy: GRID.oy, tile,                // tile: the card, for rebaseCard
-      wx: ((GRID.ox % GRID.bW) + GRID.bW) % GRID.bW - GRID.bW,
-      wy: ((GRID.oy % GRID.bH) + GRID.bH) % GRID.bH - GRID.bH };
+      wx: near(GRID.ox, GRID.bW, shown.m41), wy: near(GRID.oy, GRID.bH, shown.m42) };
+    applyGridTransform();                  // measure the tile below in the locked frame
   }
   // pan so the grown card sits fully in view — a bottom/right-edge tile used to
-  // grow its card off-screen with no way to reach it. The pan eases on the
-  // .reflowing transition, matching the card's own growth curve.
+  // grow its card off-screen with no way to reach it. The pan eases on the card's own
+  // growth curve, in the smooth-pan loop (or on the .reflowing transition with reduced motion).
   {
     const m = 24;
     const cardPx = (VIEW === 'zoom') ? 740 : 716;
@@ -3813,7 +3844,7 @@ function expandTile(tile, s){
     // the card box in canvas coords — the non-tiling clamp needs it to keep the
     // fit-pan instead of discarding it back to the tile grid's slack
     GRID.card = { x: cx, y: cy, w: cardW, h: cardH };
-    if (dx || dy) { GRID.ox += dx; GRID.oy += dy; GRID.vx = GRID.vy = 0; applyGridTransform(); }
+    if (dx || dy) { GRID.vx = GRID.vy = 0; GRID.panTween(dx, dy, 550); }
   }
   pushAround(canvas, tile);
 
