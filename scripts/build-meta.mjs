@@ -49,32 +49,21 @@ function statusLine(s) {
   return { text: `REJECTED${reason}`, color: '#f87171' };
 }
 
-// The share card is the tile as it sits in the grid: the mark centered and large on the
-// tile color; the name, id and site in mono in three corners (the bottom left stays clear for a feed's domain chip)
-const MONO = 'Menlo, monospace';
-const label = (x, y, t, fill = '#858585', end = false) =>
-  `<text x="${x}" y="${y}" font-family="${MONO}" font-size="24" letter-spacing="3"${end ? ' text-anchor="end"' : ''} fill="${fill}">${esc(t)}</text>`;
-
+// The share card is the mark alone, centered and large on the tile color: no text,
+// so it reads at any size and survives any crop
 function ogSvg(s) {
   return `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
   <style>${MARK_CSS}</style>
   <rect width="1200" height="630" fill="#141414"/>
   <svg x="285" y="0" width="630" height="630" viewBox="10 10 180 180"><g class="mark">${s.mark}</g></svg>
-  ${label(72, 116, s.name.toUpperCase(), '#fff')}
-  ${label(1128, 116, s.id, '#858585', true)}
-  ${label(1128, 512, 'SYMBOL SHELTER', '#858585', true)}
 </svg>`;
 }
 
-// the home card: the Konpo tile in the same family
-const konpoK = 170 / 61.1;
+// the home card: the Konpo mark alone, in the same family
+const konpoK = 119 / 61.1;
 const rootSvg = `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
   <rect width="1200" height="630" fill="#141414"/>
   <g transform="translate(${600 - 30.55 * konpoK} ${315 - 30.54 * konpoK}) scale(${konpoK})" fill="#ad9cff"><path d="${KONPO_MARK.match(/d="([^"]+)"/)[1]}"/></g>
-  ${label(72, 116, 'KONPO STUDIO')}
-  ${label(1128, 116, `${S.length} REJECTED LOGOS`, '#858585', true)}
-  ${label(72, 512, 'Symbol Shelter', '#fff')}
-  ${label(1128, 512, 'UP FOR ADOPTION', '#858585', true)}
 </svg>`;
 
 function stubHtml(s) {
