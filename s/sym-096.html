@@ -712,7 +712,8 @@
   }
   .xc-controls button:hover { color: var(--white); border-color: color-mix(in srgb, var(--white) 30%, transparent); }
   .xc-controls button.active { background: var(--white); color: var(--on-ink); border-color: var(--white); }
-  .xc-controls button.revive { color: var(--on-ink); background: var(--white); border-color: var(--white); }
+  /* the card's one call to action: larger than the utility chips, with a little air above them */
+  .xc-controls button.revive { color: var(--on-ink); background: var(--white); border-color: var(--white); font-size: 1.3rem; padding: 1.4rem 2.8rem; margin-top: 0.8rem; }
   .xc-controls button.revive:hover { opacity: 0.85; }
 
   /* --- close: the only way out of an expanded card --- */
@@ -1222,7 +1223,7 @@
     .xc-controls { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 0.6rem; }
     /* the four utility chips share one row; Adopt keeps its own full-width band */
     .xc-controls button { padding: 0.7rem 1.1rem; font-size: 1rem; letter-spacing: 0.06em; }
-    .xc-controls button.revive { order: 1; flex: 1 0 100%; text-align: center; padding: 1.2rem 1.6rem; font-size: 1.2rem; letter-spacing: 0.08em; }
+    .xc-controls button.revive { order: 1; flex: 1 0 100%; text-align: center; padding: 1.2rem 1.6rem; font-size: 1.2rem; letter-spacing: 0.08em; margin-top: 0; }
     /* the label column fits its longest label (ORGANIZATION ran into its value at 8.5rem) */
     .xc-meta { grid-template-columns: max-content auto; column-gap: 1.6rem; row-gap: 0.6rem; }
     /* the mark spans the card edge to edge as a square; the column scrolls to reach the data */
