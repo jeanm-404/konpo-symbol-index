@@ -142,6 +142,7 @@
   body.view-zoom .tile:not(.expanded) { width: 24rem; height: 24rem; }
   /* furthest out (the far view also carries view-zoom): the whole field at a glance */
   body.view-far .tile:not(.expanded) { width: 14.4rem; height: 14.4rem; }
+  body.view-far .tile:not(.expanded) .idx { opacity: 0; }   /* just the marks this far out */
   /* the expanded card fills its 3-cell hole flush (3 x 25rem - 1rem gutter) */
   body.view-zoom .tile.expanded {
     width: min(74rem, calc(100vw - 2.4rem));
@@ -1156,9 +1157,8 @@
     body.view-zoom .tile:not(.expanded) { width: 14.4rem; height: 14.4rem; }
     /* the small tiles keep only the name: the category label ran past the tile edge */
     body.view-zoom .tile:not(.expanded) .meta .sub { display: none; }
-    /* far on a phone: 8.4rem tiles (cell 90), too small to carry the index label */
+    /* far on a phone: 8.4rem tiles (cell 90) */
     body.view-far .tile:not(.expanded) { width: 8.4rem; height: 8.4rem; }
-    body.view-far .tile:not(.expanded) .idx { opacity: 0; }
     /* the scheme popover spans the bar instead of hanging off the icon */
     .scheme { position: static; }
     .scheme-menu { position: fixed; top: 7.2rem; left: 1.6rem; right: 1.6rem; width: auto; }
@@ -3286,19 +3286,34 @@ function stepView(){
   collapseTile(true, true); closeDetail();     // leave no card/drawer behind when the view flips
   zoomView(CYCLE[(CYCLE.indexOf(VIEW) + 1) % CYCLE.length]);
 }
-function zoomView(v){
+// o.at: zoom toward this tile instead of the screen centre; o.then(tile): runs once the new
+// layout has landed, with that mark's tile in it
+function zoomView(v, o = {}){
   const g = document.getElementById('grid'), cv = document.getElementById('canvas');
-  const from = VIEW;
+  const from = VIEW, id = o.at && o.at.dataset.id;
+  const after = at => {
+    if (!o.then) return;
+    let best = null, bd = Infinity;
+    for (const t of cv.children) {
+      if (t.dataset.id !== id) continue;
+      const q = t.getBoundingClientRect(), d = Math.hypot(q.left + q.width / 2 - at.x, q.top + q.height / 2 - at.y);
+      if (d < bd) { bd = d; best = t; }
+    }
+    if (best) o.then(best);
+  };
   if (v === from || v === 'list' || from === 'list' || g.hidden || !cv.children.length
-      || matchMedia('(prefers-reduced-motion: reduce)').matches) { setView(v); syncURL(); return; }
+      || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    setView(v); syncURL(); after({ x: innerWidth / 2, y: innerHeight / 2 }); return;
+  }
   if (GRID.stopGlide) GRID.stopGlide();         // the anchor must hold still
   const r = viewCell(v) / viewCell(from);
-  const C = { x: innerWidth / 2, y: innerHeight / 2 };
+  const ar = o.at && o.at.getBoundingClientRect();
+  const C = ar ? { x: ar.left + ar.width / 2, y: ar.top + ar.height / 2 } : { x: innerWidth / 2, y: innerHeight / 2 };
   const base = () => ({ x: Math.min(...[...cv.children].map(t => +t.dataset.x)), y: Math.min(...[...cv.children].map(t => +t.dataset.y)) });
   const shown = new DOMMatrix(getComputedStyle(cv).transform), T0 = { x: shown.m41, y: shown.m42 };
   const b0 = base(), c0 = GRID.cell;
-  let best = null, bd = Infinity;
-  for (const t of cv.children) {
+  let best = o.at || null, bd = Infinity;
+  if (!best) for (const t of cv.children) {
     const d = Math.hypot(+t.dataset.x + c0 / 2 + T0.x - C.x, +t.dataset.y + c0 / 2 + T0.y - C.y);
     if (d < bd) { bd = d; best = t; }
   }
@@ -3326,11 +3341,11 @@ function zoomView(v){
     setTimeout(() => {
       setView(v); syncURL(); land();
       const a = g.animate([{ scale: 1 / r, '--tile-r': R * r + 'px' }, { scale: 1, '--tile-r': R + 'px' }], opts);
-      a.onfinish = done;
+      a.onfinish = () => { done(); after(C); };
     }, 150);
   } else {                                      // zoom in: the current layout grows, then hands over
     const a = g.animate([{ scale: 1, '--tile-r': R + 'px' }, { scale: r, '--tile-r': R / r + 'px' }], { ...opts, fill: 'forwards' });
-    a.onfinish = () => { setView(v); syncURL(); land(); done(); };
+    a.onfinish = () => { setView(v); syncURL(); land(); done(); after(C); };
   }
 }
 document.getElementById('filterBtn').addEventListener('click', e => {
@@ -3815,6 +3830,9 @@ const scrim  = document.getElementById('scrim');
 // is clicked is abandoned, never opened late on top of the newer one
 let pendingOpen = null;
 function expandFromTile(tile, s){
+  // most zoomed out, a mark is too small to open in place: zoom in to the middle level
+  // toward it (it holds still while the field grows around it), then open its card there
+  if (VIEW === 'far') { if (!zoomBusy) zoomView('zoom', { at: tile, then: t => expandFromTile(t, s) }); return; }
   if (pendingOpen) {
     clearTimeout(pendingOpen.t);
     pendingOpen.tile.classList.remove('annot-out', 'annot-ready', 'mark-anim');
