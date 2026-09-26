@@ -49,26 +49,33 @@ function statusLine(s) {
   return { text: `REJECTED${reason}`, color: '#f87171' };
 }
 
+// The share card is the tile as it sits in the grid: the mark centered and large on the
+// tile color, four mono labels in the corners (inset so a feed's domain chip clears the name)
+const MONO = 'Menlo, monospace';
+const label = (x, y, t, fill = '#858585', end = false) =>
+  `<text x="${x}" y="${y}" font-family="${MONO}" font-size="24" letter-spacing="3"${end ? ' text-anchor="end"' : ''} fill="${fill}">${esc(t)}</text>`;
+
 function ogSvg(s) {
-  const st = statusLine(s);
   return `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
   <style>${MARK_CSS}</style>
-  <rect width="1200" height="630" fill="#000"/>
-  <rect x="80" y="85" width="460" height="460" rx="32" fill="#141414"/>
-  <svg x="80" y="85" width="460" height="460" viewBox="-28 -28 256 256"><g class="mark">${s.mark}</g></svg>
-  <text x="620" y="106" font-family="Menlo, monospace" font-size="26" letter-spacing="3" fill="#6c6c6c">${esc(s.id)}</text>
-  <text x="620" y="196" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="78" fill="#fff">${esc(s.name)}</text>
-  <text x="620" y="264" font-family="Menlo, monospace" font-size="26" letter-spacing="2" fill="${st.color}">${esc(st.text)}</text>
-  <text x="620" y="545" font-family="Menlo, monospace" font-size="23" letter-spacing="3" fill="#6c6c6c">SYMBOL SHELTER</text>
+  <rect width="1200" height="630" fill="#141414"/>
+  <svg x="285" y="0" width="630" height="630" viewBox="10 10 180 180"><g class="mark">${s.mark}</g></svg>
+  ${label(72, 116, s.id)}
+  ${label(1128, 116, 'SYMBOL SHELTER', '#858585', true)}
+  ${label(72, 512, s.name, '#fff')}
+  ${label(1128, 512, (s.cat || '').toUpperCase(), '#858585', true)}
 </svg>`;
 }
 
+// the home card: the Konpo tile in the same family
+const konpoK = 170 / 61.1;
 const rootSvg = `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
-  <rect width="1200" height="630" fill="#000"/>
-  <g transform="translate(986 82) scale(2.1)" fill="#ad9cff"><path d="${KONPO_MARK.match(/d="([^"]+)"/)[1]}"/></g>
-  <text x="80" y="330" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="110" fill="#fff">Symbol Shelter</text>
-  <text x="82" y="398" font-family="Menlo, monospace" font-size="27" letter-spacing="3" fill="#6c6c6c">${S.length} REJECTED LOGOS · EVERYONE HERE IS UP FOR ADOPTION</text>
-  <text x="82" y="545" font-family="Menlo, monospace" font-size="23" letter-spacing="3" fill="#ad9cff">KONPO STUDIO</text>
+  <rect width="1200" height="630" fill="#141414"/>
+  <g transform="translate(${600 - 30.55 * konpoK} ${315 - 30.54 * konpoK}) scale(${konpoK})" fill="#ad9cff"><path d="${KONPO_MARK.match(/d="([^"]+)"/)[1]}"/></g>
+  ${label(72, 116, 'KONPO STUDIO')}
+  ${label(1128, 116, `${S.length} REJECTED LOGOS`, '#858585', true)}
+  ${label(72, 512, 'Symbol Shelter', '#fff')}
+  ${label(1128, 512, 'UP FOR ADOPTION', '#858585', true)}
 </svg>`;
 
 function stubHtml(s) {
