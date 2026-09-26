@@ -230,19 +230,19 @@
     border-radius: 0.2rem; background: var(--white); box-shadow: 0 0 0 1.5px var(--tile);
   }
   .scheme:not(.on) .scheme-menu .ramp .thumb { opacity: 0; }
-  .scheme-menu .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
-  .scheme-menu .sw, .scheme-menu .off {
+  .scheme-menu .pick, .scheme-menu .off {
     display: flex; align-items: center; gap: 0.8rem;
     background: transparent; border: 1px solid var(--line); border-radius: 0.6rem;
     padding: 0.8rem 1rem; cursor: pointer; color: var(--fade);
     font-family: var(--mono); font-size: 1.1rem; letter-spacing: 0.08em; text-transform: uppercase;
     transition: color .2s, border-color .2s;
   }
-  .scheme-menu .sw:hover, .scheme-menu .off:hover { color: var(--white); border-color: color-mix(in srgb, var(--white) 30%, transparent); }
-  .scheme-menu .sw i { width: 1.6rem; height: 1.6rem; border-radius: 50%; flex: none; background: var(--c); box-shadow: inset 0 0 0 1px var(--line); }
-  .scheme:not(.on) .scheme-menu .pair { display: none; }
-  .scheme-menu .off { justify-content: center; }
-  .scheme:not(.on) .scheme-menu .off { display: none; }
+  .scheme-menu .off:hover { color: var(--white); border-color: color-mix(in srgb, var(--white) 30%, transparent); }
+  .scheme-menu .pick, .scheme-menu .off { justify-content: center; }
+  /* Select locks the hue in and closes: the menu's one filled button */
+  .scheme-menu .pick { color: var(--on-ink); background: var(--white); border-color: var(--white); transition: opacity .2s; }
+  .scheme-menu .pick:hover { opacity: 0.85; }
+  .scheme:not(.on) .scheme-menu .pick, .scheme:not(.on) .scheme-menu .off { display: none; }
   /* Play motions ship as white fills; a scheme redraws them in its ink */
   body.schemed .xc-stage .lottie-slot svg [fill]:not([fill="none"]),
   body.schemed #drawer .stage .lottie-slot svg [fill]:not([fill="none"]) { fill: var(--white); }
@@ -1123,6 +1123,13 @@
     .topbar:has(.search:focus-within, .search.has-q) .about { display: none; }
     .topbar:has(.search:focus-within, .search.has-q) { justify-content: flex-end; }
   }
+  /* phone search reads like the All chip (1.1rem mono): the field keeps its 1.6rem font so iOS
+     doesn't zoom the page on focus, and is drawn at 1.1/1.6 of it; the negative margin gives back
+     the width the scale doesn't take on screen */
+  @media (max-width: 480px) and (pointer: coarse) {
+    .search input { transform: scale(0.6875); transform-origin: 0 50%; transition: width .3s, margin-right .3s; }
+    .search:focus-within input, .search.has-q input { width: calc(9rem / 0.6875); margin-right: calc(9rem - 9rem / 0.6875); }
+  }
   /* narrow Androids (360px): the whole bar steps down to 3.6rem so it still fits the gutters */
   @media (max-width: 374px) {
     .tbtn, .logo.wordmark { height: 3.6rem; }
@@ -1425,10 +1432,7 @@
         <button class="tbtn scheme-btn" id="schemeBtn" type="button" aria-label="Color scheme" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.25" stroke="currentColor" stroke-width="1.5"/><path id="schemeFill" d="M10 2.75A7.25 7.25 0 0 1 10 17.25A0 7.25 0 0 1 10 2.75z" fill="currentColor"/></svg></button>
         <div class="scheme-menu" id="schemeMenu" hidden>
           <div class="ramp" id="schemeRamp" role="slider" tabindex="0" aria-label="Scheme hue" aria-valuemin="0" aria-valuemax="359" aria-valuenow="0"><span class="thumb"></span></div>
-          <div class="pair">
-            <button type="button" class="sw" data-k="tile" aria-label="Copy background color"><i></i><span></span></button>
-            <button type="button" class="sw" data-k="ink" aria-label="Copy mark color"><i></i><span></span></button>
-          </div>
+          <button type="button" class="pick" id="schemePick">Select</button>
           <button type="button" class="off" id="schemeOff">Original</button>
         </div>
       </div>
@@ -3582,11 +3586,6 @@ function applyScheme(h){
     schemeRamp.style.setProperty('--x', (SCHEME / 360 * 100).toFixed(2) + '%');
     schemeRamp.setAttribute('aria-valuenow', SCHEME);
     schemeRamp.setAttribute('aria-valuetext', `Background ${c.tile}, mark ${ink}`);
-    schemeEl.querySelectorAll('.sw').forEach(b => {
-      const hex = b.dataset.k === 'tile' ? c.tile : ink;
-      b.dataset.hex = hex; b.querySelector('i').style.setProperty('--c', hex);
-      b.querySelector('span').textContent = hex.toUpperCase();
-    });
   }
 }
 // a scheme is a look for this visit only: every load starts on the original black page
@@ -3594,11 +3593,11 @@ try { localStorage.removeItem('shelter-scheme-hue'); } catch (_) {}   // clears 
 
 function openSchemeMenu(){ schemeEl.classList.add('open'); menuMotion(document.getElementById('schemeMenu'), true); document.getElementById('schemeBtn').setAttribute('aria-expanded', 'true'); }
 function closeSchemeMenu(){ schemeEl.classList.remove('open'); menuMotion(document.getElementById('schemeMenu'), false); document.getElementById('schemeBtn').setAttribute('aria-expanded', 'false'); }
-// the button is the on/off switch: opening starts a random hue (or keeps the one already
-// set), pressing it again closes the ramp and returns the page to the original black
+// the button opens the ramp on a random hue (or the one already set); pressing it again, Select
+// or a press elsewhere closes it and keeps the hue; only Original returns the page to black
 document.getElementById('schemeBtn').addEventListener('click', e => {
   e.stopPropagation();
-  if (schemeEl.classList.contains('open')) { closeSchemeMenu(); applyScheme(null); return; }
+  if (schemeEl.classList.contains('open')) { closeSchemeMenu(); return; }   // a second press keeps the hue
   closeFilterMenu(); openSchemeMenu();
   if (SCHEME == null) applyScheme(Math.floor(Math.random() * 360));
 });
@@ -3617,12 +3616,7 @@ schemeRamp.addEventListener('keydown', e => {
   if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { e.preventDefault(); applyScheme((SCHEME ?? 270) + step); }
   else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { e.preventDefault(); applyScheme((SCHEME ?? 270) - step); }
 });
-schemeEl.querySelectorAll('.sw').forEach(b => b.addEventListener('click', () => {
-  const hex = b.dataset.hex; if (!hex) return;
-  const span = b.querySelector('span');
-  const done = () => { span.textContent = 'Copied'; setTimeout(() => { span.textContent = hex.toUpperCase(); }, 900); };
-  try { navigator.clipboard.writeText(hex.toUpperCase()).then(done, () => {}); } catch (_) {}
-}));
+document.getElementById('schemePick').addEventListener('click', () => closeSchemeMenu());
 document.getElementById('schemeOff').addEventListener('click', () => { applyScheme(null); closeSchemeMenu(); });
 // a press anywhere else closes the ramp and keeps the hue (the grid's drag handling swallows
 // its clicks, so this listens for the press itself)
