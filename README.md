@@ -53,18 +53,21 @@ UI sounds are synthesized live in WebAudio, with no audio files.
   order. Ids never change. 089, 090, 093–096 are 2026 intakes.
 - name      every mark is named; names are distinct across the set
 - cat       Monogram / Geometric / Abstract / Pictorial
-- spec      mono construction one-liner ("80 × 80u · 6 parts")
+- spec      mono construction one-liner in geometry terms ("8 × R 13.2u · orbit R 27u · 45°")
 - mark      SVG inner markup (white fills via CSS; class="stroked" = stroke
   art, optionally with inline style="stroke-width:X" to keep a source weight)
 - con       construction layer: class="guide" dashed, class="pt" points, plain
   `<line pathLength="1">` = solid dims (draw-on), `<text>` = corner notes
 - blurb     drawer description; every mark has one, written to run ~3 lines
   at the drawer's 48ch measure
-- year / status   every mark is "Rejected" except 015 + 022 "Adopted";
-  year 2025 on 001–015, "—" elsewhere (industry still in data, not shown)
-- reason    the rejection, in the two-word "Too ___" vocabulary (Too Circular,
-  Too Clever, Too Timeless…); drawer shows "Unknown" when absent
-- attachment  "High" | "Medium" | "Low" (drawer falls back to "—")
+- year      "Intake": month + year the mark arrived, "Mon YYYY", Feb 2024 to Dec 2025,
+  rising with the SYM number in batches (one rejected proposal = one month)
+- status    every mark is "Rejected" (adoption is parked)
+- reason    playful fiction: "Too ___", a vague, faintly contradictory verdict from
+  the client (Too Startupy, Too Enterprise, Too Happy…), one per mark
+- attachment  how hard the designer took it: "Low" | "Medium" | "High" | "Still Hurts"
+- (industry was removed 2026-09-26; spec + the con corner notes use the geometry
+  format "5 × R 14.4 · orbit 25.6u · 72° pitch", notes = spec segments uppercased)
 - adopter / adopterOrg / adopterUrl / adopterCase / adopterStatus /
   adopterReason / adopterDate   set on Adopted marks. The drawer shows an "Adopted by"
   section after the metadata (full-bleed divider): name (h2), their quoted
