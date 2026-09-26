@@ -22,6 +22,7 @@
 <meta name="twitter:description" content="A logo takes hundreds of proposals. Only one gets picked. This is the shelter for those who didn’t make it. Everyone here is up for adoption.">
 <meta name="twitter:image" content="https://symbols.konpo.co/og/root.png">
 <meta name="twitter:image:alt" content="Symbol Shelter by Konpo Studio: 70 rejected logos, all up for adoption">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="alternate" type="application/rss+xml" title="Symbol Shelter" href="/feed.xml">
 <link rel="alternate" type="application/feed+json" title="Symbol Shelter" href="/feed.json">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cstyle%3Ecircle%7Bfill:%230a0a0a%7D@media(prefers-color-scheme:dark)%7Bcircle%7Bfill:%23fff%7D%7D%3C/style%3E%3Ccircle cx='50' cy='50' r='32'/%3E%3C/svg%3E">
@@ -523,12 +524,16 @@
     position: absolute; left: 0; right: 0; bottom: 0;
     padding: 1.6rem 1.8rem;
     display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+    transition: opacity .4s cubic-bezier(0.165, 0.84, 0.44, 1);   /* the drag hide below */
+  }
+  /* the name rises in first, the category a beat after it; both leave together */
+  .tile .meta > * {
     opacity: 0; transform: translateY(2rem);
     transition: opacity .4s cubic-bezier(0.165, 0.84, 0.44, 1),
                 transform .4s cubic-bezier(0.165, 0.84, 0.44, 1);
-    transition-delay: .05s;
   }
-  .tile:not(.expanded):hover .meta { opacity: 1; transform: none; }
+  .tile:not(.expanded):hover .meta > * { opacity: 1; transform: none; transition-delay: .05s; }
+  .tile:not(.expanded):hover .meta > .sub { transition-delay: .17s; }
   .tile .meta .name { color: var(--white); font-size: 1.4rem; }
   .tile .meta .sub { font-family: var(--mono); font-size: 1.1rem; letter-spacing: 0.08em;
     text-transform: uppercase; color: var(--fade); white-space: nowrap; }
@@ -2398,7 +2403,7 @@ function typeset(con){
 // Provenance: every rendered SVG carries an ownership comment (what you see if
 // you open a lifted file) and a quiet per-mark class on the mark group that
 // reads like internal styling but encodes the symbol id — casual copies keep it.
-const provenance = (s) => `<!-- © Konpo Studio (konpo.studio). ${s.id} "${s.name}" belongs to the Symbol Shelter and is not licensed for use. Every copy is traceable. Want it legitimately? Apply: https://konpo-symbol-index.vercel.app/s/${s.id.toLowerCase()} -->`;
+const provenance = (s) => `<!-- © Konpo Studio (konpo.studio). ${s.id} "${s.name}" belongs to the Symbol Shelter and is not licensed for use. Every copy is traceable. Want it legitimately? Apply: https://symbols.konpo.co/s/${s.id.toLowerCase()} -->`;
 const markClass = (s) => `mark k${s.id.slice(4)}`;
 
 const svg = (s, showCon=false) => {

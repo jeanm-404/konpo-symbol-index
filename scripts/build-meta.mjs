@@ -85,6 +85,7 @@ function stubHtml(s) {
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${url}">
 <meta name="theme-color" content="#000000">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta property="og:title" content="${esc(name)} | Symbol Shelter">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:image" content="${img}">
