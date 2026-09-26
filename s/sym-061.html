@@ -341,6 +341,13 @@
     -webkit-user-select: none; user-select: none;   /* dragging the canvas must not select tile labels */
   }
   .grid.dragging { cursor: grabbing; }
+  /* switching grid <-> zoomed-out scales the view about the screen centre; the tile corners
+     counter-animate so they keep their radius on screen, and the labels step aside (text
+     would snap size at the hand-over) */
+  @property --tile-r { syntax: '<length>'; inherits: true; initial-value: 20px; }
+  .grid.zooming { pointer-events: none; }
+  .grid.zooming .tile:not(.expanded) { border-radius: var(--tile-r); }
+  .grid.zooming .tile .idx, .grid.zooming .tile.konpo .ext { opacity: 0; transition: none; }
   /* the expanded card is readable content again */
   .grid .tile.expanded { -webkit-user-select: text; user-select: text; }
   .grid[hidden] { display: none; }
@@ -385,7 +392,7 @@
     font-family: var(--mono); font-size: 1.1rem; font-weight: 300;
     letter-spacing: 0.08em;
     color: color-mix(in srgb, var(--white) 45%, transparent); z-index: 2;
-    transition: color .3s;
+    transition: color .3s, opacity .3s;
   }
   .tile:not(.expanded):hover .idx { color: var(--white); }
   .tile.active .idx { color: var(--purple); }
@@ -3203,9 +3210,58 @@ function closeFilterMenu(){ filterEl.classList.remove('open'); document.getEleme
 buildFilterMenu();
 document.getElementById('viewToggle').addEventListener('click', () => {
   collapseTile(true, true); closeDetail();     // leave no card/drawer behind when the view flips
-  setView(CYCLE[(CYCLE.indexOf(VIEW) + 1) % CYCLE.length]);
+  zoomView(CYCLE[(CYCLE.indexOf(VIEW) + 1) % CYCLE.length]);
   syncURL();
 });
+
+// Grid <-> zoomed-out actually zooms. Both layouts hold the same slots in the same order and
+// only the cell differs (366, or 250 / 150 on phones), so scaling one about the screen centre
+// lines it up with the other exactly; the real layout then takes over in the same frame. The
+// smaller-cell layout is the one that scales, always up from 1, so the screen stays covered:
+// zooming out renders it first and shrinks it into place, zooming in blows the current one up
+// and swaps at the end. The mark nearest the centre is the anchor both sides agree on.
+let zoomBusy = false;
+function zoomView(v){
+  const g = document.getElementById('grid'), cv = document.getElementById('canvas');
+  const cellOf = w => w === 'zoom' ? (MOBILE() ? 150 : 250) : 366;
+  const from = VIEW;
+  if (zoomBusy || v === from || v === 'list' || from === 'list' || g.hidden || !cv.children.length
+      || matchMedia('(prefers-reduced-motion: reduce)').matches) { setView(v); return; }
+  const r = cellOf(v) / cellOf(from);
+  const C = { x: innerWidth / 2, y: innerHeight / 2 };
+  const shown = new DOMMatrix(getComputedStyle(cv).transform);   // where the canvas is now
+  const T0 = { x: shown.m41, y: shown.m42 };
+  const tiles = [...cv.children];
+  const base = el => ({ x: Math.min(...[...el.children].map(t => +t.dataset.x)), y: Math.min(...[...el.children].map(t => +t.dataset.y)) });
+  const b0 = base(cv), c0 = GRID.cell;
+  let best = null, bd = Infinity;
+  for (const t of tiles) {
+    const d = Math.hypot(+t.dataset.x + c0 / 2 + T0.x - C.x, +t.dataset.y + c0 / 2 + T0.y - C.y);
+    if (d < bd) { bd = d; best = t; }
+  }
+  const ix = Math.round((+best.dataset.x - b0.x) / c0), iy = Math.round((+best.dataset.y - b0.y) / c0);
+  const P = { x: +best.dataset.x + T0.x, y: +best.dataset.y + T0.y };   // the anchor on screen
+  // put the new layout where the old one sits once scaled by r about the centre
+  const land = () => {
+    const b1 = base(cv), c1 = GRID.cell;
+    GRID.vx = GRID.vy = 0;
+    GRID.ox = C.x + r * (P.x - C.x) - (b1.x + ix * c1);
+    GRID.oy = C.y + r * (P.y - C.y) - (b1.y + iy * c1);
+    applyGridTransform();
+  };
+  const R = 20, opts = { duration: 600, easing: 'cubic-bezier(0.65, 0, 0.35, 1)' };
+  g.style.transformOrigin = `${C.x}px ${C.y}px`;
+  zoomBusy = true; g.classList.add('zooming');
+  const done = () => { g.getAnimations().forEach(a => a.cancel()); g.classList.remove('zooming'); zoomBusy = false; };
+  if (r < 1) {                                  // zoom out: the new, denser layout shrinks into place
+    setView(v); land();
+    const a = g.animate([{ scale: 1 / r, '--tile-r': R * r + 'px' }, { scale: 1, '--tile-r': R + 'px' }], opts);
+    a.onfinish = done; a.oncancel = () => { zoomBusy = false; g.classList.remove('zooming'); };
+  } else {                                      // zoom in: the current layout grows, then hands over
+    const a = g.animate([{ scale: 1, '--tile-r': R + 'px' }, { scale: r, '--tile-r': R / r + 'px' }], { ...opts, fill: 'forwards' });
+    a.onfinish = () => { setView(v); land(); done(); };
+  }
+}
 document.getElementById('filterBtn').addEventListener('click', e => {
   e.stopPropagation();
   filterEl.classList.contains('open') ? closeFilterMenu() : openFilterMenu();
