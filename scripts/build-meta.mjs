@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Symbol Shelter share layer: per-mark OG images, crawler stubs, RSS/JSON feeds.
-// Vercel runs this on every deploy (npm run build), so the mark pages never serve an old
-// copy of index.html; run it locally too (npm run build) to keep the committed files in step.
+// Every mark page (s/*.html) is a copy of index.html, so deploy with `npm run deploy`: it runs
+// this first, and the mark pages never serve an old copy. (Vercel itself doesn't build: the
+// upload is static and .vercelignore keeps package.json and scripts/ out of it.)
 // Also keeps the mark count in index.html's share tags in step with the catalogue.
 import fs from 'node:fs';
 import path from 'node:path';

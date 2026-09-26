@@ -6,6 +6,7 @@
     "sharp": "^0.35.3"
   },
   "scripts": {
-    "build": "cp index.html symbol-index.html && node scripts/build-meta.mjs"
+    "build": "cp index.html symbol-index.html && node scripts/build-meta.mjs",
+    "deploy": "npm run build && vercel --prod --yes"
   }
 }
