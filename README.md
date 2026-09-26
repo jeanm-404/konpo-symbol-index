@@ -52,7 +52,7 @@ UI sounds are synthesized live in WebAudio, with no audio files.
   086, which get the slow one-by-one reveal), the rest follow in catalogue
   order. Ids never change. 089, 090, 093–096 are 2026 intakes.
 - name      every mark is named; names are distinct across the set
-- cat       Monogram / Geometric / Abstract / Pictorial
+- cat       Letters / Blooms / Orbs / Modules (what the mark is made of: a letter; petals, arms or rings around a center; one circle sliced, lined or wound; discrete dots, tiles and bonds). SYM-080 Windrose cut 2026-09-26 (duplicate of 019 Asterisk)
 - spec      mono construction one-liner in geometry terms ("8 × R 13.2u · orbit R 27u · 45°")
 - mark      SVG inner markup (white fills via CSS; class="stroked" = stroke
   art, optionally with inline style="stroke-width:X" to keep a source weight)
