@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
+import crypto from 'node:crypto';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SITE = 'https://symbols.konpo.co';
@@ -66,9 +67,15 @@ const rootSvg = `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/sv
   <g transform="translate(${600 - 30.55 * konpoK} ${315 - 30.54 * konpoK}) scale(${konpoK})" fill="#ad9cff"><path d="${KONPO_MARK.match(/d="([^"]+)"/)[1]}"/></g>
 </svg>`;
 
+// each image URL carries a version from its SVG source, so chat and social apps that cache
+// previews by URL fetch a card again only when its picture actually changed
+const ver = svg => crypto.createHash('sha1').update(svg).digest('hex').slice(0, 8);
+const ogUrl = s => `${SITE}/og/${slug(s.id)}.png?v=${ver(ogSvg(s))}`;
+const rootUrl = `${SITE}/og/root.png?v=${ver(rootSvg)}`;
+
 function stubHtml(s) {
   const url = `${SITE}/s/${slug(s.id)}`;
-  const img = `${SITE}/og/${slug(s.id)}.png`;
+  const img = ogUrl(s);
   const st = statusLine(s);
   const desc = `${st.text.charAt(0) + st.text.slice(1).toLowerCase()}. ${s.blurb}`;
   const name = `${s.name} (${s.id})`, alt = `${s.name}, ${s.id}: ${st.text.charAt(0) + st.text.slice(1).toLowerCase()}`;
@@ -143,7 +150,7 @@ const jsonFeed = {
       url: `${SITE}/s/${slug(s.id)}`,
       title: `${s.name} (${s.id})`,
       content_text: `${s.cat} · ${st.text}. ${s.blurb}`,
-      image: `${SITE}/og/${slug(s.id)}.png`,
+      image: ogUrl(s),
       date_published: `${dates[s.id]}T12:00:00Z`,
     };
   }),
@@ -159,10 +166,11 @@ ${S.map(s => `  <url><loc>${SITE}/s/${slug(s.id)}</loc><lastmod>${dates[s.id]}</
 </urlset>
 `;
 
-// the home page's share tags quote the catalogue size: keep them honest
+// the home page's share tags quote the catalogue size and point at the current home card: keep them honest
 const syncCount = file => {
   const p = path.join(ROOT, file), html = fs.readFileSync(p, 'utf8');
-  const next = html.replace(/\b\d+ rejected logo(s| marks)\b/g, (m, tail) => `${S.length} rejected logo${tail}`);
+  const next = html.replace(/\b\d+ rejected logo(s| marks)\b/g, (m, tail) => `${S.length} rejected logo${tail}`)
+    .replace(/https:\/\/symbols\.konpo\.co\/og\/root\.png(\?v=[0-9a-f]+)?/g, rootUrl);
   if (next !== html) fs.writeFileSync(p, next);
 };
 ['index.html', 'symbol-index.html'].forEach(syncCount);
