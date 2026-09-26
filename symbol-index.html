@@ -207,7 +207,15 @@
   }
   .scheme-menu .sw:hover, .scheme-menu .off:hover { color: var(--white); border-color: color-mix(in srgb, var(--white) 30%, transparent); }
   .scheme-menu .sw i { width: 1.6rem; height: 1.6rem; border-radius: 50%; flex: none; background: var(--c); box-shadow: inset 0 0 0 1px var(--line); }
-  .scheme:not(.on) .scheme-menu .pair { display: none; }
+  .scheme:not(.on) .scheme-menu .pair, .scheme:not(.on) .scheme-menu .mode { display: none; }
+  .scheme-menu .mode { display: grid; grid-template-columns: 1fr 1fr; padding: 0.3rem; gap: 0.3rem; border: 1px solid var(--line); border-radius: 0.6rem; }
+  .scheme-menu .mode button {
+    background: transparent; border: 0; border-radius: 0.4rem; padding: 0.7rem 1rem; cursor: pointer;
+    font-family: var(--mono); font-size: 1.1rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fade);
+    transition: color .2s, background-color .2s;
+  }
+  .scheme-menu .mode button:hover { color: var(--white); }
+  .scheme-menu .mode button[aria-pressed="true"] { background: var(--white); color: var(--on-ink); }
   .scheme-menu .off { justify-content: center; }
   .scheme:not(.on) .scheme-menu .off { display: none; }
   /* Play motions ship as white fills; a scheme redraws them in its ink */
@@ -1299,6 +1307,10 @@
         <button class="tbtn scheme-btn" id="schemeBtn" type="button" aria-label="Color scheme" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.25" stroke="currentColor" stroke-width="1.5"/><path d="M10 2.75a7.25 7.25 0 0 1 0 14.5z" fill="currentColor"/></svg></button>
         <div class="scheme-menu" id="schemeMenu" hidden>
           <div class="ramp" id="schemeRamp" role="slider" tabindex="0" aria-label="Scheme hue" aria-valuemin="0" aria-valuemax="359" aria-valuenow="0"><span class="thumb"></span></div>
+          <div class="mode" role="group" aria-label="Scheme mode">
+            <button type="button" data-mode="light" aria-pressed="true">Light</button>
+            <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+          </div>
           <div class="pair">
             <button type="button" class="sw" data-k="tile" aria-label="Copy background color"><i></i><span></span></button>
             <button type="button" class="sw" data-k="ink" aria-label="Copy mark color"><i></i><span></span></button>
@@ -3099,10 +3111,13 @@ document.addEventListener('click', e => { if (!filterEl.contains(e.target)) clos
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeFilterMenu(); });
 
 /* ---------- Color scheme ----------
-   One hue drives the whole page. Saturation and lightness are locked (a pastel ground at
-   S100 L84, a deep ink at S55 L22), and the ink's hue runs 30° ahead of the ground's, the way
-   the reference pairs do (#D3A5FF / #531B5E, #A5D2FF / #281B5E). Moving the ramp moves the pair. */
-const SCHEME_KEY = 'shelter-scheme-hue', INK_SHIFT = 30;
+   One hue drives the whole page. Saturation and lightness are locked (a pastel at S100 L84,
+   a deep tone at S55 L22), and the deep tone's hue runs 30° ahead of the pastel's, the way the
+   reference pairs do (#D3A5FF / #531B5E, #A5D2FF / #281B5E). Moving the ramp moves the pair.
+   Light puts the mark in the deep tone on a pastel ground; Dark swaps the roles, pushing the
+   ground down near the original black so the page keeps its night feel. */
+const SCHEME_KEY = 'shelter-scheme-hue', MODE_KEY = 'shelter-scheme-mode', INK_SHIFT = 30;
+let SCHEME_MODE = 'light';
 const SCHEME_VARS = ['--bg', '--tile', '--tile-raise', '--white', '--body', '--fade', '--line',
   '--purple', '--purple-vivid', '--green', '--red', '--on-ink'];
 let SCHEME = null;   // the hue, or null for the original black page
@@ -3112,18 +3127,31 @@ function hsl2hex(h, s, l){
   const f = n => Math.round(255 * (l - a * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1))));
   return '#' + [f(0), f(8), f(4)].map(v => v.toString(16).padStart(2, '0')).join('');
 }
-function schemeColors(h){
+function schemeColors(h, mode = SCHEME_MODE){
   const ih = (h + INK_SHIFT) % 360;
+  if (mode === 'dark') return { bg: hsl2hex(ih, 45, 7), tile: hsl2hex(ih, 42, 11), ink: hsl2hex(h, 100, 84),
+           fade: hsl2hex(h, 30, 62), purple: hsl2hex(h, 90, 70), vivid: hsl2hex(h, 95, 78) };
   return { bg: hsl2hex(h, 100, 79), tile: hsl2hex(h, 100, 84), ink: hsl2hex(ih, 55, 22),
            fade: hsl2hex(ih, 32, 36), purple: hsl2hex(ih, 85, 44), vivid: hsl2hex(ih, 85, 36) };
 }
 const schemeEl = document.getElementById('scheme'), schemeRamp = document.getElementById('schemeRamp');
-// the ramp paints each pair once, sampled every 15°
-(function paintRamp(){
+// the ramp paints every pair of the current mode, sampled every 15°
+function paintRamp(){
   const stops = k => Array.from({ length: 25 }, (_, i) => schemeColors(i * 15)[k] + ' ' + (i / 24 * 100).toFixed(2) + '%').join(', ');
-  schemeRamp.style.setProperty('--ramp-bg', `linear-gradient(to right, ${stops('tile')})`);
-  schemeRamp.style.setProperty('--ramp-ink', `linear-gradient(to right, ${stops('ink')})`);
-})();
+  // the wide band carries the brighter color of the pair so the hues stay readable in Dark too
+  const [wide, band] = SCHEME_MODE === 'dark' ? ['ink', 'tile'] : ['tile', 'ink'];
+  schemeRamp.style.setProperty('--ramp-bg', `linear-gradient(to right, ${stops(wide)})`);
+  schemeRamp.style.setProperty('--ramp-ink', `linear-gradient(to right, ${stops(band)})`);
+}
+paintRamp();
+function setSchemeMode(mode, save = true){
+  SCHEME_MODE = mode === 'dark' ? 'dark' : 'light';
+  schemeEl.querySelectorAll('.mode button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === SCHEME_MODE)));
+  paintRamp();
+  if (save) try { localStorage.setItem(MODE_KEY, SCHEME_MODE); } catch (_) {}
+  if (SCHEME != null) applyScheme(SCHEME, save);
+}
+schemeEl.querySelectorAll('.mode button').forEach(b => b.addEventListener('click', () => setSchemeMode(b.dataset.mode)));
 function applyScheme(h, save = true){
   const root = document.documentElement.style;
   SCHEME = h == null ? null : Math.round(((h % 360) + 360) % 360);
@@ -3141,7 +3169,8 @@ function applyScheme(h, save = true){
       '--body': `color-mix(in srgb, ${ink} 84%, transparent)`,
       '--line': `color-mix(in srgb, ${ink} 16%, transparent)`,
       '--purple': c.purple, '--purple-vivid': c.vivid,
-      '--green': '#15803d', '--red': '#b91c1c', '--on-ink': c.tile };
+      '--green': SCHEME_MODE === 'dark' ? '#4ade80' : '#15803d', '--red': SCHEME_MODE === 'dark' ? '#f87171' : '#b91c1c',
+      '--on-ink': c.tile };
     Object.entries(v).forEach(([k, val]) => root.setProperty(k, val));
     if (meta) meta.content = c.bg;
     if (SOLID) SOLID.tint(ink);
@@ -3157,6 +3186,7 @@ function applyScheme(h, save = true){
   // a per-viewer convenience only: the page renders fine without it
   if (save) try { SCHEME == null ? localStorage.removeItem(SCHEME_KEY) : localStorage.setItem(SCHEME_KEY, SCHEME); } catch (_) {}
 }
+try { const m = localStorage.getItem(MODE_KEY); if (m) setSchemeMode(m, false); } catch (_) {}
 try { const h = localStorage.getItem(SCHEME_KEY); if (h !== null && h !== '' && !isNaN(+h)) applyScheme(+h, false); } catch (_) {}
 
 function openSchemeMenu(){ schemeEl.classList.add('open'); document.getElementById('schemeMenu').hidden = false; document.getElementById('schemeBtn').setAttribute('aria-expanded', 'true'); }

@@ -111,13 +111,13 @@ export function createSolid(){
   // a page color scheme swaps the white drawing for its ink: faces take the ink exactly, edges
   // step toward the light for a dark ink (away from it for a light one) so the thickness still reads
   const rounds = new Set(), roundTint = new THREE.Color(0xe8e8e8);
-  let darkInk = false;
+  let tinted = false;
   function tint(hex){
     const c = new THREE.Color(hex || 0xffffff), lum = c.getHSL({}).l;
     faceMat.color.copy(c);
     sideMat.color.copy(hex ? c.clone().lerp(new THREE.Color(lum > 0.5 ? 0x000000 : 0xffffff), 0.3) : new THREE.Color(0x9c9c9c));
-    darkInk = !!hex && lum <= 0.5;
-    roundTint.copy(hex ? (darkInk ? c.clone().multiplyScalar(0.5) : c.clone()) : new THREE.Color(0xe8e8e8));
+    tinted = !!hex;
+    roundTint.copy(hex ? c.clone().multiplyScalar(lum > 0.5 ? 0.55 : 0.5) : new THREE.Color(0xe8e8e8));
     hemi.groundColor.set(hex && lum <= 0.5 ? 0x808080 : 0x1a1a1a);
     rounds.forEach(m => { m.color.copy(roundTint); m.emissive.copy(c); });
   }
@@ -190,9 +190,9 @@ export function createSolid(){
     const { group } = b;
     group.quaternion.copy(quat);
     group.scale.z = Math.max(0.002, light);                   // thickness, in the mark's own frame
-    // a dark ink under these lights washes out to a mid-tone, so its lit color fades in with the
-    // turn and is gone at rest: the round forms start and land exactly on the ink
-    b.lit.forEach(m => { m.emissiveIntensity = 1 - 0.92 * light; if (darkInk) m.color.copy(roundTint).multiplyScalar(light); });
+    // a tinted ink under these lights washes out (dark ones to a mid-tone, pastels to white), so its
+    // lit color fades in with the turn and is gone at rest: the round forms start and land on the ink
+    b.lit.forEach(m => { m.emissiveIntensity = 1 - 0.92 * light; if (tinted) m.color.copy(roundTint).multiplyScalar(light); });
     if (b.clips.length) {
       group.updateMatrixWorld(true);
       Q.set(0, 0, D / group.scale.z);
