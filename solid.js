@@ -101,20 +101,33 @@ export function createSolid(){
   const camera = new THREE.PerspectiveCamera(FOV, 1, 1, 2000); camera.position.set(0, 0, D);
   // a soft key high-left, a sky-to-floor fill (spheres shade top to bottom) and a purple rim from behind
   const key = new THREE.DirectionalLight(0xffffff, 1.5); key.position.set(-140, 180, 200); scene.add(key);
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x1a1a1a, 0.9));
+  const hemi = new THREE.HemisphereLight(0xffffff, 0x1a1a1a, 0.9); scene.add(hemi);
   const rim = new THREE.DirectionalLight(0xb8aaff, 1.4); rim.position.set(180, -60, -220); scene.add(rim);
 
   const faceMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
   // edges sit darker than the white face so the thickness reads
   const sideMat = new THREE.MeshPhysicalMaterial({ color: 0x9c9c9c, roughness: 0.2, clearcoat: 1, clearcoatRoughness: 0.08 });
   const built = new Map();
+  // a page color scheme swaps the white drawing for its ink: faces take the ink exactly, edges
+  // step toward the light for a dark ink (away from it for a light one) so the thickness still reads
+  const rounds = new Set(), roundTint = new THREE.Color(0xe8e8e8);
+  let darkInk = false;
+  function tint(hex){
+    const c = new THREE.Color(hex || 0xffffff), lum = c.getHSL({}).l;
+    faceMat.color.copy(c);
+    sideMat.color.copy(hex ? c.clone().lerp(new THREE.Color(lum > 0.5 ? 0x000000 : 0xffffff), 0.3) : new THREE.Color(0x9c9c9c));
+    darkInk = !!hex && lum <= 0.5;
+    roundTint.copy(hex ? (darkInk ? c.clone().multiplyScalar(0.5) : c.clone()) : new THREE.Color(0xe8e8e8));
+    hemi.groundColor.set(hex && lum <= 0.5 ? 0x808080 : 0x1a1a1a);
+    rounds.forEach(m => { m.color.copy(roundTint); m.emissive.copy(c); });
+  }
 
   function build(s){
     if (built.has(s.id)) return built.get(s.id);
     const group = new THREE.Group(), lit = [], clips = [];
     // round forms only read through light; at rest they glow flat white like the drawing
-    const roundMat = () => { const m = new THREE.MeshPhysicalMaterial({ color: 0xe8e8e8, roughness: 0.3, clearcoat: 1,
-      emissive: 0xffffff, emissiveIntensity: 1 }); lit.push(m); return m; };
+    const roundMat = () => { const m = new THREE.MeshPhysicalMaterial({ color: roundTint.clone(), roughness: 0.3, clearcoat: 1,
+      emissive: faceMat.color.clone(), emissiveIntensity: 1 }); lit.push(m); rounds.add(m); return m; };
     const g3 = p => new THREE.Vector3(p.x - 100, -(p.y - 100), 0);
     // the site draws .stroked parts as outlines through a class, which SVGLoader can't see
     const src = s.mark.replace(/class="stroked"/g, 'fill="none" stroke="#fff"');
@@ -177,7 +190,9 @@ export function createSolid(){
     const { group } = b;
     group.quaternion.copy(quat);
     group.scale.z = Math.max(0.002, light);                   // thickness, in the mark's own frame
-    b.lit.forEach(m => { m.emissiveIntensity = 1 - 0.92 * light; });
+    // a dark ink under these lights washes out to a mid-tone, so its lit color fades in with the
+    // turn and is gone at rest: the round forms start and land exactly on the ink
+    b.lit.forEach(m => { m.emissiveIntensity = 1 - 0.92 * light; if (darkInk) m.color.copy(roundTint).multiplyScalar(light); });
     if (b.clips.length) {
       group.updateMatrixWorld(true);
       Q.set(0, 0, D / group.scale.z);
@@ -345,5 +360,5 @@ export function createSolid(){
     if (!busy) return Promise.resolve();
     return new Promise(r => { if (!waiters.has(tile)) waiters.set(tile, []); waiters.get(tile).push(r); });
   }
-  return { play, prepare, wave, carry, whenLanded };
+  return { play, prepare, wave, carry, whenLanded, tint };
 }
