@@ -4406,7 +4406,7 @@ function fillTileDetail(tile, s){
   let angle = 0, turnPending = false;
   const findBtn = label => [...controls.querySelectorAll('button')].find(b => b.textContent === label);
   tBtn.onclick = () => {
-    if (SOLID && SOLID.holding(tile)) { SOLID.letGo(tile); tBtn.classList.remove('active'); return; }
+    if (SOLID && SOLID.holding(tile)) { SOLID.letGo(tile); tBtn.classList.remove('active'); Sound.play('toggle.off'); return; }
     if (turnPending) return;
     turnPending = true; tBtn.classList.add('active');
     const xBtn = findBtn('Assemble'), wasExploded = !!xBtn && stage.classList.contains('exploded');

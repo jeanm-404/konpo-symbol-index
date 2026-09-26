@@ -429,6 +429,7 @@ export function createSolid(){
       bufSize = 0;
       if (!place(run)) { cur = null; return; }
       scene.add(b.group);
+      pose(b, REST, 0);                                      // the drawing, drawn now: no blank frame on the swap
       const host = run.host;
       host.classList.add('solid-held');
       const dq = new THREE.Quaternion(), ax = new THREE.Vector3();
@@ -473,7 +474,11 @@ export function createSolid(){
       };
       const step = now => {
         if (cur !== run) return;
-        if (!tile.isConnected || !host.isConnected || !tile.classList.contains('expanded')) { finish(); return; }
+        if (!tile.isConnected || !host.isConnected) { finish(); return; }
+        if (!tile.classList.contains('expanded') && !run.leaving) {   // the card is closing: fold back as it shrinks
+          run.drag = null; run.intro = null; run.w = [0, 0]; host.classList.remove('grabbing');
+          run.leaving = { t0: now, dur: matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 380, q: run.q.clone(), light: run.light };
+        }
         const size = bufSize; fit(run); if (bufSize !== size) run.dirty = true;
         if (run.leaving) {                                   // fold back into the drawing
           const L = run.leaving, u = L.dur ? Math.min(1, (now - L.t0) / L.dur) : 1;
@@ -493,7 +498,9 @@ export function createSolid(){
           const f = Math.exp(-dt / 320); run.w = [run.w[0] * f, run.w[1] * f];
           if (Math.hypot(run.w[0], run.w[1]) < 0.004) run.w = [0, 0];
         }
-        if (run.light < 1 && !run.intro && !run.leaving) { run.light = Math.min(1, run.light + 0.08); run.dirty = true; }
+        if (run.light < 1 && !run.intro && !run.leaving) {  // grabbed mid-rise: finish standing up over ~a quarter second
+          run.light = Math.min(1, run.light + Math.min(48, now - (run.tPrev || now)) / 250); run.dirty = true; }
+        run.tPrev = now;
         if (run.dirty) { run.dirty = false; pose(b, run.q, run.light); }
         requestAnimationFrame(step);
       };
