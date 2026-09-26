@@ -615,6 +615,9 @@
 
   /* ---------- Expanded card (a tile grows to 2×2 and pushes its neighbours) ---------- */
   .canvas.reflowing { transition: transform .55s cubic-bezier(0.66,0,0.34,1); }
+  /* the smooth pan sets the offset every frame: a transition on it would restart each frame and
+     barely move (the neighbours' own push transitions carry on) */
+  .canvas.reflowing.gliding { transition: none; }
   .canvas.reflowing .tile {
     transition: translate .55s cubic-bezier(0.66,0,0.34,1),
                 width .55s cubic-bezier(0.66,0,0.34,1),
@@ -2822,14 +2825,15 @@ function applyGridTransform(){
   const LERP = { wheel: 0.12, drag: 0.3 };
   const pend = { x: 0, y: 0, k: LERP.wheel };
   let last = 0, mine = null, fx = 0, fy = 0, moveT = 0;
+  const cvEl = () => document.getElementById('canvas');
   function pan(dx, dy, kind){
     if (!SMOOTH) { GRID.ox += dx; GRID.oy += dy; applyGridTransform(); return; }
     pend.x += dx; pend.y += dy; pend.k = LERP[kind];
-    if (!GRID.raf) { last = performance.now(); mine = null; GRID.raf = requestAnimationFrame(glide); }
+    if (!GRID.raf) { last = performance.now(); mine = null; cvEl().classList.add('gliding'); GRID.raf = requestAnimationFrame(glide); }
   }
   function glide(now){
     GRID.raf = null;
-    if (mine && (GRID.ox !== mine.x || GRID.oy !== mine.y)) { pend.x = pend.y = 0; GRID.vx = GRID.vy = 0; return; }
+    if (mine && (GRID.ox !== mine.x || GRID.oy !== mine.y)) { pend.x = pend.y = 0; GRID.vx = GRID.vy = 0; cvEl().classList.remove('gliding'); return; }
     const f = Math.min(4, (now - last) / 16.667); last = now;     // frames elapsed, so 120Hz eases like 60Hz
     if (GRID.vx || GRID.vy) {
       pend.x += GRID.vx * f; pend.y += GRID.vy * f;
@@ -2844,6 +2848,7 @@ function applyGridTransform(){
     applyGridTransform();
     mine = { x: GRID.ox, y: GRID.oy };
     if (pend.x || pend.y || GRID.vx || GRID.vy) GRID.raf = requestAnimationFrame(glide);
+    else cvEl().classList.remove('gliding');
   }
   let downOutsideCard = false;
   grid.addEventListener('pointerdown', e => {
@@ -2862,7 +2867,7 @@ function applyGridTransform(){
     cv.querySelectorAll('.tile:not(.expanded) .notes').forEach(n => n.remove());  // clear hover notes
     cv.querySelectorAll('.tile:not(.expanded)').forEach(t => t.classList.remove('mark-anim', 'annot-ready'));
     if (GRID.raf) { cancelAnimationFrame(GRID.raf); GRID.raf = null; }   // a grab stops any glide dead
-    pend.x = pend.y = 0; fx = fy = 0;
+    pend.x = pend.y = 0; fx = fy = 0; cvEl().classList.remove('gliding');
     const t = e.target.closest('.tile');
     downId = t ? t.dataset.id : null;
     downTile = t || null;
