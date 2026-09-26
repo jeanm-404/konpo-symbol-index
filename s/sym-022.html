@@ -644,6 +644,11 @@
   #intro .line.show .w { opacity: 1; filter: blur(0); }
   #intro .line .w.acc { color: var(--purple); }
   #intro .line.gone { opacity: 0; filter: blur(8px); }
+  /* phones: each sentence holds one line (the 84vw cap wrapped "it." onto its own line); the size
+     only steps down below 15px when the longest sentence (22.5em wide) would pass the 16px gutters */
+  @media (max-width: 780px) {
+    #intro .line { width: auto; white-space: nowrap; font-size: min(1.5rem, calc((100vw - 3.2rem) / 23)); }
+  }
   /* staged reveal: top bar with the chrome, footer with the grid */
   .topbar, footer { opacity: 0; transition: opacity .9s; }
   body.t2 .topbar { opacity: 1; }
