@@ -710,8 +710,7 @@
   .xc-stage { position: absolute; inset: 0; z-index: 1; display: flex; align-items: center; justify-content: center; }
   .xc-stage svg { width: 42rem; height: 42rem; transform-box: fill-box; transform-origin: center; transition: transform .7s cubic-bezier(0.165,0.84,0.44,1); }
   .xc-stage .mark > * { transform-box: fill-box; transform-origin: center; transition: transform 1.4s cubic-bezier(0.165,0.84,0.44,1); }
-  .xc-stage.hide-annot .construction, .xc-stage.hide-annot .notes,
-  .xc-stage.exploded .construction, .xc-stage.exploded .notes { opacity: 0; transition: opacity .25s; }
+  .xc-stage.hide-annot .construction, .xc-stage.hide-annot .notes { opacity: 0; transition: opacity .25s; }
   .xc-stage .notes { top: 17.4rem; right: 3.2rem; text-align: right; }
   .xc-head { position: absolute; top: 3.2rem; left: 3.2rem; width: 42rem; max-width: calc(100% - 6.4rem); z-index: 2; display: flex; flex-direction: column; gap: 1.2rem; pointer-events: none; }
   .xc-idx { font-family: var(--mono); font-size: 1.1rem; font-weight: 300; letter-spacing: 0.08em; color: color-mix(in srgb, var(--white) 45%, transparent); }
@@ -931,8 +930,6 @@
     transform-box: fill-box; transform-origin: center;
     transition: transform 1.4s cubic-bezier(0.165, 0.84, 0.44, 1);
   }
-  #drawer .stage.exploded .construction,
-  #drawer .stage.exploded .notes { opacity: 0; transition: opacity .25s; }
   #drawer .stage .construction, #drawer .stage .notes { transition: opacity .25s; }
 
   #drawer .stage-controls {
@@ -1562,7 +1559,6 @@ const S = [
   "con": "<circle class=\"guide\" cx=\"100\" cy=\"100\" r=\"40\"/><line class=\"guide\" x1=\"52\" y1=\"130\" x2=\"148\" y2=\"130\"/><line class=\"guide\" x1=\"100\" y1=\"52\" x2=\"100\" y2=\"148\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"60\" y1=\"152\" x2=\"140\" y2=\"152\"/><line pathLength=\"1\" x1=\"60\" y1=\"149\" x2=\"60\" y2=\"155\"/><line pathLength=\"1\" x1=\"140\" y1=\"149\" x2=\"140\" y2=\"155\"/><text>DOME R 40U</text><text>RIM Y+30U</text><text>6 PARTS</text>",
   "blurb": "A dome settling into its rim, caught one frame before contact. Close the gap and it becomes a bowl.",
   "year": "Nov 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Gentle",
   "attachment": "Medium"
@@ -1576,7 +1572,6 @@ const S = [
   "con": "<circle class=\"guide\" cx=\"100\" cy=\"100\" r=\"26.6\"/><circle class=\"guide\" cx=\"99.9\" cy=\"73.5\" r=\"13.2\"/><line class=\"guide\" x1=\"100\" y1=\"100\" x2=\"100.0\" y2=\"73.4\"/><line class=\"guide\" x1=\"100\" y1=\"100\" x2=\"118.8\" y2=\"81.2\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"60\" y1=\"152\" x2=\"140\" y2=\"152\"/><line pathLength=\"1\" x1=\"60\" y1=\"149\" x2=\"60\" y2=\"155\"/><line pathLength=\"1\" x1=\"140\" y1=\"149\" x2=\"140\" y2=\"155\"/><text>8 × R 13.2U</text><text>ORBIT R 27U</text><text>PITCH 45°</text>",
   "blurb": "Eight solid petals around a core dot, press-fit with no overlaps. Simple enough to cut as a stamping die. Would survive a keychain.",
   "year": "Apr 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Sweet",
   "attachment": "High"
@@ -1590,7 +1585,6 @@ const S = [
   "con": "<circle class=\"guide\" cx=\"79.3\" cy=\"120.7\" r=\"19.3\"/><circle class=\"guide\" cx=\"120.7\" cy=\"79.3\" r=\"19.3\"/><line class=\"guide\" x1=\"65\" y1=\"135\" x2=\"135\" y2=\"65\"/><line class=\"guide\" x1=\"79.5\" y1=\"98.1\" x2=\"120.5\" y2=\"98.1\"/><line class=\"guide\" x1=\"79.5\" y1=\"101.9\" x2=\"120.5\" y2=\"101.9\"/><circle class=\"pt\" cx=\"79.3\" cy=\"120.7\" r=\"1.3\"/><circle class=\"pt\" cx=\"120.7\" cy=\"79.3\" r=\"1.3\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"120.7\" y1=\"79.3\" x2=\"140\" y2=\"79.3\"/><text>2 × R 19.3U</text><text>C–C 58.4U</text><text>GAP 3.8U</text><text>180° SYM</text>",
   "blurb": "Two identical hooks with an R 19 curve, one rotated 180 degrees around the center point so the pair interlocks.",
   "year": "Apr 2024",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Friendly",
   "attachment": "High"
@@ -1604,7 +1598,6 @@ const S = [
   "con": "<circle class=\"guide\" cx=\"100\" cy=\"100\" r=\"25.6\"/><circle class=\"guide\" cx=\"100.3\" cy=\"74.4\" r=\"14.4\"/><line class=\"guide\" x1=\"100\" y1=\"100\" x2=\"100.3\" y2=\"74.4\"/><line class=\"guide\" x1=\"100\" y1=\"100\" x2=\"124.4\" y2=\"92.1\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><circle class=\"pt\" cx=\"100.3\" cy=\"74.4\" r=\"1.3\"/><circle class=\"pt\" cx=\"124.4\" cy=\"92.1\" r=\"1.3\"/><line pathLength=\"1\" x1=\"100\" y1=\"88\" x2=\"105.5\" y2=\"89.5\"/><line pathLength=\"1\" x1=\"105.5\" y1=\"89.5\" x2=\"110\" y2=\"93\"/><text>5 × R 14.4U</text><text>ORBIT R 25.6U</text><text>PITCH 72°</text>",
   "blurb": "Five arms on a 72 degree pitch around a 25.6u orbit. The symmetry is pentagonal, but there is no pentagon drawn anywhere.",
   "year": "Jun 2024",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Decorative",
   "attachment": "Still Hurts"
@@ -1618,7 +1611,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"55\" y=\"55\" width=\"90\" height=\"90\"/><circle class=\"guide\" cx=\"100\" cy=\"100\" r=\"21.4\"/><circle class=\"guide\" cx=\"76.4\" cy=\"55\" r=\"21.4\"/><circle class=\"guide\" cx=\"145\" cy=\"100\" r=\"21.4\"/><circle class=\"guide\" cx=\"123.6\" cy=\"145\" r=\"21.4\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><circle class=\"pt\" cx=\"76.4\" cy=\"55\" r=\"1.3\"/><circle class=\"pt\" cx=\"145\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"100\" y1=\"100\" x2=\"115.1\" y2=\"84.9\"/><line pathLength=\"1\" x1=\"76.4\" y1=\"46\" x2=\"123.6\" y2=\"46\"/><line pathLength=\"1\" x1=\"76.4\" y1=\"43\" x2=\"76.4\" y2=\"49\"/><line pathLength=\"1\" x1=\"123.6\" y1=\"43\" x2=\"123.6\" y2=\"49\"/><text>7 × R 21.4U</text><text>TILE 90U</text><text>PITCH 47.1U</text>",
   "blurb": "A circle-packing tile. One full circle at center, part-circles on every edge of the 90u frame, all sharing the same R 21.4. Repeat it and it tiles clean.",
   "year": "Jun 2024",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Modern",
   "attachment": "Still Hurts"
@@ -1632,7 +1624,6 @@ const S = [
   "con": "<circle class=\"guide\" cx=\"100\" cy=\"100\" r=\"30\"/><circle class=\"guide\" cx=\"100\" cy=\"70\" r=\"10\"/><circle class=\"guide\" cx=\"130\" cy=\"100\" r=\"10\"/><line class=\"guide\" x1=\"100\" y1=\"100\" x2=\"100.0\" y2=\"70.0\"/><line class=\"guide\" x1=\"100\" y1=\"100\" x2=\"130.0\" y2=\"100.0\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"60\" y1=\"152\" x2=\"140\" y2=\"152\"/><line pathLength=\"1\" x1=\"60\" y1=\"149\" x2=\"60\" y2=\"155\"/><line pathLength=\"1\" x1=\"140\" y1=\"149\" x2=\"140\" y2=\"155\"/><text>4 × R 10U</text><text>ORBIT R 30U</text><text>PITCH 90°</text>",
   "blurb": "A ring of eight dots crowding a clustered core, the spacing tightening toward the middle like a real bouquet. The client called it too happy, which is hard to argue with.",
   "year": "Oct 2024",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Happy",
   "attachment": "Medium"
@@ -1646,7 +1637,6 @@ const S = [
   "con": "<circle class=\"guide\" cx=\"100\" cy=\"100\" r=\"25.6\"/><circle class=\"guide\" cx=\"100.3\" cy=\"75.5\" r=\"15.4\"/><line class=\"guide\" x1=\"100\" y1=\"100\" x2=\"100.0\" y2=\"74.4\"/><line class=\"guide\" x1=\"100\" y1=\"100\" x2=\"124.3\" y2=\"92.1\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"59.5\" y1=\"152\" x2=\"141.5\" y2=\"152\"/><line pathLength=\"1\" x1=\"59.5\" y1=\"149\" x2=\"59.5\" y2=\"155\"/><line pathLength=\"1\" x1=\"141.5\" y1=\"149\" x2=\"141.5\" y2=\"155\"/><text>5 × R 15.4U</text><text>ORBIT R 26U</text><text>PITCH 72°</text>",
   "blurb": "Five petal-rings around an open center, pitched at 72°. Each ring shares an edge with its neighbor. Drawn entirely with a compass.",
   "year": "Oct 2024",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Polite",
   "attachment": "High"
@@ -1660,7 +1650,6 @@ const S = [
   "con": "<line class=\"guide\" x1=\"100\" y1=\"56\" x2=\"100\" y2=\"144\"/><line class=\"guide\" x1=\"32\" y1=\"100\" x2=\"168\" y2=\"100\"/><circle class=\"guide\" cx=\"148\" cy=\"100\" r=\"12\"/><circle class=\"guide\" cx=\"76\" cy=\"76\" r=\"12\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"100\" y1=\"152\" x2=\"124\" y2=\"152\"/><line pathLength=\"1\" x1=\"100\" y1=\"149\" x2=\"100\" y2=\"155\"/><line pathLength=\"1\" x1=\"124\" y1=\"149\" x2=\"124\" y2=\"155\"/><line pathLength=\"1\" x1=\"40\" y1=\"160\" x2=\"160\" y2=\"160\"/><line pathLength=\"1\" x1=\"40\" y1=\"157\" x2=\"40\" y2=\"163\"/><line pathLength=\"1\" x1=\"160\" y1=\"157\" x2=\"160\" y2=\"163\"/><text>7 × R 12U</text><text>GRID 24U</text><text>W 120U</text>",
   "blurb": "Seven equal dots in a loose hexagonal formation. Regular enough to look planned, loose enough to look like it could move.",
   "year": "Oct 2024",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Timeless",
   "attachment": "Medium"
@@ -1674,7 +1663,6 @@ const S = [
   "con": "<circle class=\"guide\" cx=\"100\" cy=\"100\" r=\"40\"/><line class=\"guide\" x1=\"68\" y1=\"68\" x2=\"132\" y2=\"132\"/><line class=\"guide\" x1=\"132\" y1=\"68\" x2=\"68\" y2=\"132\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"60\" y1=\"152\" x2=\"140\" y2=\"152\"/><line pathLength=\"1\" x1=\"60\" y1=\"149\" x2=\"60\" y2=\"155\"/><line pathLength=\"1\" x1=\"140\" y1=\"149\" x2=\"140\" y2=\"155\"/><text>R 40U</text><text>4 PETALS</text><text>PITCH 90°</text>",
   "blurb": "A disc split into four petals that meet at the center. The cross cut between them is the first thing you see.",
   "year": "Jan 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Lucky",
   "attachment": "Low"
@@ -1688,7 +1676,6 @@ const S = [
   "con": "<circle class=\"guide\" cx=\"100\" cy=\"100\" r=\"30\"/><circle class=\"guide\" cx=\"99.6\" cy=\"68.5\" r=\"13.5\"/><circle class=\"guide\" cx=\"125\" cy=\"86.4\" r=\"13.5\"/><line class=\"guide\" x1=\"100\" y1=\"100\" x2=\"100.0\" y2=\"70.0\"/><line class=\"guide\" x1=\"100\" y1=\"100\" x2=\"126.0\" y2=\"85.0\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"63\" y1=\"152\" x2=\"137\" y2=\"152\"/><line pathLength=\"1\" x1=\"63\" y1=\"149\" x2=\"63\" y2=\"155\"/><line pathLength=\"1\" x1=\"137\" y1=\"149\" x2=\"137\" y2=\"155\"/><text>6 × R 13.5U</text><text>ORBIT R 30U</text><text>PITCH 60°</text>",
   "blurb": "Six small rings strung around a seventh, each one touching its neighbors at a single tangent point. Half molecule, half party decoration.",
   "year": "Apr 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Bubbly",
   "attachment": "Medium"
@@ -1702,7 +1689,6 @@ const S = [
   "con": "<circle class=\"guide\" cx=\"100\" cy=\"100\" r=\"40\"/><line class=\"guide\" x1=\"95.9\" y1=\"54\" x2=\"95.9\" y2=\"146\"/><line class=\"guide\" x1=\"104.1\" y1=\"54\" x2=\"104.1\" y2=\"146\"/><line class=\"guide\" x1=\"52\" y1=\"100\" x2=\"148\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"95.9\" y1=\"152\" x2=\"104.1\" y2=\"152\"/><line pathLength=\"1\" x1=\"95.9\" y1=\"149\" x2=\"95.9\" y2=\"155\"/><line pathLength=\"1\" x1=\"104.1\" y1=\"149\" x2=\"104.1\" y2=\"155\"/><line pathLength=\"1\" x1=\"60\" y1=\"160\" x2=\"140\" y2=\"160\"/><line pathLength=\"1\" x1=\"60\" y1=\"157\" x2=\"60\" y2=\"163\"/><line pathLength=\"1\" x1=\"140\" y1=\"157\" x2=\"140\" y2=\"163\"/><text>R 40U</text><text>CORE 8.2U</text><text>6 PARTS</text>",
   "blurb": "A sliced orb with fins stepping off both hemispheres in even increments toward the poles. It looks like it should spin.",
   "year": "Dec 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Ambitious",
   "attachment": "Still Hurts"
@@ -1716,7 +1702,6 @@ const S = [
   "con": "<circle class=\"guide\" cx=\"100\" cy=\"100\" r=\"46\"/><line class=\"guide\" x1=\"46\" y1=\"100\" x2=\"154\" y2=\"100\"/><line class=\"guide\" x1=\"55.4\" y1=\"87.3\" x2=\"144.6\" y2=\"87.3\"/><line class=\"guide\" x1=\"55.4\" y1=\"112.7\" x2=\"144.6\" y2=\"112.7\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"54\" y1=\"158\" x2=\"146\" y2=\"158\"/><line pathLength=\"1\" x1=\"54\" y1=\"155\" x2=\"54\" y2=\"161\"/><line pathLength=\"1\" x1=\"146\" y1=\"155\" x2=\"146\" y2=\"161\"/><text>R 46U</text><text>LAT ±5.3U ±12.7U</text><text>4 RINGS</text>",
   "blurb": "Horizontal ellipses stacked into a globe, compressing toward the poles at true projection. The horizontal sibling of Meridian.",
   "year": "Nov 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Optimistic",
   "attachment": "High"
@@ -1730,11 +1715,9 @@ const S = [
   "con": "<circle class=\"guide\" cx=\"96\" cy=\"100\" r=\"36\"/><circle class=\"guide\" cx=\"96\" cy=\"100\" r=\"24\"/><circle class=\"guide\" cx=\"117\" cy=\"100\" r=\"22.8\"/><circle class=\"guide\" cx=\"117\" cy=\"100\" r=\"12\"/><line class=\"guide\" x1=\"50\" y1=\"100\" x2=\"150\" y2=\"100\"/><line class=\"guide\" x1=\"96\" y1=\"56\" x2=\"96\" y2=\"144\"/><circle class=\"pt\" cx=\"96\" cy=\"100\" r=\"1.3\"/><circle class=\"pt\" cx=\"117\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"96\" y1=\"148\" x2=\"117\" y2=\"148\"/><line pathLength=\"1\" x1=\"96\" y1=\"145\" x2=\"96\" y2=\"151\"/><line pathLength=\"1\" x1=\"117\" y1=\"145\" x2=\"117\" y2=\"151\"/><text>C R 36/24U</text><text>O R 22.8/12U</text><text>C–C 21U</text><text>RING 12U</text>",
   "blurb": "Two letters built from four radii. The C runs R 36 outside and R 24 inside, the O uses 23 and 12, and the whole lockup sits on one baseline.",
   "year": "Feb 2024",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Confident",
-  "attachment": "High",
-  "spin": true
+  "attachment": "High"
  },
  {
   "id": "SYM-002",
@@ -1745,11 +1728,9 @@ const S = [
   "con": "<circle class=\"guide\" cx=\"57.3\" cy=\"64\" r=\"26\"/><circle class=\"guide\" cx=\"57.3\" cy=\"64\" r=\"32.7\"/><circle class=\"guide\" cx=\"142.6\" cy=\"136\" r=\"26\"/><circle class=\"guide\" cx=\"142.6\" cy=\"136\" r=\"32.7\"/><line class=\"guide\" x1=\"99.95\" y1=\"52\" x2=\"99.95\" y2=\"148\"/><line class=\"guide\" x1=\"50\" y1=\"100\" x2=\"150\" y2=\"100\"/><circle class=\"pt\" cx=\"57.3\" cy=\"64\" r=\"1.3\"/><circle class=\"pt\" cx=\"142.6\" cy=\"64\" r=\"1.3\"/><circle class=\"pt\" cx=\"57.3\" cy=\"136\" r=\"1.3\"/><circle class=\"pt\" cx=\"142.6\" cy=\"136\" r=\"1.3\"/><line pathLength=\"1\" x1=\"57.3\" y1=\"154\" x2=\"142.6\" y2=\"154\"/><line pathLength=\"1\" x1=\"57.3\" y1=\"151\" x2=\"57.3\" y2=\"157\"/><line pathLength=\"1\" x1=\"142.6\" y1=\"151\" x2=\"142.6\" y2=\"157\"/><text>ARC R 26–32.7U</text><text>BAR 6.7U</text><text>SPAN 85.3×72U</text>",
   "blurb": "Four quarter arcs, each anchored on a corner point, with bars splitting the middle at 6.7u. From above it looks like a highway interchange.",
   "year": "Feb 2024",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Municipal",
-  "attachment": "Medium",
-  "spin": true
+  "attachment": "Medium"
  },
  {
   "id": "SYM-004",
@@ -1760,28 +1741,9 @@ const S = [
   "con": "<rect class=\"guide\" x=\"60\" y=\"75\" width=\"24\" height=\"23.5\"/><rect class=\"guide\" x=\"60\" y=\"101.5\" width=\"24\" height=\"23.5\"/><circle class=\"guide\" cx=\"72\" cy=\"72\" r=\"12\"/><circle class=\"guide\" cx=\"72\" cy=\"128\" r=\"12\"/><rect class=\"guide\" x=\"60\" y=\"60\" width=\"80\" height=\"80\"/><circle class=\"pt\" cx=\"72\" cy=\"72\" r=\"1.3\"/><circle class=\"pt\" cx=\"72\" cy=\"128\" r=\"1.3\"/><line pathLength=\"1\" x1=\"88\" y1=\"98.5\" x2=\"88\" y2=\"101.5\"/><line pathLength=\"1\" x1=\"85\" y1=\"98.5\" x2=\"91\" y2=\"98.5\"/><line pathLength=\"1\" x1=\"85\" y1=\"101.5\" x2=\"91\" y2=\"101.5\"/><line pathLength=\"1\" x1=\"60\" y1=\"148\" x2=\"140\" y2=\"148\"/><line pathLength=\"1\" x1=\"60\" y1=\"145\" x2=\"60\" y2=\"151\"/><line pathLength=\"1\" x1=\"140\" y1=\"145\" x2=\"140\" y2=\"151\"/><text>2 × □ 24U</text><text>GAP 3U</text><text>HOOK R 12U</text><text>FRAME 80U</text>",
   "blurb": "Two 24u blocks and a hooked spine with a 12u radius. Part letterform, part bracket hardware.",
   "year": "Feb 2024",
-  "explode": [
-   [
-    -26,
-    -5
-   ],
-   [
-    -26,
-    5
-   ],
-   [
-    0,
-    -14
-   ],
-   [
-    0,
-    14
-   ]
-  ],
   "status": "Rejected",
   "reason": "Too Industrial",
-  "attachment": "Medium",
-  "spin": true
+  "attachment": "Medium"
  },
  {
   "id": "SYM-005",
@@ -1792,7 +1754,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"64\" y=\"60\" width=\"72.3\" height=\"80\"/><line class=\"guide\" x1=\"99.5\" y1=\"58.5\" x2=\"80.1\" y2=\"84.4\"/><circle class=\"pt\" cx=\"94.2\" cy=\"65.5\" r=\"1.3\"/><circle class=\"pt\" cx=\"85.3\" cy=\"77.4\" r=\"1.3\"/><line pathLength=\"1\" x1=\"64\" y1=\"52\" x2=\"136.3\" y2=\"52\"/><line pathLength=\"1\" x1=\"64\" y1=\"49\" x2=\"64\" y2=\"55\"/><line pathLength=\"1\" x1=\"136.3\" y1=\"49\" x2=\"136.3\" y2=\"55\"/><text>PLANE 72×80U</text><text>FOLD θ 53°</text>",
   "blurb": "One folded plane inside a 72 by 80 frame, creased at 53 degrees to make the C.",
   "year": "Feb 2024",
-  "explode": null,
   "status": "Rejected",
   "reason": "Too Clever",
   "attachment": "Still Hurts"
@@ -1806,7 +1767,6 @@ const S = [
   "con": "<circle class=\"guide\" cx=\"100\" cy=\"100\" r=\"30\"/><circle class=\"guide\" cx=\"100\" cy=\"70\" r=\"15\"/><circle class=\"guide\" cx=\"100\" cy=\"130\" r=\"15\"/><circle class=\"guide\" cx=\"70\" cy=\"100\" r=\"15\"/><circle class=\"guide\" cx=\"130\" cy=\"100\" r=\"15\"/><line class=\"guide\" x1=\"100\" y1=\"48\" x2=\"100\" y2=\"152\"/><line class=\"guide\" x1=\"48\" y1=\"100\" x2=\"152\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"70\" r=\"1.3\"/><circle class=\"pt\" cx=\"70\" cy=\"100\" r=\"1.3\"/><circle class=\"pt\" cx=\"130\" cy=\"100\" r=\"1.3\"/><circle class=\"pt\" cx=\"100\" cy=\"130\" r=\"1.3\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"100\" y1=\"100\" x2=\"121.2\" y2=\"78.8\"/><text>4 × R 15U</text><text>ORBIT R 30U</text><text>HATCH 2.5U</text><text>PITCH 90°</text>",
   "blurb": "Four R 15 circles locked to the axes on a 30u pitch, each one hatched differently. It reads a bit like the gauges on an instrument panel.",
   "year": "Apr 2024",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Flowery",
   "attachment": "Medium"
@@ -1820,7 +1780,6 @@ const S = [
   "con": "<circle class=\"guide\" cx=\"100\" cy=\"100\" r=\"40\"/><circle class=\"guide\" cx=\"100\" cy=\"100\" r=\"28.9\"/><rect class=\"guide\" x=\"80.7\" y=\"80.4\" width=\"19.5\" height=\"19.4\" transform=\"rotate(1 90.4 90.1)\"/><rect class=\"guide\" x=\"99.4\" y=\"100.1\" width=\"19.5\" height=\"19.4\" transform=\"rotate(1 109.1 109.8)\"/><line class=\"guide\" x1=\"52\" y1=\"100\" x2=\"148\" y2=\"100\"/><line class=\"guide\" x1=\"100\" y1=\"52\" x2=\"100\" y2=\"148\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"100\" y1=\"100\" x2=\"128.3\" y2=\"71.7\"/><line pathLength=\"1\" x1=\"100\" y1=\"100\" x2=\"120.4\" y2=\"120.4\"/><text>R 40/28.9U</text><text>2 × □ 19.4U</text><text>TILT 1°</text><text>180° SYM</text>",
   "blurb": "Two rings and two squares rotated into a single rotor. The arcs use R 40 and R 28.9 from one shared center, and the squares each carry a deliberate 1 degree tilt, set 180 degrees apart.",
   "year": "Apr 2024",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Busy",
   "attachment": "Still Hurts"
@@ -1834,7 +1793,6 @@ const S = [
   "con": "<circle class=\"guide\" cx=\"100\" cy=\"100\" r=\"36\"/><circle class=\"guide\" cx=\"118\" cy=\"81.9\" r=\"13.4\"/><line class=\"guide\" x1=\"136\" y1=\"54\" x2=\"136\" y2=\"146\"/><line class=\"guide\" x1=\"52\" y1=\"100\" x2=\"148\" y2=\"100\"/><line class=\"guide\" x1=\"100\" y1=\"100\" x2=\"118\" y2=\"81.9\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><circle class=\"pt\" cx=\"118\" cy=\"81.9\" r=\"1.3\"/><line pathLength=\"1\" x1=\"100\" y1=\"100\" x2=\"74.5\" y2=\"74.5\"/><text>R 36U</text><text>COUNTER R 13.4U</text><text>OFFSET 25.5U · 45°</text><text>FLAT X 136</text>",
   "blurb": "Built on one R 36 circle. The counter is a separate 13.4 circle snapped inside the curve, and the terminal is cut flat against the frame edge.",
   "year": "Jun 2024",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Obvious",
   "attachment": "High"
@@ -1848,7 +1806,6 @@ const S = [
   "con": "<circle class=\"guide\" cx=\"100\" cy=\"70\" r=\"15\"/><circle class=\"guide\" cx=\"100\" cy=\"130\" r=\"15\"/><circle class=\"guide\" cx=\"70\" cy=\"100\" r=\"15\"/><circle class=\"guide\" cx=\"130\" cy=\"100\" r=\"15\"/><circle class=\"guide\" cx=\"100\" cy=\"100\" r=\"30\"/><line class=\"guide\" x1=\"100\" y1=\"48\" x2=\"100\" y2=\"152\"/><line class=\"guide\" x1=\"48\" y1=\"100\" x2=\"152\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><circle class=\"pt\" cx=\"100\" cy=\"70\" r=\"1.3\"/><circle class=\"pt\" cx=\"70\" cy=\"100\" r=\"1.3\"/><circle class=\"pt\" cx=\"130\" cy=\"100\" r=\"1.3\"/><circle class=\"pt\" cx=\"100\" cy=\"130\" r=\"1.3\"/><line pathLength=\"1\" x1=\"100\" y1=\"100\" x2=\"121.2\" y2=\"121.2\"/><text>4 × R 15U</text><text>ORBIT R 30U</text><text>PITCH 90°</text><text>KEY 11U</text>",
   "blurb": "Four R 15 circles set at 90 degrees, each with its own keyhole. A strict compass layout with a playful streak.",
   "year": "Jun 2024",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Edgy",
   "attachment": "High"
@@ -1862,7 +1819,6 @@ const S = [
   "con": "<line class=\"guide\" x1=\"72.7\" y1=\"80.1\" x2=\"126.9\" y2=\"80.1\"/><line class=\"guide\" x1=\"72.7\" y1=\"80.1\" x2=\"99.8\" y2=\"107.2\"/><line class=\"guide\" x1=\"126.9\" y1=\"80.1\" x2=\"99.8\" y2=\"107.2\"/><circle class=\"guide\" cx=\"72.7\" cy=\"80.1\" r=\"12.6\"/><circle class=\"guide\" cx=\"126.9\" cy=\"80.1\" r=\"12.6\"/><circle class=\"guide\" cx=\"99.8\" cy=\"107.2\" r=\"12.6\"/><circle class=\"pt\" cx=\"72.7\" cy=\"80.1\" r=\"1.3\"/><circle class=\"pt\" cx=\"126.9\" cy=\"80.1\" r=\"1.3\"/><circle class=\"pt\" cx=\"99.8\" cy=\"107.2\" r=\"1.3\"/><line pathLength=\"1\" x1=\"95.6\" y1=\"103\" x2=\"99.8\" y2=\"98.7\"/><line pathLength=\"1\" x1=\"99.8\" y1=\"98.7\" x2=\"104\" y2=\"103\"/><line pathLength=\"1\" x1=\"72.7\" y1=\"62\" x2=\"126.9\" y2=\"62\"/><line pathLength=\"1\" x1=\"72.7\" y1=\"59\" x2=\"72.7\" y2=\"65\"/><line pathLength=\"1\" x1=\"126.9\" y1=\"59\" x2=\"126.9\" y2=\"65\"/><text>3 × R 12.6U</text><text>SPAN 54.2U</text><text>APEX 90°</text>",
   "blurb": "Three R 12.6 nodes joined by one continuous bond. The top pair sits 54.2u apart and the apex closes at exactly 90 degrees. A molecule diagram that could pass for a monogram.",
   "year": "Jun 2024",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Scientific",
   "attachment": "Still Hurts"
@@ -1876,7 +1832,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"51\" y=\"64\" width=\"97.5\" height=\"72\"/><line class=\"guide\" x1=\"99.8\" y1=\"56\" x2=\"99.8\" y2=\"144\"/><line class=\"guide\" x1=\"43\" y1=\"100\" x2=\"156.5\" y2=\"100\"/><circle class=\"pt\" cx=\"99.8\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"51\" y1=\"148\" x2=\"148.5\" y2=\"148\"/><line pathLength=\"1\" x1=\"51\" y1=\"145\" x2=\"51\" y2=\"151\"/><line pathLength=\"1\" x1=\"148.5\" y1=\"145\" x2=\"148.5\" y2=\"151\"/><text>2 RINGS</text><text>R 36</text><text>C–C 25.5U</text><text>GAPS OPPOSED</text>",
   "blurb": "Two open rings, each broken where the other passes through. Same radius, same weight, with the openings on opposite sides. It reads as a handshake.",
   "year": "Aug 2024",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Romantic",
   "attachment": "Medium"
@@ -1890,7 +1845,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"60\" y=\"60\" width=\"79.8\" height=\"80\"/><line class=\"guide\" x1=\"99.9\" y1=\"52\" x2=\"99.9\" y2=\"148\"/><line class=\"guide\" x1=\"52\" y1=\"100\" x2=\"147.8\" y2=\"100\"/><circle class=\"pt\" cx=\"99.9\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"60\" y1=\"152\" x2=\"139.8\" y2=\"152\"/><line pathLength=\"1\" x1=\"60\" y1=\"149\" x2=\"60\" y2=\"155\"/><line pathLength=\"1\" x1=\"139.8\" y1=\"149\" x2=\"139.8\" y2=\"155\"/><text>1 RING</text><text>8 FLATS</text><text>80U ACROSS</text><text>SPLIT WAIST</text>",
   "blurb": "A ring milled into eight flats, with no curves left. The two halves stop just short of touching at the waist. An O cut like a gemstone.",
   "year": "Aug 2024",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Expensive",
   "attachment": "High"
@@ -1904,7 +1858,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"60\" y=\"60\" width=\"80\" height=\"80\"/><line class=\"guide\" x1=\"100\" y1=\"52\" x2=\"100\" y2=\"148\"/><line class=\"guide\" x1=\"52\" y1=\"100\" x2=\"148\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"60\" y1=\"152\" x2=\"140\" y2=\"152\"/><line pathLength=\"1\" x1=\"60\" y1=\"149\" x2=\"60\" y2=\"155\"/><line pathLength=\"1\" x1=\"140\" y1=\"149\" x2=\"140\" y2=\"155\"/><text>RING R 40</text><text>5 LENSES</text><text>MAX W 53.2U</text>",
   "blurb": "A ring holding five vertical lenses, widest at the axis. Half the room saw an eye, the other half saw an onion cut in half.",
   "year": "Aug 2024",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Teary",
   "attachment": "Medium"
@@ -1918,7 +1871,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"60\" y=\"60\" width=\"80\" height=\"80\"/><line class=\"guide\" x1=\"100\" y1=\"52\" x2=\"100\" y2=\"148\"/><line class=\"guide\" x1=\"52\" y1=\"100\" x2=\"148\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"60\" y1=\"152\" x2=\"140\" y2=\"152\"/><line pathLength=\"1\" x1=\"60\" y1=\"149\" x2=\"60\" y2=\"155\"/><line pathLength=\"1\" x1=\"140\" y1=\"149\" x2=\"140\" y2=\"155\"/><text>8 SPOKES</text><text>45°</text><text>R 40U</text><text>FLARED TIPS</text>",
   "blurb": "Eight serifed spokes off a common hub at even intervals, tips flared like type. A footnote mark drawn at headline size.",
   "year": "Aug 2024",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Legal",
   "attachment": "Medium"
@@ -1932,7 +1884,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"53\" y=\"64\" width=\"93.6\" height=\"72\"/><line class=\"guide\" x1=\"99.8\" y1=\"56\" x2=\"99.8\" y2=\"144\"/><line class=\"guide\" x1=\"45\" y1=\"100\" x2=\"154.6\" y2=\"100\"/><circle class=\"pt\" cx=\"99.8\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"53\" y1=\"148\" x2=\"146.6\" y2=\"148\"/><line pathLength=\"1\" x1=\"53\" y1=\"145\" x2=\"53\" y2=\"151\"/><line pathLength=\"1\" x1=\"146.6\" y1=\"145\" x2=\"146.6\" y2=\"151\"/><text>2 DISCS R 36</text><text>C–C 21.6U</text><text>1 SHARED EDGE</text>",
   "blurb": "Two discs sharing one edge, drawn as a single mass. One reads full, the other is clipped where they meet.",
   "year": "Aug 2024",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Decisive",
   "attachment": "Low"
@@ -1946,7 +1897,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"45\" y=\"64\" width=\"109.7\" height=\"72\"/><line class=\"guide\" x1=\"99.9\" y1=\"56\" x2=\"99.9\" y2=\"144\"/><line class=\"guide\" x1=\"37\" y1=\"100\" x2=\"162.7\" y2=\"100\"/><circle class=\"pt\" cx=\"99.9\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"45\" y1=\"148\" x2=\"154.7\" y2=\"148\"/><line pathLength=\"1\" x1=\"45\" y1=\"145\" x2=\"45\" y2=\"151\"/><line pathLength=\"1\" x1=\"154.7\" y1=\"145\" x2=\"154.7\" y2=\"151\"/><text>3 PANELS 34.3 × 72U</text><text>2 × R 17.2</text><text>1 BAR</text>",
   "blurb": "Two upright tiles, four counters and one connecting bar. Game pieces that could pass for a system diagram. The pips sit on the grid.",
   "year": "Oct 2024",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Casual",
   "attachment": "Low"
@@ -1960,7 +1910,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"59\" y=\"60\" width=\"81.4\" height=\"80\"/><line class=\"guide\" x1=\"99.7\" y1=\"52\" x2=\"99.7\" y2=\"148\"/><line class=\"guide\" x1=\"51\" y1=\"100\" x2=\"148.4\" y2=\"100\"/><circle class=\"pt\" cx=\"99.7\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"59\" y1=\"152\" x2=\"140.4\" y2=\"152\"/><line pathLength=\"1\" x1=\"59\" y1=\"149\" x2=\"59\" y2=\"155\"/><line pathLength=\"1\" x1=\"140.4\" y1=\"149\" x2=\"140.4\" y2=\"155\"/><text>1 STROKE</text><text>R 40</text><text>WEIGHT 4U</text><text>OPEN TOP RIGHT</text>",
   "blurb": "One stroke, almost closed, thinning where the brush lifts. The most hand-drawn mark in a catalogue built with compasses.",
   "year": "Oct 2024",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Spiritual",
   "attachment": "Still Hurts"
@@ -1974,7 +1923,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"68\" y=\"68\" width=\"63.6\" height=\"63.6\"/><line class=\"guide\" x1=\"99.8\" y1=\"60\" x2=\"99.8\" y2=\"139.6\"/><line class=\"guide\" x1=\"60\" y1=\"99.8\" x2=\"139.7\" y2=\"99.8\"/><circle class=\"pt\" cx=\"99.8\" cy=\"99.8\" r=\"1.3\"/><line pathLength=\"1\" x1=\"68\" y1=\"143.6\" x2=\"131.7\" y2=\"143.6\"/><line pathLength=\"1\" x1=\"68\" y1=\"140.6\" x2=\"68\" y2=\"146.6\"/><line pathLength=\"1\" x1=\"131.7\" y1=\"140.6\" x2=\"131.7\" y2=\"146.6\"/><text>4 PANES 30.3U</text><text>2 × 2</text><text>GAP 3U</text>",
   "blurb": "Four rounded panes split by a hairline mullion, with matching radii at every corner. A window with nothing behind it yet.",
   "year": "Nov 2024",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Hopeful",
   "attachment": "Low"
@@ -1988,7 +1936,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"57\" y=\"60\" width=\"86.6\" height=\"80\"/><line class=\"guide\" x1=\"100.3\" y1=\"52\" x2=\"100.3\" y2=\"148\"/><line class=\"guide\" x1=\"49\" y1=\"100\" x2=\"151.6\" y2=\"100\"/><circle class=\"pt\" cx=\"100.3\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"57\" y1=\"152\" x2=\"143.6\" y2=\"152\"/><line pathLength=\"1\" x1=\"57\" y1=\"149\" x2=\"57\" y2=\"155\"/><line pathLength=\"1\" x1=\"143.6\" y1=\"149\" x2=\"143.6\" y2=\"155\"/><text>6 WEDGES</text><text>60° PITCH</text><text>R 43.3U</text><text>PIN CENTER</text>",
   "blurb": "Six wedges locked into a hexagon, meeting at a pinpoint center. The gaps between them are what make it read as six.",
   "year": "Nov 2024",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Serious",
   "attachment": "High"
@@ -2002,7 +1949,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"51.2\" y=\"51.6\" width=\"96.7\" height=\"96.7\"/><line class=\"guide\" x1=\"99.6\" y1=\"43.6\" x2=\"99.6\" y2=\"156.4\"/><line class=\"guide\" x1=\"43.2\" y1=\"100\" x2=\"155.9\" y2=\"100\"/><circle class=\"pt\" cx=\"99.6\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"51.2\" y1=\"160.4\" x2=\"147.9\" y2=\"160.4\"/><line pathLength=\"1\" x1=\"51.2\" y1=\"157.4\" x2=\"51.2\" y2=\"163.4\"/><line pathLength=\"1\" x1=\"147.9\" y1=\"157.4\" x2=\"147.9\" y2=\"163.4\"/><text>4 RINGS</text><text>16 DASHES 25.7 × 7.2U</text><text>90°</text>",
   "blurb": "Four rings pinched around a square center. The dashes hold it together. Remove one and the square disappears.",
   "year": "Nov 2024",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Festive",
   "attachment": "High"
@@ -2016,7 +1962,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"60\" y=\"60\" width=\"80\" height=\"80\"/><line class=\"guide\" x1=\"100\" y1=\"52\" x2=\"100\" y2=\"148\"/><line class=\"guide\" x1=\"52\" y1=\"100\" x2=\"147.9\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"60\" y1=\"152\" x2=\"139.9\" y2=\"152\"/><line pathLength=\"1\" x1=\"60\" y1=\"149\" x2=\"60\" y2=\"155\"/><line pathLength=\"1\" x1=\"139.9\" y1=\"149\" x2=\"139.9\" y2=\"155\"/><text>R 40</text><text>OPEN CORE</text><text>1 CHANNEL</text>",
   "blurb": "A disc with its core exposed and one channel leading out. It looks like something used to plug in here.",
   "year": "Nov 2024",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Startupy",
   "attachment": "Medium"
@@ -2030,7 +1975,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"34\" y=\"60\" width=\"132.6\" height=\"80\"/><line class=\"guide\" x1=\"100.3\" y1=\"52\" x2=\"100.3\" y2=\"148\"/><line class=\"guide\" x1=\"26\" y1=\"100\" x2=\"174.6\" y2=\"100\"/><circle class=\"pt\" cx=\"100.3\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"34\" y1=\"152\" x2=\"166.6\" y2=\"152\"/><line pathLength=\"1\" x1=\"34\" y1=\"149\" x2=\"34\" y2=\"155\"/><line pathLength=\"1\" x1=\"166.6\" y1=\"149\" x2=\"166.6\" y2=\"155\"/><text>8 × R 13.3</text><text>2 BONDS</text><text>SPAN 132.6U</text>",
   "blurb": "Dots and bonds laid on one axis, like a compound diagrammed in plan view. Every interval is a multiple of the dot radius.",
   "year": "Jan 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Clinical",
   "attachment": "Medium"
@@ -2044,7 +1988,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"36\" y=\"64\" width=\"127.6\" height=\"72\"/><line class=\"guide\" x1=\"99.8\" y1=\"56\" x2=\"99.8\" y2=\"144\"/><line class=\"guide\" x1=\"28\" y1=\"100\" x2=\"171.6\" y2=\"100\"/><circle class=\"pt\" cx=\"99.8\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"36\" y1=\"148\" x2=\"163.6\" y2=\"148\"/><line pathLength=\"1\" x1=\"36\" y1=\"145\" x2=\"36\" y2=\"151\"/><line pathLength=\"1\" x1=\"163.6\" y1=\"145\" x2=\"163.6\" y2=\"151\"/><text>CORE R 16.4</text><text>2 NODES 40.9 × 72U</text><text>SPAN 127.6U</text>",
   "blurb": "Two pointed nodes flanking a dot, like a signal caught mid-pass. The taper sets the direction, left to right.",
   "year": "Jan 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Fast",
   "attachment": "Medium"
@@ -2058,7 +2001,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"58\" y=\"60\" width=\"83.7\" height=\"80\"/><line class=\"guide\" x1=\"99.8\" y1=\"52\" x2=\"99.8\" y2=\"148\"/><line class=\"guide\" x1=\"50\" y1=\"100\" x2=\"149.7\" y2=\"100\"/><circle class=\"pt\" cx=\"99.8\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"58\" y1=\"152\" x2=\"141.7\" y2=\"152\"/><line pathLength=\"1\" x1=\"58\" y1=\"149\" x2=\"58\" y2=\"155\"/><line pathLength=\"1\" x1=\"141.7\" y1=\"149\" x2=\"141.7\" y2=\"155\"/><text>3 PAIRS</text><text>NODES R 12.2</text><text>TRACES 1.5U</text><text>45°</text>",
   "blurb": "Paired dots and pills stepping up the diagonal, corner to corner. It reads like a small piece of circuit board.",
   "year": "Jan 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Techy",
   "attachment": "Medium"
@@ -2072,7 +2014,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"60\" y=\"60\" width=\"80\" height=\"80\"/><line class=\"guide\" x1=\"100\" y1=\"52\" x2=\"100\" y2=\"148\"/><line class=\"guide\" x1=\"52\" y1=\"100\" x2=\"148\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"60\" y1=\"152\" x2=\"140\" y2=\"152\"/><line pathLength=\"1\" x1=\"60\" y1=\"149\" x2=\"60\" y2=\"155\"/><line pathLength=\"1\" x1=\"140\" y1=\"149\" x2=\"140\" y2=\"155\"/><text>8 LOBES</text><text>ORBIT R 27.2</text><text>45°</text><text>CORE R 10.4</text>",
   "blurb": "Eight lobes and a core cut from one piece. Built like a rubber stamp, and it holds up at any size.",
   "year": "Dec 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Warm",
   "attachment": "High"
@@ -2086,7 +2027,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"60\" y=\"60\" width=\"80\" height=\"80\"/><line class=\"guide\" x1=\"100\" y1=\"52\" x2=\"100\" y2=\"148\"/><line class=\"guide\" x1=\"52\" y1=\"100\" x2=\"148\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"60\" y1=\"152\" x2=\"140\" y2=\"152\"/><line pathLength=\"1\" x1=\"60\" y1=\"149\" x2=\"60\" y2=\"155\"/><line pathLength=\"1\" x1=\"140\" y1=\"149\" x2=\"140\" y2=\"155\"/><text>4 × R 19</text><text>2 × 2</text><text>PITCH 41.9U</text>",
   "blurb": "Dot-and-tile pairs in a 2×2 rotation, laid out like parquet flooring. Rotate any unit 90° and the pattern still lines up.",
   "year": "Mar 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Grounded",
   "attachment": "High"
@@ -2100,7 +2040,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"55\" y=\"55\" width=\"90\" height=\"90\"/><line class=\"guide\" x1=\"100\" y1=\"47\" x2=\"100\" y2=\"153\"/><line class=\"guide\" x1=\"47\" y1=\"100\" x2=\"153\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"55\" y1=\"157\" x2=\"145\" y2=\"157\"/><line pathLength=\"1\" x1=\"55\" y1=\"154\" x2=\"55\" y2=\"160\"/><line pathLength=\"1\" x1=\"145\" y1=\"154\" x2=\"145\" y2=\"160\"/><text>CORE R 16.2</text><text>4 PETALS</text><text>4 CORNERS</text><text>FRAME 90U</text>",
   "blurb": "Rings, petals and a rounded frame, every band sharing the same center point. The formal one of the set, made for embossing.",
   "year": "Mar 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Royal",
   "attachment": "Still Hurts"
@@ -2114,7 +2053,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"60\" y=\"60\" width=\"79.7\" height=\"80\"/><line class=\"guide\" x1=\"99.8\" y1=\"52\" x2=\"99.8\" y2=\"148\"/><line class=\"guide\" x1=\"52\" y1=\"100\" x2=\"147.7\" y2=\"100\"/><circle class=\"pt\" cx=\"99.8\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"60\" y1=\"152\" x2=\"139.7\" y2=\"152\"/><line pathLength=\"1\" x1=\"60\" y1=\"149\" x2=\"60\" y2=\"155\"/><line pathLength=\"1\" x1=\"139.7\" y1=\"149\" x2=\"139.7\" y2=\"155\"/><text>CIRCLE R 24</text><text>C 55.7 × 80U</text><text>1 CONTACT POINT</text>",
   "blurb": "A square and a circle that touch at exactly one point. Neither shape gives way to the other.",
   "year": "Mar 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Neutral",
   "attachment": "Medium"
@@ -2128,7 +2066,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"60\" y=\"60\" width=\"80.5\" height=\"80\"/><line class=\"guide\" x1=\"100.3\" y1=\"52\" x2=\"100.3\" y2=\"148\"/><line class=\"guide\" x1=\"52\" y1=\"100\" x2=\"148.5\" y2=\"100\"/><circle class=\"pt\" cx=\"100.3\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"60\" y1=\"152\" x2=\"140.5\" y2=\"152\"/><line pathLength=\"1\" x1=\"60\" y1=\"149\" x2=\"60\" y2=\"155\"/><line pathLength=\"1\" x1=\"140.5\" y1=\"149\" x2=\"140.5\" y2=\"155\"/><text>CORE R 14.9</text><text>2 COMMAS 40.3 × 59.2U</text><text>180° SYM</text>",
   "blurb": "Two comma shapes chasing each other around a still center. Nothing moves, but the eye keeps turning it anyway.",
   "year": "Mar 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Dizzy",
   "attachment": "Still Hurts"
@@ -2142,7 +2079,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"48\" y=\"64\" width=\"104.4\" height=\"72\"/><line class=\"guide\" x1=\"100.2\" y1=\"56\" x2=\"100.2\" y2=\"144\"/><line class=\"guide\" x1=\"40\" y1=\"100\" x2=\"160.4\" y2=\"100\"/><circle class=\"pt\" cx=\"100.2\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"48\" y1=\"148\" x2=\"152.4\" y2=\"148\"/><line pathLength=\"1\" x1=\"48\" y1=\"145\" x2=\"48\" y2=\"151\"/><line pathLength=\"1\" x1=\"152.4\" y1=\"145\" x2=\"152.4\" y2=\"151\"/><text>SQUARE 72U</text><text>HALF DISC R 32.4</text><text>1 SHARED WALL</text>",
   "blurb": "Half square, half circle, joined into one silhouette along a dead-straight wall. A duplex with two very different tenants.",
   "year": "Mar 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Suburban",
   "attachment": "Low"
@@ -2156,7 +2092,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"59\" y=\"60\" width=\"82.7\" height=\"80\"/><line class=\"guide\" x1=\"100.3\" y1=\"52\" x2=\"100.3\" y2=\"148\"/><line class=\"guide\" x1=\"51\" y1=\"100\" x2=\"149.7\" y2=\"100\"/><circle class=\"pt\" cx=\"100.3\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"59\" y1=\"152\" x2=\"141.7\" y2=\"152\"/><line pathLength=\"1\" x1=\"59\" y1=\"149\" x2=\"59\" y2=\"155\"/><line pathLength=\"1\" x1=\"141.7\" y1=\"149\" x2=\"141.7\" y2=\"155\"/><text>4 PILLS 26.7U</text><text>2 HALF PILLS</text><text>90°</text><text>OPEN CENTER</text>",
   "blurb": "Four pill shapes pointing at a center that isn’t drawn. The empty middle is where the signal would jump.",
   "year": "Mar 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Smart",
   "attachment": "High"
@@ -2170,7 +2105,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"60\" y=\"60\" width=\"80\" height=\"80\"/><line class=\"guide\" x1=\"100\" y1=\"52\" x2=\"100\" y2=\"148\"/><line class=\"guide\" x1=\"52\" y1=\"100\" x2=\"148\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"60\" y1=\"152\" x2=\"140\" y2=\"152\"/><line pathLength=\"1\" x1=\"60\" y1=\"149\" x2=\"60\" y2=\"155\"/><line pathLength=\"1\" x1=\"140\" y1=\"149\" x2=\"140\" y2=\"155\"/><text>LENS 80U</text><text>45° CHECKS</text><text>CORE R 18.3</text>",
   "blurb": "A lens filled with diagonal checkers at forty-five degrees, like an argyle sweater. The counters shrink toward the tips. Grandfather-approved.",
   "year": "Apr 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Old Money",
   "attachment": "Low"
@@ -2184,7 +2118,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"54\" y=\"54\" width=\"92\" height=\"92\"/><line class=\"guide\" x1=\"100\" y1=\"46\" x2=\"100\" y2=\"154\"/><line class=\"guide\" x1=\"46\" y1=\"100\" x2=\"154\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"54\" y1=\"158\" x2=\"146\" y2=\"158\"/><line pathLength=\"1\" x1=\"54\" y1=\"155\" x2=\"54\" y2=\"161\"/><line pathLength=\"1\" x1=\"146\" y1=\"155\" x2=\"146\" y2=\"161\"/><text>R 46</text><text>3 SLICES</text><text>POLE TAPER</text>",
   "blurb": "A sphere sliced by longitudes that thin toward the poles. A globe without the map.",
   "year": "Apr 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Global",
   "attachment": "High"
@@ -2198,7 +2131,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"38\" y=\"60\" width=\"124\" height=\"80\"/><line class=\"guide\" x1=\"100\" y1=\"52\" x2=\"100\" y2=\"148\"/><line class=\"guide\" x1=\"30\" y1=\"100\" x2=\"170\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"38\" y1=\"152\" x2=\"162\" y2=\"152\"/><line pathLength=\"1\" x1=\"38\" y1=\"149\" x2=\"38\" y2=\"155\"/><line pathLength=\"1\" x1=\"162\" y1=\"149\" x2=\"162\" y2=\"155\"/><text>2 HOOKS R 40</text><text>C–C 44U</text><text>1 PART</text>",
   "blurb": "Two C shapes hooked into each other, like a chain link with serifs. Pull either end and the counters close tighter.",
   "year": "Apr 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Committed",
   "attachment": "Medium"
@@ -2212,7 +2144,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"55\" y=\"55\" width=\"90\" height=\"90\"/><line class=\"guide\" x1=\"100\" y1=\"47\" x2=\"100\" y2=\"153\"/><line class=\"guide\" x1=\"47\" y1=\"100\" x2=\"153\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"55\" y1=\"157\" x2=\"145\" y2=\"157\"/><line pathLength=\"1\" x1=\"55\" y1=\"154\" x2=\"55\" y2=\"160\"/><line pathLength=\"1\" x1=\"145\" y1=\"154\" x2=\"145\" y2=\"160\"/><text>R 45</text><text>2 VISOR ARCS</text><text>1 PART</text>",
   "blurb": "An orb with two curved lines low on its face. From across the room it’s a helmet, up close it’s a kettle.",
   "year": "Jun 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Domestic",
   "attachment": "Low"
@@ -2226,7 +2157,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"47\" y=\"50\" width=\"106.2\" height=\"100\"/><line class=\"guide\" x1=\"100.1\" y1=\"42\" x2=\"100.1\" y2=\"158\"/><line class=\"guide\" x1=\"39\" y1=\"100\" x2=\"161.2\" y2=\"100\"/><circle class=\"pt\" cx=\"100.1\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"47\" y1=\"162\" x2=\"153.2\" y2=\"162\"/><line pathLength=\"1\" x1=\"47\" y1=\"159\" x2=\"47\" y2=\"165\"/><line pathLength=\"1\" x1=\"153.2\" y1=\"159\" x2=\"153.2\" y2=\"165\"/><text>3 ELLIPSES 106.2 × 64.4U</text><text>60°</text><text>SHARED CENTER</text>",
   "blurb": "Three ellipses sharing a nucleus, drawn with a loose hand. The atom before anyone wrote a standards manual for it.",
   "year": "Jun 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Retro",
   "attachment": "High"
@@ -2240,7 +2170,6 @@ const S = [
   "con": "<circle class=\"guide\" cx=\"85\" cy=\"100\" r=\"40\"/><circle class=\"pt\" cx=\"85\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"85\" y1=\"100\" x2=\"56.72\" y2=\"71.72\"/><text class=\"lbl\" x=\"53\" y=\"68\" text-anchor=\"end\">R 40</text><circle class=\"guide\" cx=\"125\" cy=\"100\" r=\"30\"/><circle class=\"pt\" cx=\"125\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"125\" y1=\"100\" x2=\"146.21\" y2=\"121.21\"/><text class=\"lbl\" x=\"149\" y=\"129\" text-anchor=\"start\">R 30</text><line class=\"guide\" x1=\"85\" y1=\"100\" x2=\"85\" y2=\"156\"/><line class=\"guide\" x1=\"125\" y1=\"100\" x2=\"125\" y2=\"156\"/><line pathLength=\"1\" x1=\"85\" y1=\"152\" x2=\"125\" y2=\"152\"/><line pathLength=\"1\" x1=\"85\" y1=\"149\" x2=\"85\" y2=\"155\"/><line pathLength=\"1\" x1=\"125\" y1=\"149\" x2=\"125\" y2=\"155\"/><text class=\"lbl\" x=\"105\" y=\"165\" text-anchor=\"middle\">C–C 40</text><line class=\"guide\" x1=\"95\" y1=\"48\" x2=\"95\" y2=\"100\"/><line class=\"guide\" x1=\"125\" y1=\"48\" x2=\"125\" y2=\"100\"/><line pathLength=\"1\" x1=\"95\" y1=\"52\" x2=\"125\" y2=\"52\"/><line pathLength=\"1\" x1=\"95\" y1=\"49\" x2=\"95\" y2=\"55\"/><line pathLength=\"1\" x1=\"125\" y1=\"49\" x2=\"125\" y2=\"55\"/><text class=\"lbl\" x=\"110\" y=\"44\" text-anchor=\"middle\">LENS 30</text><text>R 40 + R 30</text><text>C–C 40U</text><text>LENS 30U</text><text class=\"why\">The small circle is centred on the big one's edge, so the lens is exactly half its width.</text>",
   "blurb": "Two circles and their intersection, no labels. The small one is centred on the big one's edge. Every strategy deck has one.",
   "year": "Jun 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Corporate",
   "attachment": "Low"
@@ -2254,7 +2183,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"55\" y=\"55\" width=\"90\" height=\"90\"/><line class=\"guide\" x1=\"100\" y1=\"47\" x2=\"100\" y2=\"153\"/><line class=\"guide\" x1=\"47\" y1=\"100\" x2=\"153\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"55\" y1=\"157\" x2=\"145\" y2=\"157\"/><line pathLength=\"1\" x1=\"55\" y1=\"154\" x2=\"55\" y2=\"160\"/><line pathLength=\"1\" x1=\"145\" y1=\"154\" x2=\"145\" y2=\"160\"/><text>8 RINGS</text><text>R 45</text><text>STEP 4.3U</text>",
   "blurb": "Concentric ellipses packed until they start to vibrate. The spacing is optically corrected, which only makes it worse.",
   "year": "Jun 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Hypnotic",
   "attachment": "Low"
@@ -2268,7 +2196,6 @@ const S = [
   "con": "<circle class=\"guide\" cx=\"89\" cy=\"100\" r=\"40\"/><circle class=\"guide\" cx=\"111.03\" cy=\"100\" r=\"40\"/><line class=\"guide\" x1=\"89\" y1=\"46\" x2=\"89\" y2=\"156\"/><text class=\"lbl\" x=\"89\" y=\"40\" text-anchor=\"middle\">SEAM</text><circle class=\"pt\" cx=\"89\" cy=\"100\" r=\"1.3\"/><circle class=\"pt\" cx=\"111.03\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"89\" y1=\"152\" x2=\"111.03\" y2=\"152\"/><line pathLength=\"1\" x1=\"89\" y1=\"149\" x2=\"89\" y2=\"155\"/><line pathLength=\"1\" x1=\"111.03\" y1=\"149\" x2=\"111.03\" y2=\"155\"/><text class=\"lbl\" x=\"100\" y=\"165\" text-anchor=\"middle\">C–C 22</text><ellipse class=\"guide\" cx=\"89\" cy=\"100\" rx=\"28.96\" ry=\"33.31\"/><ellipse class=\"guide\" cx=\"111.03\" cy=\"100\" rx=\"28.96\" ry=\"33.31\"/><line pathLength=\"1\" x1=\"49\" y1=\"100\" x2=\"60.04\" y2=\"100\"/><text class=\"lbl\" x=\"45\" y=\"103.5\" text-anchor=\"end\">11</text><line pathLength=\"1\" x1=\"111.03\" y1=\"60\" x2=\"111.03\" y2=\"66.7\"/><text class=\"lbl\" x=\"115\" y=\"57\" text-anchor=\"start\">6.7</text><text>2 × R 40</text><text>C–C 22U</text><text>STRESS 11 : 6.7U</text><text class=\"why\">Both rings stop on one seam and their ends stack on it. That is the join.</text>",
   "blurb": "Two open rings joined at the seam, each gap filled by the other ring. A merger that actually closed.",
   "year": "Jul 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Enterprise",
   "attachment": "Medium"
@@ -2282,7 +2209,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"58\" y=\"60\" width=\"84.7\" height=\"80.1\"/><line class=\"guide\" x1=\"100.3\" y1=\"52\" x2=\"100.3\" y2=\"148.1\"/><line class=\"guide\" x1=\"50\" y1=\"100\" x2=\"150.7\" y2=\"100\"/><circle class=\"pt\" cx=\"100.3\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"58\" y1=\"152.1\" x2=\"142.7\" y2=\"152.1\"/><line pathLength=\"1\" x1=\"58\" y1=\"149.1\" x2=\"58\" y2=\"155.1\"/><line pathLength=\"1\" x1=\"142.7\" y1=\"149.1\" x2=\"142.7\" y2=\"155.1\"/><text>12 COUNTERS 19.4 × 18.1U</text><text>CROSS GRID</text>",
   "blurb": "A cross built from square counters on a strict grid, like cross-stitch. Zoom in and it never gets smoother.",
   "year": "Jul 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Crafty",
   "attachment": "Low"
@@ -2296,7 +2222,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"61.2\" y=\"60\" width=\"77.5\" height=\"80\"/><line class=\"guide\" x1=\"100\" y1=\"52\" x2=\"100\" y2=\"148\"/><line class=\"guide\" x1=\"53.2\" y1=\"100\" x2=\"146.7\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"61.2\" y1=\"152\" x2=\"138.7\" y2=\"152\"/><line pathLength=\"1\" x1=\"61.2\" y1=\"149\" x2=\"61.2\" y2=\"155\"/><line pathLength=\"1\" x1=\"138.7\" y1=\"149\" x2=\"138.7\" y2=\"155\"/><text>R 40</text><text>2 × 3 MERIDIANS</text><text>MIRRORED</text>",
   "blurb": "Nested meridians swelling to a sphere, drawn twice and mirrored, with every rib meeting at the poles. A wireframe globe that holds up at small sizes.",
   "year": "Dec 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Nostalgic",
   "attachment": "Still Hurts"
@@ -2310,7 +2235,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"45\" y=\"50\" width=\"110\" height=\"100\"/><line class=\"guide\" x1=\"100\" y1=\"42\" x2=\"100\" y2=\"158\"/><line class=\"guide\" x1=\"37\" y1=\"100\" x2=\"163\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"45\" y1=\"162\" x2=\"155\" y2=\"162\"/><line pathLength=\"1\" x1=\"45\" y1=\"159\" x2=\"45\" y2=\"165\"/><line pathLength=\"1\" x1=\"155\" y1=\"159\" x2=\"155\" y2=\"165\"/><text>15 BARS 5.1U</text><text>PITCH 7.5U</text><text>ELLIPSE 110 × 100U</text>",
   "blurb": "Vertical bars packed into an ellipse. The bars stay evenly spaced and the outline does the curving.",
   "year": "Jul 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Salesy",
   "attachment": "Low"
@@ -2324,7 +2248,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"55\" y=\"55\" width=\"89.7\" height=\"90\"/><line class=\"guide\" x1=\"99.9\" y1=\"47\" x2=\"99.9\" y2=\"153\"/><line class=\"guide\" x1=\"47\" y1=\"100\" x2=\"152.7\" y2=\"100\"/><circle class=\"pt\" cx=\"99.9\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"55\" y1=\"157\" x2=\"144.7\" y2=\"157\"/><line pathLength=\"1\" x1=\"55\" y1=\"154\" x2=\"55\" y2=\"160\"/><line pathLength=\"1\" x1=\"144.7\" y1=\"154\" x2=\"144.7\" y2=\"160\"/><text>4 CORNER ARCS 43.8U</text><text>90°</text><text>OPEN COURT</text>",
   "blurb": "Four corner arcs around an empty courtyard. Close the gaps between them and it becomes a plain frame.",
   "year": "Jul 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Quiet",
   "attachment": "Medium"
@@ -2338,7 +2261,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"50\" y=\"73\" width=\"100\" height=\"53.1\"/><line class=\"guide\" x1=\"100\" y1=\"65\" x2=\"100\" y2=\"134.1\"/><line class=\"guide\" x1=\"42\" y1=\"99.6\" x2=\"158\" y2=\"99.6\"/><circle class=\"pt\" cx=\"100\" cy=\"99.6\" r=\"1.3\"/><line pathLength=\"1\" x1=\"50\" y1=\"138.1\" x2=\"150\" y2=\"138.1\"/><line pathLength=\"1\" x1=\"50\" y1=\"135.1\" x2=\"50\" y2=\"141.1\"/><line pathLength=\"1\" x1=\"150\" y1=\"135.1\" x2=\"150\" y2=\"141.1\"/><text>4 CRESCENTS</text><text>H 53.1U</text><text>STEP 25U</text>",
   "blurb": "Crescents overlapping left to right, a month of moon phases in one lockup. Each phase covers part of the one before it.",
   "year": "Jul 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Moody",
   "attachment": "Low"
@@ -2352,7 +2274,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"56.6\" y=\"54\" width=\"86.7\" height=\"92\"/><line class=\"guide\" x1=\"100\" y1=\"46\" x2=\"100\" y2=\"154\"/><line class=\"guide\" x1=\"48.6\" y1=\"100\" x2=\"151.4\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"56.6\" y1=\"158\" x2=\"143.4\" y2=\"158\"/><line pathLength=\"1\" x1=\"56.6\" y1=\"155\" x2=\"56.6\" y2=\"161\"/><line pathLength=\"1\" x1=\"143.4\" y1=\"155\" x2=\"143.4\" y2=\"161\"/><text>R 46</text><text>7 ARCS</text><text>EQUATOR TWIST</text>",
   "blurb": "Nested arcs wound into a sphere with a twist at the equator. It looks like a spring, compressed and ready to go.",
   "year": "Aug 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Tense",
   "attachment": "High"
@@ -2366,7 +2287,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"54\" y=\"54\" width=\"92\" height=\"92\"/><line class=\"guide\" x1=\"100\" y1=\"46\" x2=\"100\" y2=\"154\"/><line class=\"guide\" x1=\"46\" y1=\"100\" x2=\"154\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"54\" y1=\"158\" x2=\"146\" y2=\"158\"/><line pathLength=\"1\" x1=\"54\" y1=\"155\" x2=\"54\" y2=\"161\"/><line pathLength=\"1\" x1=\"146\" y1=\"155\" x2=\"146\" y2=\"161\"/><text>4 RINGS R 23</text><text>16 DASHES</text><text>2 × 2 TANGENT</text>",
   "blurb": "Four dashed rings, tangent in a 2×2. The dashes line up at every meeting point, which took an afternoon.",
   "year": "Aug 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Orderly",
   "attachment": "High"
@@ -2380,7 +2300,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"54\" y=\"63.2\" width=\"92\" height=\"73.6\"/><line class=\"guide\" x1=\"100\" y1=\"55.2\" x2=\"100\" y2=\"144.8\"/><line class=\"guide\" x1=\"46\" y1=\"100\" x2=\"154\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"54\" y1=\"148.8\" x2=\"146\" y2=\"148.8\"/><line pathLength=\"1\" x1=\"54\" y1=\"145.8\" x2=\"54\" y2=\"151.8\"/><line pathLength=\"1\" x1=\"146\" y1=\"145.8\" x2=\"146\" y2=\"151.8\"/><text>1 LINE</text><text>6 LOOPS</text><text>92 × 73.6U</text>",
   "blurb": "One continuous line looping through six lobes, with no start and no end. Trace it with a finger and you come back to where you began.",
   "year": "Aug 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Complicated",
   "attachment": "Still Hurts"
@@ -2394,7 +2313,6 @@ const S = [
   "con": "<circle class=\"guide\" cx=\"100\" cy=\"105.71\" r=\"46\"/><circle class=\"pt\" cx=\"100\" cy=\"105.71\" r=\"1.3\"/><line pathLength=\"1\" x1=\"100\" y1=\"105.71\" x2=\"67.47\" y2=\"73.18\"/><text class=\"lbl\" x=\"64\" y=\"69\" text-anchor=\"end\">R 46</text><line class=\"guide\" x1=\"38\" y1=\"140\" x2=\"162\" y2=\"140\"/><line class=\"guide\" x1=\"102\" y1=\"105.71\" x2=\"162\" y2=\"105.71\"/><line pathLength=\"1\" x1=\"158\" y1=\"105.71\" x2=\"158\" y2=\"140\"/><line pathLength=\"1\" x1=\"155\" y1=\"105.71\" x2=\"161\" y2=\"105.71\"/><line pathLength=\"1\" x1=\"155\" y1=\"140\" x2=\"161\" y2=\"140\"/><text class=\"lbl\" x=\"163\" y=\"126\" text-anchor=\"start\">34.3</text><line class=\"guide\" x1=\"69.58\" y1=\"140\" x2=\"69.58\" y2=\"164\"/><line class=\"guide\" x1=\"130.42\" y1=\"140\" x2=\"130.42\" y2=\"164\"/><line pathLength=\"1\" x1=\"69.58\" y1=\"160\" x2=\"130.42\" y2=\"160\"/><line pathLength=\"1\" x1=\"69.58\" y1=\"157\" x2=\"69.58\" y2=\"163\"/><line pathLength=\"1\" x1=\"130.42\" y1=\"157\" x2=\"130.42\" y2=\"163\"/><text class=\"lbl\" x=\"100\" y=\"173\" text-anchor=\"middle\">BASE 60.8</text><text class=\"lbl\" x=\"66\" y=\"152\" text-anchor=\"end\">CAP 11.7</text><text>DOME R 46</text><text>CUT Y+34.3U</text><text>BASE 60.8U</text><text class=\"why\">The cut lands where the base is two thirds of the width. Any higher and it stops reading as round.</text>",
   "blurb": "A solid dome settling past its baseline, like sand after the wind drops. The flat bottom is where the mass came to rest.",
   "year": "Aug 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Calm",
   "attachment": "Medium"
@@ -2408,7 +2326,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"54\" y=\"54\" width=\"92\" height=\"92\"/><line class=\"guide\" x1=\"100\" y1=\"46\" x2=\"100\" y2=\"154\"/><line class=\"guide\" x1=\"46\" y1=\"100\" x2=\"154\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"54\" y1=\"158\" x2=\"146\" y2=\"158\"/><line pathLength=\"1\" x1=\"54\" y1=\"155\" x2=\"54\" y2=\"161\"/><line pathLength=\"1\" x1=\"146\" y1=\"155\" x2=\"146\" y2=\"161\"/><text>33 SLATS</text><text>PITCH 2.9U</text><text>DISC R 46</text>",
   "blurb": "Horizontal slats filling a softened square. The gap between slats matches the slat height, so the rhythm stays even.",
   "year": "Aug 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Loud",
   "attachment": "Low"
@@ -2422,7 +2339,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"54\" y=\"54\" width=\"92\" height=\"92\"/><line class=\"guide\" x1=\"100\" y1=\"46\" x2=\"100\" y2=\"154\"/><line class=\"guide\" x1=\"46\" y1=\"100\" x2=\"154\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"54\" y1=\"158\" x2=\"146\" y2=\"158\"/><line pathLength=\"1\" x1=\"54\" y1=\"155\" x2=\"54\" y2=\"161\"/><line pathLength=\"1\" x1=\"146\" y1=\"155\" x2=\"146\" y2=\"161\"/><text>DOME R 46</text><text>BRIM BAND</text><text>2 CURLS</text>",
   "blurb": "A dome with a low band and curls at the sides. Some saw a helmet, some saw a kettle, and it was never settled.",
   "year": "Aug 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Heroic",
   "attachment": "Low"
@@ -2436,7 +2352,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"57.9\" y=\"54\" width=\"84.1\" height=\"92\"/><line class=\"guide\" x1=\"100\" y1=\"46\" x2=\"100\" y2=\"154\"/><line class=\"guide\" x1=\"49.9\" y1=\"100\" x2=\"150.1\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"57.9\" y1=\"158\" x2=\"142.1\" y2=\"158\"/><line pathLength=\"1\" x1=\"57.9\" y1=\"155\" x2=\"57.9\" y2=\"161\"/><line pathLength=\"1\" x1=\"142.1\" y1=\"155\" x2=\"142.1\" y2=\"161\"/><text>6 PETALS</text><text>R 14.9</text><text>60°</text><text>1 PART</text>",
   "blurb": "Six outline petals around an open center, their roots sharing one circle. The everyday lawn flower, drafted properly.",
   "year": "Oct 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Innocent",
   "attachment": "Medium"
@@ -2450,7 +2365,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"54\" y=\"64\" width=\"92\" height=\"72\"/><line class=\"guide\" x1=\"100\" y1=\"56\" x2=\"100\" y2=\"144\"/><line class=\"guide\" x1=\"46\" y1=\"100\" x2=\"154\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"54\" y1=\"148\" x2=\"146\" y2=\"148\"/><line pathLength=\"1\" x1=\"54\" y1=\"145\" x2=\"54\" y2=\"151\"/><line pathLength=\"1\" x1=\"146\" y1=\"145\" x2=\"146\" y2=\"151\"/><text>O 92 × 72U</text><text>2 CRESCENTS</text><text>MIRRORED</text>",
   "blurb": "Crescent slivers nested inside an O. A lune is geometry’s word for a moon shape. The client said banana.",
   "year": "Oct 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Fruity",
   "attachment": "Low"
@@ -2464,7 +2378,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"54\" y=\"57.1\" width=\"92\" height=\"85.9\"/><line class=\"guide\" x1=\"100\" y1=\"49.1\" x2=\"100\" y2=\"150.9\"/><line class=\"guide\" x1=\"46\" y1=\"100\" x2=\"154\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"54\" y1=\"154.9\" x2=\"146\" y2=\"154.9\"/><line pathLength=\"1\" x1=\"54\" y1=\"151.9\" x2=\"54\" y2=\"157.9\"/><line pathLength=\"1\" x1=\"146\" y1=\"151.9\" x2=\"146\" y2=\"157.9\"/><text>3 RINGS</text><text>92 × 85.9U</text><text>STEP 12.3U</text><text>WEIGHTED LOW</text>",
   "blurb": "Rings inside rings, weighted low in the frame, spreading out from where a drop landed. They fade toward the edge the way real ripples do.",
   "year": "Oct 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Soft",
   "attachment": "High"
@@ -2478,7 +2391,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"56\" y=\"54\" width=\"88.1\" height=\"92\"/><line class=\"guide\" x1=\"100\" y1=\"46\" x2=\"100\" y2=\"154\"/><line class=\"guide\" x1=\"48\" y1=\"100\" x2=\"152\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"56\" y1=\"158\" x2=\"144\" y2=\"158\"/><line pathLength=\"1\" x1=\"56\" y1=\"155\" x2=\"56\" y2=\"161\"/><line pathLength=\"1\" x1=\"144\" y1=\"155\" x2=\"144\" y2=\"161\"/><text>PUPIL R 23</text><text>LID 88.1 × 92U</text><text>BAR ON THE AXIS</text>",
   "blurb": "A ring, a lid and a pupil, like a lens caught mid-blink. The bar sits exactly on the horizontal axis.",
   "year": "Oct 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Watchful",
   "attachment": "Still Hurts"
@@ -2492,7 +2404,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"54\" y=\"54\" width=\"92\" height=\"92\"/><line class=\"guide\" x1=\"100\" y1=\"46\" x2=\"100\" y2=\"154\"/><line class=\"guide\" x1=\"46\" y1=\"100\" x2=\"154\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"54\" y1=\"158\" x2=\"146\" y2=\"158\"/><line pathLength=\"1\" x1=\"54\" y1=\"155\" x2=\"54\" y2=\"161\"/><line pathLength=\"1\" x1=\"146\" y1=\"155\" x2=\"146\" y2=\"161\"/><text>5 STROKES</text><text>MAX 53.7 × 92U</text><text>MIRRORED</text>",
   "blurb": "Vertical strokes swelling to an ellipse, like a sound wave on a screen. The outline is symmetric top to bottom.",
   "year": "Oct 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Talkative",
   "attachment": "Medium"
@@ -2506,7 +2417,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"54\" y=\"69.7\" width=\"92\" height=\"60.7\"/><line class=\"guide\" x1=\"100\" y1=\"61.7\" x2=\"100\" y2=\"138.3\"/><line class=\"guide\" x1=\"46\" y1=\"100\" x2=\"154\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"54\" y1=\"142.3\" x2=\"146\" y2=\"142.3\"/><line pathLength=\"1\" x1=\"54\" y1=\"139.3\" x2=\"54\" y2=\"145.3\"/><line pathLength=\"1\" x1=\"146\" y1=\"139.3\" x2=\"146\" y2=\"145.3\"/><text>4 CELLS 28.8U</text><text>2 COUNTERS</text><text>GRID 92 × 60.7U</text>",
   "blurb": "Counters in framed cells, like a scorecard. The grid comes first and the dots fill it in.",
   "year": "Oct 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Competitive",
   "attachment": "Low"
@@ -2520,7 +2430,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"63.8\" y=\"60\" width=\"72.5\" height=\"80\"/><line class=\"guide\" x1=\"100\" y1=\"52\" x2=\"100\" y2=\"148\"/><line class=\"guide\" x1=\"55.8\" y1=\"100\" x2=\"144.3\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"63.8\" y1=\"152\" x2=\"136.3\" y2=\"152\"/><line pathLength=\"1\" x1=\"63.8\" y1=\"149\" x2=\"63.8\" y2=\"155\"/><line pathLength=\"1\" x1=\"136.3\" y1=\"149\" x2=\"136.3\" y2=\"155\"/><text>2 STROKES</text><text>72.5 × 76.1U</text><text>3 CROSSINGS</text>",
   "blurb": "Two strokes woven into peaks, over, under, over. The line weight stays constant through every crossing.",
   "year": "Nov 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Playful",
   "attachment": "Medium"
@@ -2534,7 +2443,6 @@ const S = [
   "con": "<rect class=\"guide\" x=\"60\" y=\"60\" width=\"80\" height=\"80\"/><line class=\"guide\" x1=\"100\" y1=\"52\" x2=\"100\" y2=\"148\"/><line class=\"guide\" x1=\"52\" y1=\"100\" x2=\"148\" y2=\"100\"/><circle class=\"pt\" cx=\"100\" cy=\"100\" r=\"1.3\"/><line pathLength=\"1\" x1=\"60\" y1=\"152\" x2=\"140\" y2=\"152\"/><line pathLength=\"1\" x1=\"60\" y1=\"149\" x2=\"60\" y2=\"155\"/><line pathLength=\"1\" x1=\"140\" y1=\"149\" x2=\"140\" y2=\"155\"/><text>8 PETALS</text><text>ORBIT R 28.6</text><text>45°</text>",
   "blurb": "Eight petals drawn in one heavy contour of constant weight. Sturdy enough to live on an outdoor sign.",
   "year": "Nov 2025",
-  "explode": "auto",
   "status": "Rejected",
   "reason": "Too Wholesome",
   "attachment": "Medium"
@@ -2598,30 +2506,6 @@ const svg = (s, showCon=false) => {
 };
 const markOnly = (s, px) =>
   `<svg viewBox="30 30 140 140" width="${px}" height="${px}" aria-hidden="true">${provenance(s)}<g class="${markClass(s)}">${s.mark}</g></svg>`;
-
-/* Explode geometry: unwrap the neutral/transform wrappers so the real parts
-   travel individually; vectors radiate from the art's own centre (which, for
-   transform-wrapped marks, lives in local — not comp — coordinates). */
-function explodeSetup(stage, s){
-  let parts = [...stage.querySelectorAll('.mark > *')];
-  let cx0 = 100, cy0 = 100, unwrapped = false;
-  while (parts.length === 1 && parts[0].tagName.toLowerCase() === 'g' && parts[0].children.length) {
-    parts = [...parts[0].children]; unwrapped = true;
-  }
-  if (unwrapped && parts.length) {
-    const hb = parts[0].parentNode.getBBox();
-    cx0 = hb.x + hb.width / 2; cy0 = hb.y + hb.height / 2;
-  }
-  const vectors = s.explode === 'auto'
-    ? parts.map(el => {
-        const b = el.getBBox();
-        const dx = b.x + b.width / 2 - cx0, dy = b.y + b.height / 2 - cy0;
-        const d = Math.hypot(dx, dy);
-        return d < 6 ? [0, 0] : [dx / d * 26, dy / d * 26];
-      })
-    : s.explode;
-  return { parts, vectors };
-}
 
 /* Konpo logomark (four-dot symbol), 62x62 */
 const KONPO_MARK = '<path d="M13.5752 33.9356C21.0719 33.9356 27.1493 40.0131 27.1494 47.5098C27.1494 55.0066 21.072 61.084 13.5752 61.084C6.07832 61.084 0.000976562 55.0067 0.000976562 47.5098C0.00114046 40.0131 6.07843 33.9356 13.5752 33.9356ZM37.9141 37.9112C43.213 32.609 51.8074 32.612 57.1094 37.9112C62.4114 43.2105 62.4112 51.8059 57.1094 57.1084C51.8104 62.411 43.2161 62.4078 37.9141 57.1084C32.612 51.809 32.612 43.2137 37.9141 37.9112ZM13.5742 3.8115e-05C20.6616 3.8115e-05 26.4782 5.43181 27.0928 12.3594C21.0431 13.8702 16.5617 19.3408 16.5615 25.8584C16.5615 26.1783 16.5725 26.4961 16.5938 26.8106C15.6226 27.0312 14.6121 27.1485 13.5742 27.1485C6.07738 27.1484 0 21.0711 0 13.5743C3.55627e-05 6.07744 6.0774 7.36788e-05 13.5742 3.8115e-05ZM37.9131 3.97562C43.212 -1.32673 51.8064 -1.32368 57.1084 3.97562C62.4105 9.27503 62.4105 17.8704 57.1084 23.1729C53.6507 26.6329 48.7901 27.8329 44.3564 26.7774C44.3762 26.4737 44.3887 26.1671 44.3887 25.8584C44.3885 19.388 39.9714 13.9493 33.9883 12.3926C34.2552 9.32257 35.5632 6.32569 37.9131 3.97562Z"/>';
@@ -4423,7 +4307,7 @@ function fillTileDetail(tile, s){
     + '</div>';
   const inner = tile.querySelector('.xc-inner');
   const stage = tile.querySelector('.xc-stage');
-  stage.classList.remove('exploded', 'hide-annot');
+  stage.classList.remove('hide-annot');
   stage.innerHTML = notes(s) + svg(s, false);   // a card opens clean — annotations are opt-in
   fitStageMark(stage);
   tile.querySelector('.xc-close').onclick = () => collapseTile();
@@ -4431,7 +4315,7 @@ function fillTileDetail(tile, s){
   const controls = tile.querySelector('.xc-controls');
 
   // Turn: the mark stands up as its 3D solid, spun by hand; Turn again lays it back down.
-  // It works on the whole drawing, so an exploded mark reassembles and the notes step aside first
+  // It works on the whole drawing, so the notes step aside first
   const tBtn = document.createElement('button'); tBtn.textContent = 'Turn'; controls.appendChild(tBtn);
   let angle = 0, turnPending = false;
   const findBtn = label => [...controls.querySelectorAll('button')].find(b => b.textContent === label);
@@ -4439,13 +4323,11 @@ function fillTileDetail(tile, s){
     if (SOLID && SOLID.holding(tile)) { SOLID.letGo(tile); tBtn.classList.remove('active'); Sound.play('toggle.off'); return; }
     if (turnPending) return;
     turnPending = true; tBtn.classList.add('active');
-    const xBtn = findBtn('Assemble'), wasExploded = !!xBtn && stage.classList.contains('exploded');
-    if (wasExploded) xBtn.click();                                          // parts travel home (1.4s)
     const nBtn = findBtn('Notes'); if (nBtn && nBtn.classList.contains('active')) nBtn.click();
-    Promise.all([loadSolid(), new Promise(r => setTimeout(r, wasExploded ? 1450 : 0))]).then(() => {
+    loadSolid().then(() => {
       turnPending = false;
       if (!tile.classList.contains('expanded')) return;
-      if (stage.classList.contains('exploded') || (nBtn && nBtn.classList.contains('active'))) { tBtn.classList.remove('active'); return; }   // pressed again meanwhile
+      if (nBtn && nBtn.classList.contains('active')) { tBtn.classList.remove('active'); return; }   // Notes pressed meanwhile
       if (!SOLID) {                                                         // no WebGL: the flat quarter turn
         tBtn.classList.remove('active');
         angle += 90; stage.querySelectorAll(':scope > svg').forEach(el => el.style.transform = `rotate(${angle}deg)`);
@@ -4455,21 +4337,6 @@ function fillTileDetail(tile, s){
       Sound.play('toggle.on');
     });
   };
-
-  if (s.explode && !MOBILE()) {             // phones: the card-wide mark leaves no room to explode into
-    const btn = document.createElement('button'); btn.textContent = 'Explode'; controls.appendChild(btn);
-    const { parts, vectors } = explodeSetup(stage, s);
-    if (!vectors.some(v => v && Math.hypot(v[0], v[1]) > 1)) btn.remove();
-    else btn.onclick = () => afterTurn(tile, () => {
-      stage.classList.remove('lottie-live');   // hand the stage back to the static mark
-      const on = stage.classList.toggle('exploded');
-      parts.forEach((el, i) => { const [dx, dy] = vectors[i] || [0, 0]; const rot = s.spin ? ' rotate(360deg)' : ''; el.style.transform = on ? `translate(${dx}px, ${dy}px)${rot}` : ''; });
-      btn.textContent = on ? 'Assemble' : 'Explode';
-      // the CSS hides the annotations while exploded; keep the button's lit state honest
-      if (on) { const a2 = [...controls.querySelectorAll('button')].find(b => b.textContent === 'Notes');
-                if (a2 && a2.classList.contains('active')) a2.click(); }
-    });
-  }
 
   const aBtn = document.createElement('button'); aBtn.textContent = 'Notes'; controls.appendChild(aBtn);
   let annotOn = false;
@@ -4483,18 +4350,6 @@ function fillTileDetail(tile, s){
       aBtn.classList.add('active');
       svgEl.style.setProperty('--k', (svgEl.getBoundingClientRect().width / 256).toFixed(4));   // labels: 11px on screen
       svgEl.classList.remove('show-construction'); if (nEl) nEl.classList.remove('on');   // reset
-      // exploded? assemble first — annotations drawn over parts still in flight
-      // would sit off the geometry they measure (parts travel 1.4s)
-      const xBtn = [...controls.querySelectorAll('button')].find(b => b.textContent === 'Assemble');
-      if (stage.classList.contains('exploded') && xBtn) {
-        xBtn.click();
-        annotOn = true;
-        setTimeout(() => {
-          if (!annotOn || stage.classList.contains('exploded')) return;
-          svgEl.classList.add('show-construction'); if (nEl) nEl.classList.add('on');
-        }, 1500);
-        return;
-      }
       void svgEl.getBoundingClientRect();                                                 // commit
       requestAnimationFrame(() => requestAnimationFrame(() => {
         svgEl.classList.add('show-construction'); if (nEl) nEl.classList.add('on');
@@ -4760,7 +4615,7 @@ let drawerAnim = null;   // the drawer stage's mounted motion cycle, if any
 function fillDrawer(s){
   const stage = drawer.querySelector('.stage');
   if (drawerAnim) { drawerAnim.destroy(); drawerAnim = null; }
-  stage.classList.remove('exploded', 'lottie-live');
+  stage.classList.remove('lottie-live');
   stage.classList.toggle('adopted-mark', s.status === 'Adopted');
   stage.classList.add('hide-annot');
   stage.innerHTML = notes(s) + svg(s, false);
@@ -4769,7 +4624,6 @@ function fillDrawer(s){
   const controls = document.createElement('div');
   controls.className = 'stage-controls';
   stage.appendChild(controls);
-  let stageBusyUntil = 0; // when the stage's explode/turn transitions land
 
   // annotations toggle (always available; label stays static)
   const aBtn = document.createElement('button');
@@ -4779,10 +4633,6 @@ function fillDrawer(s){
   aBtn.onclick = () => {
     const svgEl = stage.querySelector(':scope > svg'); // the static svg, not the lottie one
     const notesEl = stage.querySelector('.notes');
-    if (stage.classList.contains('exploded')) {
-      const xBtn = [...controls.querySelectorAll('button')].find(b => b.textContent === 'Assemble');
-      if (xBtn) xBtn.click();
-    }
     if (annotOn) {
       stage.classList.add('hide-annot');            // fade the layer out
       aBtn.classList.remove('active');
@@ -4809,31 +4659,10 @@ function fillDrawer(s){
   let angle = 0;
   tBtn.onclick = () => {
     angle += 90;
-    stageBusyUntil = Math.max(stageBusyUntil, Date.now() + 750); // turn eases .7s
     // rotate the static svg and the lottie slot together
     stage.querySelectorAll(':scope > svg, :scope > .lottie-slot').forEach(el => el.style.transform = `rotate(${angle}deg)`);
     drawer.querySelectorAll('.ramp .step svg').forEach(el => el.style.transform = `rotate(${angle}deg)`);
   };
-
-  if (s.explode) {
-    const btn = document.createElement('button');
-    btn.textContent = 'Explode';
-    controls.appendChild(btn);
-    const { parts, vectors } = explodeSetup(stage, s);
-    if (!vectors.some(v => v && Math.hypot(v[0], v[1]) > 1)) { btn.remove(); }
-    else btn.onclick = () => {
-      if (!stage.classList.contains('exploded') && annotOn) aBtn.click();
-      stage.classList.remove('lottie-live'); // hand the stage back to the static mark
-      stageBusyUntil = Math.max(stageBusyUntil, Date.now() + 1450); // parts travel 1.4s
-      const on = stage.classList.toggle('exploded');
-      parts.forEach((el, i) => {
-        const [dx, dy] = vectors[i] || [0, 0];
-        const rot = s.spin ? ' rotate(360deg)' : '';
-        el.style.transform = on ? `translate(${dx}px, ${dy}px)${rot}` : '';
-      });
-      btn.textContent = on ? 'Assemble' : 'Explode';
-    };
-  }
 
   document.getElementById('d-meta').innerHTML = s.id + (s.status === 'Adopted' ? '<span class="status-dot"></span>' : '');
   document.getElementById('d-name').textContent = s.name;

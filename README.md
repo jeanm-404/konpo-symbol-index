@@ -75,9 +75,7 @@ UI sounds are synthesized live in WebAudio, with no audio files.
   introduction, adopter stats (Status "Rescued" in green, Reason,
   Date, Organization, and Home, the domain linked out). The mark's own Status row shows "Rejected"
   struck through in the neutral color. Adopted marks show no Adopt CTA.
-- explode   'auto' | [[dx,dy],…] | null. auto derives vectors from part
-  bboxes around the mark center (100,100)
-- spin      true on 001, 002, 004: parts rotate 360° while exploding
+- (explode / spin were removed with the Explode control, 2026-09-27)
 
 `sym-file-map.txt` maps marks to their source SVG filenames.
 `keepers.json` holds cleaned glyphs + measured bboxes from the original batch.
@@ -159,11 +157,10 @@ filters, view toggle, expand cards) carrying the Shelter's catalogue.
   hole-free. Controls: Turn (the 3D solid, spun by one-pointer drag with a
   glide on release, no pinch or zoom; `SOLID.hold` / `letGo` in solid.js; Turn
   again folds it back; without WebGL it falls back to a flat 90° turn),
-  Explode (auto-vectors; suppressed for single-compound or centered-part
-  marks), Notes (annotation replay), and "Adopt <name>". Controls act on the
-  drawing: Turn assembles and clears notes first; Explode and Notes wait for a
-  held solid to fold back (`afterTurn`). Play was removed 2026-09-26; the
-  lottie cycles remain in /anim. A card collapses
+  Notes (annotation replay), and "Adopt <name>". Controls act on the
+  drawing: Turn clears the notes first; Notes waits for a held solid to fold
+  back (`afterTurn`). Play was removed 2026-09-26 (the lottie cycles remain
+  in /anim) and Explode on 2026-09-27. A card collapses
   via its close button or by opening another card; drags and empty-space
   clicks leave it alone. The canvas still pans with a card open. Adopted
   marks show Status "Rejected" struck through, the adopter in the meta grid
@@ -174,7 +171,7 @@ filters, view toggle, expand cards) carrying the Shelter's catalogue.
   mailto to hey@konpo.studio ("Adopt SYM-0XX: application") and throws
   ribbons from both side edges. Back/Esc flips it back.
 - List view (off, `LIST_VIEW = false`): compact index table (glyph, id, name, category, spec, status);
-  a row opens the right drawer: Notes/Turn/Explode stage, scale ramp
+  a row opens the right drawer: Notes/Turn stage, scale ramp
   (96/64/44/28/16px), Status/Reason/Category/Intake/Attachment, the
   "Adopted by" section on adopted marks, and the adopt panel.
 - The Konpo logomark card closes the untouched catalogue (accent purple,
