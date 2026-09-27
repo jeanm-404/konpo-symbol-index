@@ -58,7 +58,9 @@ UI sounds are synthesized live in WebAudio, with no audio files.
 - mark      SVG inner markup (white fills via CSS; class="stroked" = stroke
   art, optionally with inline style="stroke-width:X" to keep a source weight)
 - con       construction layer: class="guide" dashed, class="pt" points, plain
-  `<line pathLength="1">` = solid dims (draw-on), `<text>` = corner notes
+  `<line pathLength="1">` = solid dims (draw-on), `<text>` = corner notes,
+  `<text class="why">` = the decision line (sentence case, 26ch), `<text class="lbl"
+  x y text-anchor>` = on-drawing label (card only, 11px desktop / 9.5px phones via --k)
 - blurb     drawer description; every mark has one, written to run ~3 lines
   at the drawer's 48ch measure
 - year      "Intake": month + year the mark arrived, "Mon YYYY", Feb 2024 to Dec 2025,
@@ -68,7 +70,11 @@ UI sounds are synthesized live in WebAudio, with no audio files.
   the client (Too Startupy, Too Enterprise, Too Happy…), one per mark
 - attachment  how hard the designer took it: "Low" | "Medium" | "High" | "Still Hurts"
 - (industry was removed 2026-09-26; spec + the con corner notes use the geometry
-  format "5 × R 14.4 · orbit 25.6u · 72° pitch", notes = spec segments uppercased)
+  format "5 × R 14.4 · orbit R 28.3 · 72° · gaps 4.5u", notes = spec segments uppercased)
+- Every number in spec, notes and labels is measured: `npm run measure` writes
+  scripts/data/measure-report.md + measure.json (fits, relations, symmetry, gaps,
+  claim check). A ✓ only means some measured length matches; gaps and weights come
+  from cross-sections, so the checker flags some true claims as ✗.
 - adopter / adopterOrg / adopterUrl / adopterCase / adopterStatus /
   adopterReason / adopterDate   set on Adopted marks. The drawer shows an "Adopted by"
   section after the metadata (full-bleed divider): name (h2), their quoted
@@ -235,9 +241,10 @@ lottie-web is self-hosted at `/vendor/lottie.min.js` (no CDN dependency);
 ## Known state / pending
 
 - Every mark has a full record (2026-09-26): reason, intake, attachment and a
-  geometry spec, with the corner notes synced to the spec. Drawn construction
-  layers are richest on 001–015 and the curated twelve; the rest carry
-  baseline auto-annotations (bbox frame, axes, center, dims, part count).
+  geometry spec, with the corner notes synced to the spec. Since 2026-09-27
+  every mark has a measured construction sheet: guides and dimensions where
+  they apply, on-drawing labels, corner notes and one decision line. Copy that
+  the geometry contradicted was corrected in the same pass.
 - No marks are adopted; the old placeholder adopters were removed.
 - The category filter is live in the All menu (four families).
 - Known dead CSS from the canvas port (`.featured`, `.chip(s)`, `.views`,

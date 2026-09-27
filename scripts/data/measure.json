@@ -286,34 +286,34 @@
   "ratios": [],
   "claims": [
    {
-    "text": "dome R 40u · rim y+30u · 6 parts",
-    "value": "40u",
+    "text": "dome R 40 · rim 80 × 20u at y+30 · gap 20u",
+    "value": "40",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "dome R 40u · rim y+30u · 6 parts",
-    "value": "30u",
+    "text": "dome R 40 · rim 80 × 20u at y+30 · gap 20u",
+    "value": "80",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "dome R 40 · rim 80 × 20u at y+30 · gap 20u",
+    "value": "20u",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "dome R 40 · rim 80 × 20u at y+30 · gap 20u",
+    "value": "30",
     "kind": "length",
     "ok": false
    },
    {
-    "text": "dome R 40u · rim y+30u · 6 parts",
-    "value": "6",
-    "kind": "count",
-    "ok": true
-   },
-   {
-    "text": "DOME R 40U",
-    "value": "40U",
+    "text": "RIM 80 × 20U",
+    "value": "20U",
     "kind": "length",
     "ok": true
-   },
-   {
-    "text": "RIM Y+30U",
-    "value": "30U",
-    "kind": "length",
-    "ok": false
    }
   ]
  },
@@ -562,39 +562,27 @@
   "ratios": [],
   "claims": [
    {
-    "text": "8 × R 13.2u · orbit R 27u · 45°",
+    "text": "8 × R 13.5 · orbit R 26.5 · 45°",
     "value": "8",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "8 × R 13.2u · orbit R 27u · 45°",
-    "value": "13.2u",
+    "text": "8 × R 13.5 · orbit R 26.5 · 45°",
+    "value": "13.5",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "8 × R 13.2u · orbit R 27u · 45°",
-    "value": "27u",
+    "text": "8 × R 13.5 · orbit R 26.5 · 45°",
+    "value": "26.5",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "8 × R 13.2u · orbit R 27u · 45°",
+    "text": "8 × R 13.5 · orbit R 26.5 · 45°",
     "value": "45°",
     "kind": "angle",
-    "ok": true
-   },
-   {
-    "text": "8 × R 13.2U",
-    "value": "13.2U",
-    "kind": "length",
-    "ok": true
-   },
-   {
-    "text": "ORBIT R 27U",
-    "value": "27U",
-    "kind": "length",
     "ok": true
    }
   ]
@@ -721,43 +709,43 @@
   "ratios": [],
   "claims": [
    {
-    "text": "2 hooks · R 19.3 · c–c 58.4u",
-    "value": "2",
+    "text": "4 × R 19 · c–c 42u · cuts 3.8u",
+    "value": "4",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "2 hooks · R 19.3 · c–c 58.4u",
-    "value": "19.3",
+    "text": "4 × R 19 · c–c 42u · cuts 3.8u",
+    "value": "19",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "2 hooks · R 19.3 · c–c 58.4u",
-    "value": "58.4u",
-    "kind": "length",
-    "ok": false
-   },
-   {
-    "text": "2 × R 19.3U",
-    "value": "19.3U",
+    "text": "4 × R 19 · c–c 42u · cuts 3.8u",
+    "value": "42u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "C–C 58.4U",
-    "value": "58.4U",
+    "text": "4 × R 19 · c–c 42u · cuts 3.8u",
+    "value": "3.8u",
     "kind": "length",
-    "ok": false
+    "ok": true
    },
    {
-    "text": "GAP 3.8U",
+    "text": "C–C 42U",
+    "value": "42U",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "CUTS 3.8U",
     "value": "3.8U",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "180° SYM",
+    "text": "180° TURN",
     "value": "180°",
     "kind": "angle",
     "ok": true
@@ -968,38 +956,38 @@
   "ratios": [],
   "claims": [
    {
-    "text": "5 × R 14.4 · orbit 25.6u · 72° pitch",
+    "text": "5 × R 14.4 · orbit R 28.3 · 72° · gaps 4.5u",
     "value": "5",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "5 × R 14.4 · orbit 25.6u · 72° pitch",
+    "text": "5 × R 14.4 · orbit R 28.3 · 72° · gaps 4.5u",
     "value": "14.4",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "5 × R 14.4 · orbit 25.6u · 72° pitch",
-    "value": "25.6u",
+    "text": "5 × R 14.4 · orbit R 28.3 · 72° · gaps 4.5u",
+    "value": "28.3",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "5 × R 14.4 · orbit 25.6u · 72° pitch",
+    "text": "5 × R 14.4 · orbit R 28.3 · 72° · gaps 4.5u",
     "value": "72°",
     "kind": "angle",
     "ok": true
    },
    {
-    "text": "5 × R 14.4U",
-    "value": "14.4U",
+    "text": "5 × R 14.4 · orbit R 28.3 · 72° · gaps 4.5u",
+    "value": "4.5u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "ORBIT R 25.6U",
-    "value": "25.6U",
+    "text": "GAPS 4.5U",
+    "value": "4.5U",
     "kind": "length",
     "ok": true
    }
@@ -1262,12 +1250,6 @@
     "ok": true
    },
    {
-    "text": "7 × R 21.4U",
-    "value": "21.4U",
-    "kind": "length",
-    "ok": true
-   },
-   {
     "text": "TILE 90U",
     "value": "90U",
     "kind": "length",
@@ -1455,38 +1437,38 @@
   "ratios": [],
   "claims": [
    {
-    "text": "4 × R 10u · orbit R 30u · 90°",
+    "text": "4 dots R 10 · orbit R 30 · gap 2.4u",
     "value": "4",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "4 × R 10u · orbit R 30u · 90°",
-    "value": "10u",
+    "text": "4 dots R 10 · orbit R 30 · gap 2.4u",
+    "value": "10",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "4 × R 10u · orbit R 30u · 90°",
-    "value": "30u",
+    "text": "4 dots R 10 · orbit R 30 · gap 2.4u",
+    "value": "30",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "4 × R 10u · orbit R 30u · 90°",
-    "value": "90°",
-    "kind": "angle",
-    "ok": true
-   },
-   {
-    "text": "4 × R 10U",
-    "value": "10U",
+    "text": "4 dots R 10 · orbit R 30 · gap 2.4u",
+    "value": "2.4u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "ORBIT R 30U",
-    "value": "30U",
+    "text": "8 × R 10",
+    "value": "8",
+    "kind": "count",
+    "ok": true
+   },
+   {
+    "text": "GAP 2.4U",
+    "value": "2.4U",
     "kind": "length",
     "ok": true
    }
@@ -1664,38 +1646,38 @@
   "ratios": [],
   "claims": [
    {
-    "text": "5 × R 15.4u · orbit R 26u · 72°",
+    "text": "5 × R 15.4 · orbit R 27.2 · 72° · weight 6.2u",
     "value": "5",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "5 × R 15.4u · orbit R 26u · 72°",
-    "value": "15.4u",
+    "text": "5 × R 15.4 · orbit R 27.2 · 72° · weight 6.2u",
+    "value": "15.4",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "5 × R 15.4u · orbit R 26u · 72°",
-    "value": "26u",
+    "text": "5 × R 15.4 · orbit R 27.2 · 72° · weight 6.2u",
+    "value": "27.2",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "5 × R 15.4u · orbit R 26u · 72°",
+    "text": "5 × R 15.4 · orbit R 27.2 · 72° · weight 6.2u",
     "value": "72°",
     "kind": "angle",
     "ok": true
    },
    {
-    "text": "5 × R 15.4U",
-    "value": "15.4U",
+    "text": "5 × R 15.4 · orbit R 27.2 · 72° · weight 6.2u",
+    "value": "6.2u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "ORBIT R 26U",
-    "value": "26U",
+    "text": "WEIGHT 6.2U",
+    "value": "6.2U",
     "kind": "length",
     "ok": true
    }
@@ -1922,8 +1904,8 @@
     "ok": true
    },
    {
-    "text": "7 × R 12U",
-    "value": "12U",
+    "text": "7 × R 12",
+    "value": "12",
     "kind": "length",
     "ok": true
    },
@@ -2066,26 +2048,32 @@
   "ratios": [],
   "claims": [
    {
-    "text": "R 40u · 4 petals · 90°",
-    "value": "40u",
+    "text": "R 40.7 · 4 petals · cut 0.8u · 45° notches",
+    "value": "40.7",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "R 40u · 4 petals · 90°",
+    "text": "R 40.7 · 4 petals · cut 0.8u · 45° notches",
     "value": "4",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "R 40u · 4 petals · 90°",
-    "value": "90°",
+    "text": "R 40.7 · 4 petals · cut 0.8u · 45° notches",
+    "value": "0.8u",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "R 40.7 · 4 petals · cut 0.8u · 45° notches",
+    "value": "45°",
     "kind": "angle",
     "ok": true
    },
    {
-    "text": "R 40U",
-    "value": "40U",
+    "text": "CUT 0.8U",
+    "value": "0.8U",
     "kind": "length",
     "ok": true
    }
@@ -2862,40 +2850,40 @@
   "ratios": [],
   "claims": [
    {
-    "text": "6 × R 13.5u · orbit R 30u · 60°",
+    "text": "6 rings R 14.4 · orbit R 25.6 · 60° · weight 3.3u",
     "value": "6",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "6 × R 13.5u · orbit R 30u · 60°",
-    "value": "13.5u",
+    "text": "6 rings R 14.4 · orbit R 25.6 · 60° · weight 3.3u",
+    "value": "14.4",
     "kind": "length",
-    "ok": false
+    "ok": true
    },
    {
-    "text": "6 × R 13.5u · orbit R 30u · 60°",
-    "value": "30u",
+    "text": "6 rings R 14.4 · orbit R 25.6 · 60° · weight 3.3u",
+    "value": "25.6",
     "kind": "length",
-    "ok": false
+    "ok": true
    },
    {
-    "text": "6 × R 13.5u · orbit R 30u · 60°",
+    "text": "6 rings R 14.4 · orbit R 25.6 · 60° · weight 3.3u",
     "value": "60°",
     "kind": "angle",
     "ok": true
    },
    {
-    "text": "6 × R 13.5U",
-    "value": "13.5U",
+    "text": "6 rings R 14.4 · orbit R 25.6 · 60° · weight 3.3u",
+    "value": "3.3u",
     "kind": "length",
-    "ok": false
+    "ok": true
    },
    {
-    "text": "ORBIT R 30U",
-    "value": "30U",
+    "text": "WEIGHT 3.3U",
+    "value": "3.3U",
     "kind": "length",
-    "ok": false
+    "ok": true
    }
   ]
  },
@@ -3058,31 +3046,19 @@
   "ratios": [],
   "claims": [
    {
-    "text": "R 40u · core 8.2u · 6 parts",
-    "value": "40u",
+    "text": "R 40 · module 8.2u · checker column",
+    "value": "40",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "R 40u · core 8.2u · 6 parts",
+    "text": "R 40 · module 8.2u · checker column",
     "value": "8.2u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "R 40u · core 8.2u · 6 parts",
-    "value": "6",
-    "kind": "count",
-    "ok": true
-   },
-   {
-    "text": "R 40U",
-    "value": "40U",
-    "kind": "length",
-    "ok": true
-   },
-   {
-    "text": "CORE 8.2U",
+    "text": "MODULE 8.2U",
     "value": "8.2U",
     "kind": "length",
     "ok": true
@@ -3553,32 +3529,44 @@
   "ratios": [],
   "claims": [
    {
-    "text": "R 46u · 4 latitudes",
-    "value": "46u",
+    "text": "R 46 · 3 ellipses 85.2u · step 17.5u · 2 caps",
+    "value": "46",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "R 46u · 4 latitudes",
-    "value": "4",
+    "text": "R 46 · 3 ellipses 85.2u · step 17.5u · 2 caps",
+    "value": "3",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "R 46U",
-    "value": "46U",
+    "text": "R 46 · 3 ellipses 85.2u · step 17.5u · 2 caps",
+    "value": "85.2u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "LAT ±5.3U ±12.7U",
-    "value": "5.3U",
+    "text": "R 46 · 3 ellipses 85.2u · step 17.5u · 2 caps",
+    "value": "17.5u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "LAT ±5.3U ±12.7U",
-    "value": "12.7U",
+    "text": "R 46 · 3 ellipses 85.2u · step 17.5u · 2 caps",
+    "value": "2",
+    "kind": "count",
+    "ok": true
+   },
+   {
+    "text": "3 ELLIPSES · STEP 17.5U",
+    "value": "17.5U",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "WEIGHT 3U",
+    "value": "3U",
     "kind": "length",
     "ok": true
    }
@@ -3704,32 +3692,14 @@
     "ok": null
    },
    {
-    "text": "C R 36/24U",
-    "value": "24U",
-    "kind": "ratio",
-    "ok": null
-   },
-   {
-    "text": "O R 22.8/12U",
+    "text": "O R 22.8 / 12",
     "value": "22.8",
-    "kind": "ratio",
-    "ok": null
-   },
-   {
-    "text": "O R 22.8/12U",
-    "value": "12U",
     "kind": "ratio",
     "ok": null
    },
    {
     "text": "C–C 21U",
     "value": "21U",
-    "kind": "length",
-    "ok": true
-   },
-   {
-    "text": "RING 12U",
-    "value": "12U",
     "kind": "length",
     "ok": true
    }
@@ -3997,25 +3967,31 @@
     "ok": true
    },
    {
-    "text": "ARC R 26–32.7U",
-    "value": "32.7U",
-    "kind": "length",
-    "ok": true
+    "text": "ARC R 32.7 / 26",
+    "value": "32.7",
+    "kind": "ratio",
+    "ok": null
    },
    {
-    "text": "BAR 6.7U",
+    "text": "ARC R 32.7 / 26",
+    "value": "26",
+    "kind": "ratio",
+    "ok": null
+   },
+   {
+    "text": "BAR = GAP = 6.7U",
     "value": "6.7U",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "SPAN 85.3×72U",
-    "value": "85.3",
+    "text": "C–C 85.4 × 72U",
+    "value": "85.4",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "SPAN 85.3×72U",
+    "text": "C–C 85.4 × 72U",
     "value": "72U",
     "kind": "length",
     "ok": true
@@ -4190,14 +4166,20 @@
     "ok": true
    },
    {
-    "text": "GAP 3U",
-    "value": "3U",
+    "text": "HOOK R 12 / R 6",
+    "value": "12",
+    "kind": "ratio",
+    "ok": null
+   },
+   {
+    "text": "HOOK R 12 / R 6",
+    "value": "6",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "HOOK R 12U",
-    "value": "12U",
+    "text": "GAPS 3U",
+    "value": "3U",
     "kind": "length",
     "ok": true
    },
@@ -4325,8 +4307,20 @@
     "ok": true
    },
    {
-    "text": "PLANE 72×80U",
+    "text": "PLANE 72 × 80U",
     "value": "80U",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "R 13.8 / R 6.9",
+    "value": "13.8",
+    "kind": "ratio",
+    "ok": null
+   },
+   {
+    "text": "R 13.8 / R 6.9",
+    "value": "6.9",
     "kind": "length",
     "ok": true
    }
@@ -4446,52 +4440,52 @@
   "ratios": [],
   "claims": [
    {
-    "text": "4 × R 15 · orbit 30u · hatch 2.5u",
+    "text": "4 × R 15 · orbit 30u · slots 2u on a 5u pitch",
     "value": "4",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "4 × R 15 · orbit 30u · hatch 2.5u",
+    "text": "4 × R 15 · orbit 30u · slots 2u on a 5u pitch",
     "value": "15",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "4 × R 15 · orbit 30u · hatch 2.5u",
+    "text": "4 × R 15 · orbit 30u · slots 2u on a 5u pitch",
     "value": "30u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "4 × R 15 · orbit 30u · hatch 2.5u",
-    "value": "2.5u",
+    "text": "4 × R 15 · orbit 30u · slots 2u on a 5u pitch",
+    "value": "2u",
     "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "4 × R 15 · orbit 30u · slots 2u on a 5u pitch",
+    "value": "5u",
+    "kind": "count",
     "ok": false
    },
    {
-    "text": "4 × R 15U",
-    "value": "15U",
+    "text": "ORBIT R 30",
+    "value": "30",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "ORBIT R 30U",
-    "value": "30U",
+    "text": "SLOTS 2U · PITCH 5U",
+    "value": "2U",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "HATCH 2.5U",
-    "value": "2.5U",
+    "text": "SLOTS 2U · PITCH 5U",
+    "value": "5U",
     "kind": "length",
     "ok": false
-   },
-   {
-    "text": "PITCH 90°",
-    "value": "90°",
-    "kind": "angle",
-    "ok": true
    }
   ]
  },
@@ -4583,46 +4577,40 @@
   "ratios": [],
   "claims": [
    {
-    "text": "R 40/28.9 · 2 × □ 19.4u · tilt 1° · 180° sym",
+    "text": "R 40 / 29.1 · 2 × □ 19.4u · tilt 1° · 180° sym",
     "value": "40",
     "kind": "ratio",
     "ok": null
    },
    {
-    "text": "R 40/28.9 · 2 × □ 19.4u · tilt 1° · 180° sym",
-    "value": "28.9",
+    "text": "R 40 / 29.1 · 2 × □ 19.4u · tilt 1° · 180° sym",
+    "value": "29.1",
     "kind": "ratio",
     "ok": null
    },
    {
-    "text": "R 40/28.9 · 2 × □ 19.4u · tilt 1° · 180° sym",
+    "text": "R 40 / 29.1 · 2 × □ 19.4u · tilt 1° · 180° sym",
     "value": "2",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "R 40/28.9 · 2 × □ 19.4u · tilt 1° · 180° sym",
+    "text": "R 40 / 29.1 · 2 × □ 19.4u · tilt 1° · 180° sym",
     "value": "19.4u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "R 40/28.9 · 2 × □ 19.4u · tilt 1° · 180° sym",
+    "text": "R 40 / 29.1 · 2 × □ 19.4u · tilt 1° · 180° sym",
     "value": "1°",
     "kind": "angle",
     "ok": true
    },
    {
-    "text": "R 40/28.9 · 2 × □ 19.4u · tilt 1° · 180° sym",
+    "text": "R 40 / 29.1 · 2 × □ 19.4u · tilt 1° · 180° sym",
     "value": "180°",
     "kind": "angle",
     "ok": true
-   },
-   {
-    "text": "R 40/28.9U",
-    "value": "28.9U",
-    "kind": "ratio",
-    "ok": null
    },
    {
     "text": "2 × □ 19.4U",
@@ -4701,26 +4689,20 @@
   ],
   "claims": [
    {
-    "text": "R 36 · counter R 13.4 · flat terminal",
+    "text": "R 36 · 2 counters R 13.5 · flat terminal",
     "value": "36",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "R 36 · counter R 13.4 · flat terminal",
-    "value": "13.4",
-    "kind": "length",
+    "text": "R 36 · 2 counters R 13.5 · flat terminal",
+    "value": "2",
+    "kind": "count",
     "ok": true
    },
    {
-    "text": "R 36U",
-    "value": "36U",
-    "kind": "length",
-    "ok": true
-   },
-   {
-    "text": "COUNTER R 13.4U",
-    "value": "13.4U",
+    "text": "R 36 · 2 counters R 13.5 · flat terminal",
+    "value": "13.5",
     "kind": "length",
     "ok": true
    },
@@ -4882,20 +4864,26 @@
     "ok": true
    },
    {
-    "text": "4 × R 15U",
-    "value": "15U",
+    "text": "KEY R 3.75 = R/4",
+    "value": "3.75",
     "kind": "length",
-    "ok": true
+    "ok": false
    },
    {
-    "text": "ORBIT R 30U",
-    "value": "30U",
-    "kind": "length",
-    "ok": true
+    "text": "KEY R 3.75 = R/4",
+    "value": "4",
+    "kind": "ratio",
+    "ok": null
    },
    {
-    "text": "KEY 11U",
-    "value": "11U",
+    "text": "SLIT 0.75 × 11.25U",
+    "value": "0.75",
+    "kind": "length",
+    "ok": false
+   },
+   {
+    "text": "SLIT 0.75 × 11.25U",
+    "value": "11.25U",
     "kind": "length",
     "ok": true
    }
@@ -5103,12 +5091,6 @@
     "ok": true
    },
    {
-    "text": "3 × R 12.6U",
-    "value": "12.6U",
-    "kind": "length",
-    "ok": true
-   },
-   {
     "text": "SPAN 54.2U",
     "value": "54.2U",
     "kind": "length",
@@ -5205,26 +5187,44 @@
   ],
   "claims": [
    {
-    "text": "2 rings · R 36 · c–c 25.5u · gaps opposed",
+    "text": "2 × R 36 · c–c 25.7u · weight 10.7 : 9.9u",
     "value": "2",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "2 rings · R 36 · c–c 25.5u · gaps opposed",
+    "text": "2 × R 36 · c–c 25.7u · weight 10.7 : 9.9u",
     "value": "36",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "2 rings · R 36 · c–c 25.5u · gaps opposed",
-    "value": "25.5u",
+    "text": "2 × R 36 · c–c 25.7u · weight 10.7 : 9.9u",
+    "value": "25.7u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "C–C 25.5U",
-    "value": "25.5U",
+    "text": "2 × R 36 · c–c 25.7u · weight 10.7 : 9.9u",
+    "value": "10.7",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "2 × R 36 · c–c 25.7u · weight 10.7 : 9.9u",
+    "value": "9.9u",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "C–C 25.7U",
+    "value": "25.7U",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "WEIGHT 10.7 : 9.9U",
+    "value": "9.9U",
     "kind": "length",
     "ok": true
    }
@@ -5418,28 +5418,34 @@
   "ratios": [],
   "claims": [
    {
-    "text": "1 ring · 8 flats · 80u across · split waist",
-    "value": "1",
-    "kind": "count",
-    "ok": true
-   },
-   {
-    "text": "1 ring · 8 flats · 80u across · split waist",
+    "text": "8 flats · bar 13.9u · neck 2.8u",
     "value": "8",
     "kind": "count",
     "ok": false
    },
    {
-    "text": "1 ring · 8 flats · 80u across · split waist",
-    "value": "80u",
-    "kind": "count",
+    "text": "8 flats · bar 13.9u · neck 2.8u",
+    "value": "13.9u",
+    "kind": "length",
     "ok": true
    },
    {
-    "text": "80U ACROSS",
-    "value": "80U",
-    "kind": "count",
+    "text": "8 flats · bar 13.9u · neck 2.8u",
+    "value": "2.8u",
+    "kind": "length",
+    "ok": false
+   },
+   {
+    "text": "BAR 13.9U",
+    "value": "13.9U",
+    "kind": "length",
     "ok": true
+   },
+   {
+    "text": "NECK 2.8U",
+    "value": "2.8U",
+    "kind": "length",
+    "ok": false
    }
   ]
  },
@@ -5559,26 +5565,56 @@
   "ratios": [],
   "claims": [
    {
-    "text": "ring R 40 · 5 lenses · max w 53.2u",
-    "value": "40",
-    "kind": "length",
-    "ok": true
-   },
-   {
-    "text": "ring R 40 · 5 lenses · max w 53.2u",
-    "value": "5",
+    "text": "3 rings · 80 / 53.2 / 20u · weight 4u → 2u",
+    "value": "3",
     "kind": "count",
-    "ok": false
+    "ok": true
    },
    {
-    "text": "ring R 40 · 5 lenses · max w 53.2u",
-    "value": "53.2u",
+    "text": "3 rings · 80 / 53.2 / 20u · weight 4u → 2u",
+    "value": "80",
+    "kind": "ratio",
+    "ok": null
+   },
+   {
+    "text": "3 rings · 80 / 53.2 / 20u · weight 4u → 2u",
+    "value": "53.2",
+    "kind": "ratio",
+    "ok": null
+   },
+   {
+    "text": "3 rings · 80 / 53.2 / 20u · weight 4u → 2u",
+    "value": "20u",
+    "kind": "ratio",
+    "ok": null
+   },
+   {
+    "text": "3 rings · 80 / 53.2 / 20u · weight 4u → 2u",
+    "value": "4u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "MAX W 53.2U",
-    "value": "53.2U",
+    "text": "3 rings · 80 / 53.2 / 20u · weight 4u → 2u",
+    "value": "2u",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "WIDTHS 80 / 53.2 / 20U",
+    "value": "20U",
+    "kind": "ratio",
+    "ok": null
+   },
+   {
+    "text": "WEIGHT 4U → 2U",
+    "value": "4U",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "WEIGHT 4U → 2U",
+    "value": "2U",
     "kind": "length",
     "ok": true
    }
@@ -5793,26 +5829,44 @@
   "ratios": [],
   "claims": [
    {
-    "text": "8 spokes · 45° · R 40u · flared tips",
+    "text": "8 spokes · R 40 · stem 2.7u · serifs 16u",
     "value": "8",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "8 spokes · 45° · R 40u · flared tips",
+    "text": "8 spokes · R 40 · stem 2.7u · serifs 16u",
+    "value": "40",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "8 spokes · R 40 · stem 2.7u · serifs 16u",
+    "value": "2.7u",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "8 spokes · R 40 · stem 2.7u · serifs 16u",
+    "value": "16u",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "8 SPOKES · 45°",
     "value": "45°",
     "kind": "angle",
     "ok": true
    },
    {
-    "text": "8 spokes · 45° · R 40u · flared tips",
-    "value": "40u",
+    "text": "STEM 2.7U",
+    "value": "2.7U",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "R 40U",
-    "value": "40U",
+    "text": "SERIF 16U",
+    "value": "16U",
     "kind": "length",
     "ok": true
    }
@@ -5876,32 +5930,38 @@
   "ratios": [],
   "claims": [
    {
-    "text": "2 discs R 36 · c–c 21.6u · 1 shared edge",
+    "text": "2 × R 36 · c–c 21.6u · step 7.2u",
     "value": "2",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "2 discs R 36 · c–c 21.6u · 1 shared edge",
+    "text": "2 × R 36 · c–c 21.6u · step 7.2u",
     "value": "36",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "2 discs R 36 · c–c 21.6u · 1 shared edge",
+    "text": "2 × R 36 · c–c 21.6u · step 7.2u",
     "value": "21.6u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "2 discs R 36 · c–c 21.6u · 1 shared edge",
-    "value": "1",
-    "kind": "count",
+    "text": "2 × R 36 · c–c 21.6u · step 7.2u",
+    "value": "7.2u",
+    "kind": "length",
     "ok": true
    },
    {
     "text": "C–C 21.6U",
     "value": "21.6U",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "STEP 7.2U",
+    "value": "7.2U",
     "kind": "length",
     "ok": true
    }
@@ -6053,44 +6113,32 @@
   "ratios": [],
   "claims": [
    {
-    "text": "3 panels 34.3 × 72u · 2 × R 17.2 · 1 bar",
-    "value": "3",
-    "kind": "count",
-    "ok": false
-   },
-   {
-    "text": "3 panels 34.3 × 72u · 2 × R 17.2 · 1 bar",
-    "value": "34.3",
-    "kind": "length",
-    "ok": true
-   },
-   {
-    "text": "3 panels 34.3 × 72u · 2 × R 17.2 · 1 bar",
-    "value": "72u",
-    "kind": "length",
-    "ok": true
-   },
-   {
-    "text": "3 panels 34.3 × 72u · 2 × R 17.2 · 1 bar",
-    "value": "2",
+    "text": "4 tiles 34.3u · counters R 12.9 · channel 3.4u",
+    "value": "4",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "3 panels 34.3 × 72u · 2 × R 17.2 · 1 bar",
-    "value": "17.2",
+    "text": "4 tiles 34.3u · counters R 12.9 · channel 3.4u",
+    "value": "34.3u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "3 panels 34.3 × 72u · 2 × R 17.2 · 1 bar",
-    "value": "1",
-    "kind": "count",
-    "ok": false
+    "text": "4 tiles 34.3u · counters R 12.9 · channel 3.4u",
+    "value": "12.9",
+    "kind": "length",
+    "ok": true
    },
    {
-    "text": "3 PANELS 34.3 × 72U",
-    "value": "72U",
+    "text": "4 tiles 34.3u · counters R 12.9 · channel 3.4u",
+    "value": "3.4u",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "CHANNEL 3.4U",
+    "value": "3.4U",
     "kind": "length",
     "ok": true
    }
@@ -6184,26 +6232,38 @@
   "ratios": [],
   "claims": [
    {
-    "text": "1 stroke · R 40 · weight 4u · open top right",
+    "text": "1 stroke · R 40.7 · weight 7.6 → 3.8 → 1.9u",
     "value": "1",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "1 stroke · R 40 · weight 4u · open top right",
-    "value": "40",
+    "text": "1 stroke · R 40.7 · weight 7.6 → 3.8 → 1.9u",
+    "value": "40.7",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "1 stroke · R 40 · weight 4u · open top right",
-    "value": "4u",
+    "text": "1 stroke · R 40.7 · weight 7.6 → 3.8 → 1.9u",
+    "value": "7.6",
+    "kind": "length",
+    "ok": false
+   },
+   {
+    "text": "1 stroke · R 40.7 · weight 7.6 → 3.8 → 1.9u",
+    "value": "3.8",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "WEIGHT 4U",
-    "value": "4U",
+    "text": "1 stroke · R 40.7 · weight 7.6 → 3.8 → 1.9u",
+    "value": "1.9u",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "WEIGHT 7.6 → 1.9U",
+    "value": "1.9U",
     "kind": "length",
     "ok": true
    }
@@ -6327,28 +6387,28 @@
   "ratios": [],
   "claims": [
    {
-    "text": "4 panes 30.3u · 2 × 2 · gap 3u",
+    "text": "4 panes 30.3u · gap = R 3u · chamfer 7.3u",
     "value": "4",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "4 panes 30.3u · 2 × 2 · gap 3u",
+    "text": "4 panes 30.3u · gap = R 3u · chamfer 7.3u",
     "value": "30.3u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "4 panes 30.3u · 2 × 2 · gap 3u",
-    "value": "2",
+    "text": "4 panes 30.3u · gap = R 3u · chamfer 7.3u",
+    "value": "3u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "4 panes 30.3u · 2 × 2 · gap 3u",
-    "value": "3u",
+    "text": "4 panes 30.3u · gap = R 3u · chamfer 7.3u",
+    "value": "7.3u",
     "kind": "length",
-    "ok": true
+    "ok": false
    },
    {
     "text": "4 PANES 30.3U",
@@ -6357,10 +6417,16 @@
     "ok": true
    },
    {
-    "text": "GAP 3U",
+    "text": "GAP = R 3U",
     "value": "3U",
     "kind": "length",
     "ok": true
+   },
+   {
+    "text": "CHAMFER 7.3U",
+    "value": "7.3U",
+    "kind": "length",
+    "ok": false
    }
   ]
  },
@@ -6601,26 +6667,32 @@
   "ratios": [],
   "claims": [
    {
-    "text": "6 wedges · 60° pitch · R 43.3u · pin center",
+    "text": "6 wedges · 60° · gaps 1.4u · pin R 5.8",
     "value": "6",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "6 wedges · 60° pitch · R 43.3u · pin center",
+    "text": "6 wedges · 60° · gaps 1.4u · pin R 5.8",
     "value": "60°",
     "kind": "angle",
     "ok": true
    },
    {
-    "text": "6 wedges · 60° pitch · R 43.3u · pin center",
-    "value": "43.3u",
+    "text": "6 wedges · 60° · gaps 1.4u · pin R 5.8",
+    "value": "1.4u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "R 43.3U",
-    "value": "43.3U",
+    "text": "6 wedges · 60° · gaps 1.4u · pin R 5.8",
+    "value": "5.8",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "GAPS 1.4U",
+    "value": "1.4U",
     "kind": "length",
     "ok": true
    }
@@ -7056,38 +7128,32 @@
   "ratios": [],
   "claims": [
    {
-    "text": "4 rings · 16 dashes 25.7 × 7.2u · 90°",
+    "text": "4 rings R 20.1 · 16 dashes · gap = weight 3.7u",
     "value": "4",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "4 rings · 16 dashes 25.7 × 7.2u · 90°",
+    "text": "4 rings R 20.1 · 16 dashes · gap = weight 3.7u",
+    "value": "20.1",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "4 rings R 20.1 · 16 dashes · gap = weight 3.7u",
     "value": "16",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "4 rings · 16 dashes 25.7 × 7.2u · 90°",
-    "value": "25.7",
+    "text": "4 rings R 20.1 · 16 dashes · gap = weight 3.7u",
+    "value": "3.7u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "4 rings · 16 dashes 25.7 × 7.2u · 90°",
-    "value": "7.2u",
-    "kind": "length",
-    "ok": true
-   },
-   {
-    "text": "4 rings · 16 dashes 25.7 × 7.2u · 90°",
-    "value": "90°",
-    "kind": "angle",
-    "ok": true
-   },
-   {
-    "text": "16 DASHES 25.7 × 7.2U",
-    "value": "7.2U",
+    "text": "GAP = WEIGHT 3.7U",
+    "value": "3.7U",
     "kind": "length",
     "ok": true
    }
@@ -7152,16 +7218,34 @@
   ],
   "claims": [
    {
-    "text": "R 40 · open core · 1 channel",
+    "text": "disc R 40 · core R 20 · wall = channel 4u",
     "value": "40",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "R 40 · open core · 1 channel",
-    "value": "1",
-    "kind": "count",
+    "text": "disc R 40 · core R 20 · wall = channel 4u",
+    "value": "20",
+    "kind": "length",
     "ok": true
+   },
+   {
+    "text": "disc R 40 · core R 20 · wall = channel 4u",
+    "value": "4u",
+    "kind": "length",
+    "ok": false
+   },
+   {
+    "text": "CORE R 20 = R/2",
+    "value": "2",
+    "kind": "ratio",
+    "ok": null
+   },
+   {
+    "text": "WALL = CHANNEL 4U",
+    "value": "4U",
+    "kind": "length",
+    "ok": false
    }
   ]
  },
@@ -7434,32 +7518,44 @@
   ],
   "claims": [
    {
-    "text": "8 × R 13.3 · 2 bonds · span 132.6u",
-    "value": "8",
+    "text": "7 × R 13.3 · pitch 26.5u · bonds 1.8u",
+    "value": "7",
     "kind": "count",
     "ok": false
    },
    {
-    "text": "8 × R 13.3 · 2 bonds · span 132.6u",
+    "text": "7 × R 13.3 · pitch 26.5u · bonds 1.8u",
     "value": "13.3",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "8 × R 13.3 · 2 bonds · span 132.6u",
-    "value": "2",
-    "kind": "count",
-    "ok": true
-   },
-   {
-    "text": "8 × R 13.3 · 2 bonds · span 132.6u",
-    "value": "132.6u",
+    "text": "7 × R 13.3 · pitch 26.5u · bonds 1.8u",
+    "value": "26.5u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "SPAN 132.6U",
-    "value": "132.6U",
+    "text": "7 × R 13.3 · pitch 26.5u · bonds 1.8u",
+    "value": "1.8u",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "PITCH 26.5U = 2R",
+    "value": "26.5U",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "PITCH 26.5U = 2R",
+    "value": "2",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "BONDS 1.8U",
+    "value": "1.8U",
     "kind": "length",
     "ok": true
    }
@@ -7590,44 +7686,26 @@
   ],
   "claims": [
    {
-    "text": "core R 16.4 · 2 nodes 40.9 × 72u · span 127.6u",
+    "text": "core R 16.4 · arcs R 32.7 · gap 6.5u",
     "value": "16.4",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "core R 16.4 · 2 nodes 40.9 × 72u · span 127.6u",
-    "value": "2",
-    "kind": "count",
-    "ok": true
-   },
-   {
-    "text": "core R 16.4 · 2 nodes 40.9 × 72u · span 127.6u",
-    "value": "40.9",
+    "text": "core R 16.4 · arcs R 32.7 · gap 6.5u",
+    "value": "32.7",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "core R 16.4 · 2 nodes 40.9 × 72u · span 127.6u",
-    "value": "72u",
+    "text": "core R 16.4 · arcs R 32.7 · gap 6.5u",
+    "value": "6.5u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "core R 16.4 · 2 nodes 40.9 × 72u · span 127.6u",
-    "value": "127.6u",
-    "kind": "length",
-    "ok": true
-   },
-   {
-    "text": "2 NODES 40.9 × 72U",
-    "value": "72U",
-    "kind": "length",
-    "ok": true
-   },
-   {
-    "text": "SPAN 127.6U",
-    "value": "127.6U",
+    "text": "GAP 6.5U",
+    "value": "6.5U",
     "kind": "length",
     "ok": true
    }
@@ -7765,28 +7843,28 @@
   "ratios": [],
   "claims": [
    {
-    "text": "3 pairs · nodes R 12.2 · traces 1.5u · 45°",
+    "text": "3 pairs · pitch 39.6u · traces 1.5u",
     "value": "3",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "3 pairs · nodes R 12.2 · traces 1.5u · 45°",
-    "value": "12.2",
+    "text": "3 pairs · pitch 39.6u · traces 1.5u",
+    "value": "39.6u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "3 pairs · nodes R 12.2 · traces 1.5u · 45°",
+    "text": "3 pairs · pitch 39.6u · traces 1.5u",
     "value": "1.5u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "3 pairs · nodes R 12.2 · traces 1.5u · 45°",
-    "value": "45°",
-    "kind": "angle",
-    "ok": false
+    "text": "PITCH 39.6U",
+    "value": "39.6U",
+    "kind": "length",
+    "ok": true
    },
    {
     "text": "TRACES 1.5U",
@@ -8359,25 +8437,25 @@
   "ratios": [],
   "claims": [
    {
-    "text": "8 lobes · orbit R 27.2 · 45° · core R 10.4",
+    "text": "8 lobes R 13.5 · orbit R 28.8 · core R 10.4",
     "value": "8",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "8 lobes · orbit R 27.2 · 45° · core R 10.4",
-    "value": "27.2",
+    "text": "8 lobes R 13.5 · orbit R 28.8 · core R 10.4",
+    "value": "13.5",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "8 lobes · orbit R 27.2 · 45° · core R 10.4",
-    "value": "45°",
-    "kind": "angle",
+    "text": "8 lobes R 13.5 · orbit R 28.8 · core R 10.4",
+    "value": "28.8",
+    "kind": "length",
     "ok": true
    },
    {
-    "text": "8 lobes · orbit R 27.2 · 45° · core R 10.4",
+    "text": "8 lobes R 13.5 · orbit R 28.8 · core R 10.4",
     "value": "10.4",
     "kind": "length",
     "ok": true
@@ -8529,32 +8607,38 @@
   "ratios": [],
   "claims": [
    {
-    "text": "4 × R 19 · 2 × 2 · pitch 41.9u",
+    "text": "4 × R 19 · pitch 41.9u · gap 3.8u",
     "value": "4",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "4 × R 19 · 2 × 2 · pitch 41.9u",
+    "text": "4 × R 19 · pitch 41.9u · gap 3.8u",
     "value": "19",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "4 × R 19 · 2 × 2 · pitch 41.9u",
-    "value": "2",
+    "text": "4 × R 19 · pitch 41.9u · gap 3.8u",
+    "value": "41.9u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "4 × R 19 · 2 × 2 · pitch 41.9u",
-    "value": "41.9u",
+    "text": "4 × R 19 · pitch 41.9u · gap 3.8u",
+    "value": "3.8u",
     "kind": "length",
     "ok": true
    },
    {
     "text": "PITCH 41.9U",
     "value": "41.9U",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "GAP 3.8U",
+    "value": "3.8U",
     "kind": "length",
     "ok": true
    }
@@ -8927,25 +9011,31 @@
   ],
   "claims": [
    {
-    "text": "core R 16.2 · 4 petals · 4 corners · frame 90u",
+    "text": "core R 16.2 · petals R 17.2 · frame R 28 · 90u",
     "value": "16.2",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "core R 16.2 · 4 petals · 4 corners · frame 90u",
-    "value": "4",
-    "kind": "count",
+    "text": "core R 16.2 · petals R 17.2 · frame R 28 · 90u",
+    "value": "17.2",
+    "kind": "length",
     "ok": true
    },
    {
-    "text": "core R 16.2 · 4 petals · 4 corners · frame 90u",
+    "text": "core R 16.2 · petals R 17.2 · frame R 28 · 90u",
+    "value": "28",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "core R 16.2 · petals R 17.2 · frame R 28 · 90u",
     "value": "90u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "FRAME 90U",
+    "text": "FRAME R 28 · 90U",
     "value": "90U",
     "kind": "length",
     "ok": true
@@ -8954,7 +9044,7 @@
  },
  {
   "id": "SYM-043",
-  "name": "Tangent",
+  "name": "Berth",
   "box": [
    60,
    60,
@@ -9021,32 +9111,38 @@
   ],
   "claims": [
    {
-    "text": "circle R 24 · C 55.7 × 80u · 1 contact point",
+    "text": "R 40 + R 24 · bar 13.3u · gap 2.7u",
+    "value": "40",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "R 40 + R 24 · bar 13.3u · gap 2.7u",
     "value": "24",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "circle R 24 · C 55.7 × 80u · 1 contact point",
-    "value": "55.7",
+    "text": "R 40 + R 24 · bar 13.3u · gap 2.7u",
+    "value": "13.3u",
+    "kind": "length",
+    "ok": false
+   },
+   {
+    "text": "R 40 + R 24 · bar 13.3u · gap 2.7u",
+    "value": "2.7u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "circle R 24 · C 55.7 × 80u · 1 contact point",
-    "value": "80u",
+    "text": "BAR 13.3U",
+    "value": "13.3U",
     "kind": "length",
-    "ok": true
+    "ok": false
    },
    {
-    "text": "circle R 24 · C 55.7 × 80u · 1 contact point",
-    "value": "1",
-    "kind": "count",
-    "ok": true
-   },
-   {
-    "text": "C 55.7 × 80U",
-    "value": "80U",
+    "text": "GAP 2.7U",
+    "value": "2.7U",
     "kind": "length",
     "ok": true
    }
@@ -9275,26 +9371,32 @@
   "ratios": [],
   "claims": [
    {
-    "text": "square 72u · half disc R 32.4 · 1 shared wall",
+    "text": "square 72u · R 32.4 on the wall · margin 3.6u",
     "value": "72u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "square 72u · half disc R 32.4 · 1 shared wall",
+    "text": "square 72u · R 32.4 on the wall · margin 3.6u",
     "value": "32.4",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "square 72u · half disc R 32.4 · 1 shared wall",
-    "value": "1",
-    "kind": "count",
+    "text": "square 72u · R 32.4 on the wall · margin 3.6u",
+    "value": "3.6u",
+    "kind": "length",
     "ok": true
    },
    {
     "text": "SQUARE 72U",
     "value": "72U",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "MARGIN 3.6U",
+    "value": "3.6U",
     "kind": "length",
     "ok": true
    }
@@ -9456,32 +9558,38 @@
   "ratios": [],
   "claims": [
    {
-    "text": "4 pills 26.7u · 2 half pills · 90° · open center",
-    "value": "4",
+    "text": "6 × R 13.3 · pills 26.7u · gap 2.7u",
+    "value": "6",
     "kind": "count",
-    "ok": false
+    "ok": true
    },
    {
-    "text": "4 pills 26.7u · 2 half pills · 90° · open center",
+    "text": "6 × R 13.3 · pills 26.7u · gap 2.7u",
+    "value": "13.3",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "6 × R 13.3 · pills 26.7u · gap 2.7u",
     "value": "26.7u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "4 pills 26.7u · 2 half pills · 90° · open center",
-    "value": "2",
-    "kind": "count",
+    "text": "6 × R 13.3 · pills 26.7u · gap 2.7u",
+    "value": "2.7u",
+    "kind": "length",
     "ok": true
    },
    {
-    "text": "4 pills 26.7u · 2 half pills · 90° · open center",
-    "value": "90°",
-    "kind": "angle",
-    "ok": true
-   },
-   {
-    "text": "4 PILLS 26.7U",
+    "text": "PILLS 26.7U",
     "value": "26.7U",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "GAP 2.7U",
+    "value": "2.7U",
     "kind": "length",
     "ok": true
    }
@@ -9868,26 +9976,38 @@
   ],
   "claims": [
    {
-    "text": "lens 80u · 45° checks · core R 18.3",
-    "value": "80u",
+    "text": "lens 92 × 65.9u at 45° · 2 counters · centre 46.4u",
+    "value": "92",
+    "kind": "length",
+    "ok": false
+   },
+   {
+    "text": "lens 92 × 65.9u at 45° · 2 counters · centre 46.4u",
+    "value": "65.9u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "lens 80u · 45° checks · core R 18.3",
+    "text": "lens 92 × 65.9u at 45° · 2 counters · centre 46.4u",
     "value": "45°",
     "kind": "angle",
     "ok": false
    },
    {
-    "text": "lens 80u · 45° checks · core R 18.3",
-    "value": "18.3",
+    "text": "lens 92 × 65.9u at 45° · 2 counters · centre 46.4u",
+    "value": "2",
+    "kind": "count",
+    "ok": true
+   },
+   {
+    "text": "lens 92 × 65.9u at 45° · 2 counters · centre 46.4u",
+    "value": "46.4u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "LENS 80U",
-    "value": "80U",
+    "text": "LENS 92 × 65.9U",
+    "value": "65.9U",
     "kind": "length",
     "ok": true
    }
@@ -9977,15 +10097,33 @@
   ],
   "claims": [
    {
-    "text": "R 46 · 3 slices · pole taper",
+    "text": "R 46 · 3 slices · gaps 4.5u · cut R 61.1",
     "value": "46",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "R 46 · 3 slices · pole taper",
+    "text": "R 46 · 3 slices · gaps 4.5u · cut R 61.1",
     "value": "3",
     "kind": "count",
+    "ok": true
+   },
+   {
+    "text": "R 46 · 3 slices · gaps 4.5u · cut R 61.1",
+    "value": "4.5u",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "R 46 · 3 slices · gaps 4.5u · cut R 61.1",
+    "value": "61.1",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "GAPS 4.5U",
+    "value": "4.5U",
+    "kind": "length",
     "ok": true
    }
   ]
@@ -10107,32 +10245,44 @@
   "ratios": [],
   "claims": [
    {
-    "text": "2 hooks R 40 · c–c 44u · 1 part",
-    "value": "2",
+    "text": "3 × R 40 · pitch 22u · stress 11 : 6.7u",
+    "value": "3",
     "kind": "count",
-    "ok": true
+    "ok": false
    },
    {
-    "text": "2 hooks R 40 · c–c 44u · 1 part",
+    "text": "3 × R 40 · pitch 22u · stress 11 : 6.7u",
     "value": "40",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "2 hooks R 40 · c–c 44u · 1 part",
-    "value": "44u",
+    "text": "3 × R 40 · pitch 22u · stress 11 : 6.7u",
+    "value": "22u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "2 hooks R 40 · c–c 44u · 1 part",
-    "value": "1",
-    "kind": "count",
+    "text": "3 × R 40 · pitch 22u · stress 11 : 6.7u",
+    "value": "11",
+    "kind": "length",
     "ok": true
    },
    {
-    "text": "C–C 44U",
-    "value": "44U",
+    "text": "3 × R 40 · pitch 22u · stress 11 : 6.7u",
+    "value": "6.7u",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "PITCH 22U",
+    "value": "22U",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "STRESS 11 : 6.7U",
+    "value": "6.7U",
     "kind": "length",
     "ok": true
    }
@@ -10393,21 +10543,39 @@
   ],
   "claims": [
    {
-    "text": "R 45 · 2 visor arcs · 1 part",
+    "text": "R 45 · weight 8.2u · 3 openings 19.1u",
     "value": "45",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "R 45 · 2 visor arcs · 1 part",
-    "value": "2",
+    "text": "R 45 · weight 8.2u · 3 openings 19.1u",
+    "value": "8.2u",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "R 45 · weight 8.2u · 3 openings 19.1u",
+    "value": "3",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "R 45 · 2 visor arcs · 1 part",
-    "value": "1",
-    "kind": "count",
+    "text": "R 45 · weight 8.2u · 3 openings 19.1u",
+    "value": "19.1u",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "WEIGHT 8.2U",
+    "value": "8.2U",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "3 OPENINGS 19.1U",
+    "value": "19.1U",
+    "kind": "length",
     "ok": true
    }
   ]
@@ -11066,32 +11234,56 @@
   "ratios": [],
   "claims": [
    {
-    "text": "3 ellipses 106.2 × 64.4u · 60° · shared center",
+    "text": "3 ellipses 106.2 × 64.4u · 60° · 5.2u to hairline",
     "value": "3",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "3 ellipses 106.2 × 64.4u · 60° · shared center",
+    "text": "3 ellipses 106.2 × 64.4u · 60° · 5.2u to hairline",
     "value": "106.2",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "3 ellipses 106.2 × 64.4u · 60° · shared center",
+    "text": "3 ellipses 106.2 × 64.4u · 60° · 5.2u to hairline",
     "value": "64.4u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "3 ellipses 106.2 × 64.4u · 60° · shared center",
+    "text": "3 ellipses 106.2 × 64.4u · 60° · 5.2u to hairline",
     "value": "60°",
     "kind": "angle",
     "ok": true
    },
    {
-    "text": "3 ELLIPSES 106.2 × 64.4U",
+    "text": "3 ellipses 106.2 × 64.4u · 60° · 5.2u to hairline",
+    "value": "5.2u",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "3 × 106.2 × 64.4U",
+    "value": "3",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "3 × 106.2 × 64.4U",
     "value": "64.4U",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "WEIGHT 5.2U → 0",
+    "value": "5.2U",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "WEIGHT 5.2U → 0",
+    "value": "0",
     "kind": "length",
     "ok": true
    }
@@ -11599,26 +11791,44 @@
   ],
   "claims": [
    {
-    "text": "8 rings · R 45 · step 4.3u",
+    "text": "8 rings · R 45 · step 2.15 × 5.74u",
     "value": "8",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "8 rings · R 45 · step 4.3u",
+    "text": "8 rings · R 45 · step 2.15 × 5.74u",
     "value": "45",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "8 rings · R 45 · step 4.3u",
-    "value": "4.3u",
+    "text": "8 rings · R 45 · step 2.15 × 5.74u",
+    "value": "2.15",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "STEP 4.3U",
-    "value": "4.3U",
+    "text": "8 rings · R 45 · step 2.15 × 5.74u",
+    "value": "5.74u",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "STEP 2.15 × 5.74U",
+    "value": "5.74U",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "WEIGHT 1.5 → 0.9U",
+    "value": "1.5",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "WEIGHT 1.5 → 0.9U",
+    "value": "0.9U",
     "kind": "length",
     "ok": true
    }
@@ -12069,26 +12279,38 @@
   "ratios": [],
   "claims": [
    {
-    "text": "12 counters 19.4 × 18.1u · cross grid",
-    "value": "12",
+    "text": "6 half discs R 19.4 · step 21.6u · split 2.6u",
+    "value": "6",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "12 counters 19.4 × 18.1u · cross grid",
+    "text": "6 half discs R 19.4 · step 21.6u · split 2.6u",
     "value": "19.4",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "12 counters 19.4 × 18.1u · cross grid",
-    "value": "18.1u",
+    "text": "6 half discs R 19.4 · step 21.6u · split 2.6u",
+    "value": "21.6u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "12 COUNTERS 19.4 × 18.1U",
-    "value": "18.1U",
+    "text": "6 half discs R 19.4 · step 21.6u · split 2.6u",
+    "value": "2.6u",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "STEP 21.6U",
+    "value": "21.6U",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "SPLIT 2.6U",
+    "value": "2.6U",
     "kind": "length",
     "ok": true
    }
@@ -12373,21 +12595,45 @@
   "ratios": [],
   "claims": [
    {
-    "text": "R 40 · 2 × 3 meridians · mirrored",
-    "value": "40",
-    "kind": "length",
-    "ok": true
-   },
-   {
-    "text": "R 40 · 2 × 3 meridians · mirrored",
-    "value": "2",
-    "kind": "length",
-    "ok": true
-   },
-   {
-    "text": "R 40 · 2 × 3 meridians · mirrored",
-    "value": "3",
+    "text": "6 ribs · pitch 12.9u · 0.8u → caps 10u",
+    "value": "6",
     "kind": "count",
+    "ok": true
+   },
+   {
+    "text": "6 ribs · pitch 12.9u · 0.8u → caps 10u",
+    "value": "12.9u",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "6 ribs · pitch 12.9u · 0.8u → caps 10u",
+    "value": "0.8u",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "6 ribs · pitch 12.9u · 0.8u → caps 10u",
+    "value": "10u",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "PITCH 12.9U",
+    "value": "12.9U",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "0.8U → CAP 10U",
+    "value": "0.8U",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "0.8U → CAP 10U",
+    "value": "10U",
+    "kind": "length",
     "ok": true
    }
   ]
@@ -12926,20 +13172,20 @@
     "ok": true
    },
    {
-    "text": "15 BARS 5.1U",
-    "value": "5.1U",
-    "kind": "length",
-    "ok": true
-   },
-   {
     "text": "PITCH 7.5U",
     "value": "7.5U",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "ELLIPSE 110 × 100U",
-    "value": "100U",
+    "text": "SWELL 0.9 → 5.1U",
+    "value": "0.9",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "SWELL 0.9 → 5.1U",
+    "value": "5.1U",
     "kind": "length",
     "ok": true
    }
@@ -13119,26 +13365,44 @@
   ],
   "claims": [
    {
-    "text": "4 corner arcs 43.8u · 90° · open court",
+    "text": "4 arcs R 21.9 · counter 3/5 · gaps 2.1u",
     "value": "4",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "4 corner arcs 43.8u · 90° · open court",
-    "value": "43.8u",
+    "text": "4 arcs R 21.9 · counter 3/5 · gaps 2.1u",
+    "value": "21.9",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "4 corner arcs 43.8u · 90° · open court",
-    "value": "90°",
-    "kind": "angle",
+    "text": "4 arcs R 21.9 · counter 3/5 · gaps 2.1u",
+    "value": "3",
+    "kind": "ratio",
+    "ok": null
+   },
+   {
+    "text": "4 arcs R 21.9 · counter 3/5 · gaps 2.1u",
+    "value": "5",
+    "kind": "ratio",
+    "ok": null
+   },
+   {
+    "text": "4 arcs R 21.9 · counter 3/5 · gaps 2.1u",
+    "value": "2.1u",
+    "kind": "length",
     "ok": true
    },
    {
-    "text": "4 CORNER ARCS 43.8U",
-    "value": "43.8U",
+    "text": "COUNTER R 13.1 = 3/5",
+    "value": "13.1",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "GAPS 2.1U",
+    "value": "2.1U",
     "kind": "length",
     "ok": true
    }
@@ -13314,34 +13578,34 @@
   ],
   "claims": [
    {
-    "text": "4 crescents · h 53.1u · step 25u",
+    "text": "4 half rings R 26.6 · bite R 13.3 · step 23u",
     "value": "4",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "4 crescents · h 53.1u · step 25u",
-    "value": "53.1u",
+    "text": "4 half rings R 26.6 · bite R 13.3 · step 23u",
+    "value": "26.6",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "4 crescents · h 53.1u · step 25u",
-    "value": "25u",
-    "kind": "length",
-    "ok": false
-   },
-   {
-    "text": "H 53.1U",
-    "value": "53.1U",
+    "text": "4 half rings R 26.6 · bite R 13.3 · step 23u",
+    "value": "13.3",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "STEP 25U",
-    "value": "25U",
+    "text": "4 half rings R 26.6 · bite R 13.3 · step 23u",
+    "value": "23u",
     "kind": "length",
-    "ok": false
+    "ok": true
+   },
+   {
+    "text": "STEP 23U",
+    "value": "23U",
+    "kind": "length",
+    "ok": true
    }
   ]
  },
@@ -13756,15 +14020,39 @@
   "ratios": [],
   "claims": [
    {
-    "text": "R 46 · 7 arcs · equator twist",
-    "value": "46",
+    "text": "86.7 × 92u · 7 bands · band = gap 6.13u",
+    "value": "86.7",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "R 46 · 7 arcs · equator twist",
+    "text": "86.7 × 92u · 7 bands · band = gap 6.13u",
+    "value": "92u",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "86.7 × 92u · 7 bands · band = gap 6.13u",
     "value": "7",
     "kind": "count",
+    "ok": true
+   },
+   {
+    "text": "86.7 × 92u · 7 bands · band = gap 6.13u",
+    "value": "6.13u",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "BAND = GAP 6.13U",
+    "value": "6.13U",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "86.7 × 92U",
+    "value": "92U",
+    "kind": "length",
     "ok": true
    }
   ]
@@ -14170,33 +14458,33 @@
   "ratios": [],
   "claims": [
    {
-    "text": "4 rings R 23 · 16 dashes · 2 × 2 tangent",
+    "text": "4 rings R 23.1 · 16 dashes · gap = weight 4.2u",
     "value": "4",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "4 rings R 23 · 16 dashes · 2 × 2 tangent",
-    "value": "23",
+    "text": "4 rings R 23.1 · 16 dashes · gap = weight 4.2u",
+    "value": "23.1",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "4 rings R 23 · 16 dashes · 2 × 2 tangent",
+    "text": "4 rings R 23.1 · 16 dashes · gap = weight 4.2u",
     "value": "16",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "4 rings R 23 · 16 dashes · 2 × 2 tangent",
-    "value": "2",
+    "text": "4 rings R 23.1 · 16 dashes · gap = weight 4.2u",
+    "value": "4.2u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "4 rings R 23 · 16 dashes · 2 × 2 tangent",
-    "value": "2",
-    "kind": "count",
+    "text": "GAP = WEIGHT 4.2U",
+    "value": "4.2U",
+    "kind": "length",
     "ok": true
    }
   ]
@@ -14349,10 +14637,28 @@
     "ok": true
    },
    {
-    "text": "92 × 73.6U",
+    "text": "6 LOOPS R 15.5",
+    "value": "15.5",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "92 × 73.6U = 5 : 4",
     "value": "73.6U",
     "kind": "length",
     "ok": true
+   },
+   {
+    "text": "92 × 73.6U = 5 : 4",
+    "value": "5",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "92 × 73.6U = 5 : 4",
+    "value": "4",
+    "kind": "length",
+    "ok": false
    }
   ]
  },
@@ -15212,6 +15518,18 @@
     "value": "2.9U",
     "kind": "length",
     "ok": true
+   },
+   {
+    "text": "SLATS 1.1 → 2.5U",
+    "value": "1.1",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "SLATS 1.1 → 2.5U",
+    "value": "2.5U",
+    "kind": "length",
+    "ok": true
    }
   ]
  },
@@ -15612,15 +15930,27 @@
   ],
   "claims": [
    {
-    "text": "dome R 46 · brim band · 2 curls",
+    "text": "dome R 46 · 3 brims · weight 3u",
     "value": "46",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "dome R 46 · brim band · 2 curls",
-    "value": "2",
+    "text": "dome R 46 · 3 brims · weight 3u",
+    "value": "3",
     "kind": "count",
+    "ok": true
+   },
+   {
+    "text": "dome R 46 · 3 brims · weight 3u",
+    "value": "3u",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "WEIGHT 3U",
+    "value": "3U",
+    "kind": "length",
     "ok": true
    }
   ]
@@ -15850,27 +16180,39 @@
   "ratios": [],
   "claims": [
    {
-    "text": "6 petals · R 14.9 · 60° · 1 part",
+    "text": "6 petals R 14.9 · counter R/2 · gaps 1.5u",
     "value": "6",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "6 petals · R 14.9 · 60° · 1 part",
+    "text": "6 petals R 14.9 · counter R/2 · gaps 1.5u",
     "value": "14.9",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "6 petals · R 14.9 · 60° · 1 part",
-    "value": "60°",
-    "kind": "angle",
+    "text": "6 petals R 14.9 · counter R/2 · gaps 1.5u",
+    "value": "2",
+    "kind": "ratio",
+    "ok": null
+   },
+   {
+    "text": "6 petals R 14.9 · counter R/2 · gaps 1.5u",
+    "value": "1.5u",
+    "kind": "length",
     "ok": true
    },
    {
-    "text": "6 petals · R 14.9 · 60° · 1 part",
-    "value": "1",
-    "kind": "count",
+    "text": "COUNTER R 7.45",
+    "value": "7.45",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "GAPS 1.5U",
+    "value": "1.5U",
+    "kind": "length",
     "ok": true
    }
   ]
@@ -15984,28 +16326,58 @@
   "ratios": [],
   "claims": [
    {
-    "text": "O 92 × 72u · 2 crescents · mirrored",
-    "value": "92",
-    "kind": "length",
-    "ok": true
-   },
-   {
-    "text": "O 92 × 72u · 2 crescents · mirrored",
-    "value": "72u",
-    "kind": "length",
-    "ok": true
-   },
-   {
-    "text": "O 92 × 72u · 2 crescents · mirrored",
+    "text": "2 rings 73.7 × 72u · c–c 18.4u · stress 8.7 : 3.6u",
     "value": "2",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "O 92 × 72U",
+    "text": "2 rings 73.7 × 72u · c–c 18.4u · stress 8.7 : 3.6u",
+    "value": "73.7",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "2 rings 73.7 × 72u · c–c 18.4u · stress 8.7 : 3.6u",
+    "value": "72u",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "2 rings 73.7 × 72u · c–c 18.4u · stress 8.7 : 3.6u",
+    "value": "18.4u",
+    "kind": "length",
+    "ok": false
+   },
+   {
+    "text": "2 rings 73.7 × 72u · c–c 18.4u · stress 8.7 : 3.6u",
+    "value": "8.7",
+    "kind": "length",
+    "ok": false
+   },
+   {
+    "text": "2 rings 73.7 × 72u · c–c 18.4u · stress 8.7 : 3.6u",
+    "value": "3.6u",
+    "kind": "length",
+    "ok": false
+   },
+   {
+    "text": "2 RINGS 73.7 × 72U",
     "value": "72U",
     "kind": "length",
     "ok": true
+   },
+   {
+    "text": "C–C 18.4U",
+    "value": "18.4U",
+    "kind": "length",
+    "ok": false
+   },
+   {
+    "text": "STRESS 8.7 : 3.6U",
+    "value": "3.6U",
+    "kind": "length",
+    "ok": false
    }
   ]
  },
@@ -16118,38 +16490,44 @@
   "ratios": [],
   "claims": [
    {
-    "text": "3 rings · 92 × 85.9u · step 12.3u · weighted low",
+    "text": "3 rings · 92 × 85.9u · step 12.3u",
     "value": "3",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "3 rings · 92 × 85.9u · step 12.3u · weighted low",
+    "text": "3 rings · 92 × 85.9u · step 12.3u",
     "value": "92",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "3 rings · 92 × 85.9u · step 12.3u · weighted low",
+    "text": "3 rings · 92 × 85.9u · step 12.3u",
     "value": "85.9u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "3 rings · 92 × 85.9u · step 12.3u · weighted low",
+    "text": "3 rings · 92 × 85.9u · step 12.3u",
     "value": "12.3u",
     "kind": "length",
     "ok": false
    },
    {
-    "text": "92 × 85.9U",
-    "value": "85.9U",
+    "text": "STEP 12.3U",
+    "value": "12.3U",
+    "kind": "length",
+    "ok": false
+   },
+   {
+    "text": "SIDES 6.1U · TOPS 1.5U",
+    "value": "6.1U",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "STEP 12.3U",
-    "value": "12.3U",
+    "text": "SIDES 6.1U · TOPS 1.5U",
+    "value": "1.5U",
     "kind": "length",
     "ok": false
    }
@@ -16232,26 +16610,32 @@
   ],
   "claims": [
    {
-    "text": "pupil R 23 · lid 88.1 × 92u · bar on the axis",
+    "text": "R 46 · pupil R 23 · gap 6.9u",
+    "value": "46",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "R 46 · pupil R 23 · gap 6.9u",
     "value": "23",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "pupil R 23 · lid 88.1 × 92u · bar on the axis",
-    "value": "88.1",
+    "text": "R 46 · pupil R 23 · gap 6.9u",
+    "value": "6.9u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "pupil R 23 · lid 88.1 × 92u · bar on the axis",
-    "value": "92u",
-    "kind": "length",
-    "ok": true
+    "text": "PUPIL R 23 = R/2",
+    "value": "2",
+    "kind": "ratio",
+    "ok": null
    },
    {
-    "text": "LID 88.1 × 92U",
-    "value": "92U",
+    "text": "GAP 6.9U",
+    "value": "6.9U",
     "kind": "length",
     "ok": true
    }
@@ -16446,28 +16830,28 @@
   "ratios": [],
   "claims": [
    {
-    "text": "5 strokes · max 53.7 × 92u · mirrored",
-    "value": "5",
+    "text": "9 ellipses · pitch 11u · tops on R 46",
+    "value": "9",
     "kind": "count",
-    "ok": true
+    "ok": false
    },
    {
-    "text": "5 strokes · max 53.7 × 92u · mirrored",
-    "value": "53.7",
+    "text": "9 ellipses · pitch 11u · tops on R 46",
+    "value": "11u",
+    "kind": "length",
+    "ok": false
+   },
+   {
+    "text": "9 ellipses · pitch 11u · tops on R 46",
+    "value": "46",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "5 strokes · max 53.7 × 92u · mirrored",
-    "value": "92u",
+    "text": "PITCH 11U",
+    "value": "11U",
     "kind": "length",
-    "ok": true
-   },
-   {
-    "text": "MAX 53.7 × 92U",
-    "value": "92U",
-    "kind": "length",
-    "ok": true
+    "ok": false
    }
   ]
  },
@@ -16617,44 +17001,32 @@
   "ratios": [],
   "claims": [
    {
-    "text": "4 cells 28.8u · 2 counters · grid 92 × 60.7u",
+    "text": "4 tiles 28.8u · counters R 10.8 · channel 2.9u",
     "value": "4",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "4 cells 28.8u · 2 counters · grid 92 × 60.7u",
+    "text": "4 tiles 28.8u · counters R 10.8 · channel 2.9u",
     "value": "28.8u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "4 cells 28.8u · 2 counters · grid 92 × 60.7u",
-    "value": "2",
-    "kind": "count",
-    "ok": true
-   },
-   {
-    "text": "4 cells 28.8u · 2 counters · grid 92 × 60.7u",
-    "value": "92",
+    "text": "4 tiles 28.8u · counters R 10.8 · channel 2.9u",
+    "value": "10.8",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "4 cells 28.8u · 2 counters · grid 92 × 60.7u",
-    "value": "60.7u",
+    "text": "4 tiles 28.8u · counters R 10.8 · channel 2.9u",
+    "value": "2.9u",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "4 CELLS 28.8U",
-    "value": "28.8U",
-    "kind": "length",
-    "ok": true
-   },
-   {
-    "text": "GRID 92 × 60.7U",
-    "value": "60.7U",
+    "text": "CHANNEL 2.9U",
+    "value": "2.9U",
     "kind": "length",
     "ok": true
    }
@@ -16795,34 +17167,34 @@
   "ratios": [],
   "claims": [
    {
-    "text": "2 strokes · 72.5 × 76.1u · 3 crossings",
+    "text": "2 strokes 4.2u · 6 crossings · runs 65°",
     "value": "2",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "2 strokes · 72.5 × 76.1u · 3 crossings",
-    "value": "72.5",
+    "text": "2 strokes 4.2u · 6 crossings · runs 65°",
+    "value": "4.2u",
     "kind": "length",
-    "ok": true
-   },
-   {
-    "text": "2 strokes · 72.5 × 76.1u · 3 crossings",
-    "value": "76.1u",
-    "kind": "length",
-    "ok": true
-   },
-   {
-    "text": "2 strokes · 72.5 × 76.1u · 3 crossings",
-    "value": "3",
-    "kind": "count",
     "ok": false
    },
    {
-    "text": "72.5 × 76.1U",
-    "value": "76.1U",
-    "kind": "length",
+    "text": "2 strokes 4.2u · 6 crossings · runs 65°",
+    "value": "6",
+    "kind": "count",
     "ok": true
+   },
+   {
+    "text": "2 strokes 4.2u · 6 crossings · runs 65°",
+    "value": "65°",
+    "kind": "angle",
+    "ok": true
+   },
+   {
+    "text": "2 STROKES 4.2U",
+    "value": "4.2U",
+    "kind": "length",
+    "ok": false
    }
   ]
  },
@@ -17261,21 +17633,33 @@
   "ratios": [],
   "claims": [
    {
-    "text": "8 petals · orbit R 28.6 · 45°",
+    "text": "8 petals · orbit R 28.6 · 45° · weight 4.6u",
     "value": "8",
     "kind": "count",
     "ok": true
    },
    {
-    "text": "8 petals · orbit R 28.6 · 45°",
+    "text": "8 petals · orbit R 28.6 · 45° · weight 4.6u",
     "value": "28.6",
     "kind": "length",
     "ok": true
    },
    {
-    "text": "8 petals · orbit R 28.6 · 45°",
+    "text": "8 petals · orbit R 28.6 · 45° · weight 4.6u",
     "value": "45°",
     "kind": "angle",
+    "ok": true
+   },
+   {
+    "text": "8 petals · orbit R 28.6 · 45° · weight 4.6u",
+    "value": "4.6u",
+    "kind": "length",
+    "ok": true
+   },
+   {
+    "text": "WEIGHT 4.6U",
+    "value": "4.6U",
+    "kind": "length",
     "ok": true
    }
   ]
