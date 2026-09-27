@@ -182,10 +182,9 @@ claims: 5 (count) ✓  15.4 ✓  27.2 ✓  72° ✓  6.2u ✓  6.2U ✓
 ## SYM-022 Swarm (Modules)
 spec: 7 × R 12u · grid 24u
 box 40,64 to 160,136  ·  120 × 72u  ·  outline centre 100,100.1
-parts 7 (holes: 1/0/1/1/0/0/1)
+parts 7
 circles: 7 × R 12 (360–360°)
-straight edges at: 0°, 90°  (4 edges over 3u)
-repeats: 4 × part 24×60u at 76,76.1 / 52,100.1 / 124,76.1 / 100,100.1  ·  3 × part 24×24u at 76,124.1 / 148,100.1 / 124,124.1
+repeats: 7 × part 24×24u (not on one orbit)
 symmetry: 2-fold; mirror at 0°, 90°
 relations:
   R 12 & R 12: c–c 33.9 (equal radii)
@@ -193,7 +192,6 @@ relations:
   R 12 & R 12: c–c 75.9 (equal radii)
   R 12 & R 12: c–c 67.9 (equal radii)
   R 12 & R 12: c–c 96 (equal radii)
-contacts/gaps between parts: 0-1 touch, 0-2 touch, 2-6 touch, 3-5 touch, 3-6 touch, 4-6 touch
 ratios: height / width = 3/5 (0.600)
 claims: 7 (count) ✓  12u ✓  24u ✓  12 ✓  24U ✓  120U ✓
 
@@ -1191,30 +1189,28 @@ claims: 6 (count) ✓  13.3 ✓  26.7u ✓  2.7u ✓  26.7U ✓  2.7U ✓
 spec: lens 92 × 65.9u at 45° · 2 counters · centre 46.4u
 box 60,60 to 140,140  ·  80 × 80u  ·  outline centre 99.9,99.9
 parts 6
-circles: R 113.13 @ 167.1,167.1 (47°)  ·  R 112.78 @ 33.2,33.2 (48°)  ·  R 57.01 @ 72.6,127.4 (105°)  ·  R 56.97 @ 127.3,72.7 (106°)  ·  4 × R 41.52 (86–86°)  ·  4 × R 32.02 (66–66°)  ·  4 × R 19.64 (69–69°)  ·  R 18.31 @ 100,100 (360°)
+circles: R 113.19 @ 167.1,167.1 (48°)  ·  R 112.78 @ 33.2,33.2 (48°)  ·  R 57.01 @ 72.6,127.4 (105°)  ·  R 56.97 @ 127.3,72.7 (106°)  ·  4 × R 41.52 (86–86°)  ·  4 × R 32.02 (66–66°)  ·  4 × R 19.64 (69–69°)
 repeats: 3 × part 16.8×55.8u at 132.6,94.1 / 94.2,132.5 / 105.7,67.5  ·  3 × part 46.4×46.4u at 99.9,99.9 / 99.9,99.8 / 99.9,99.8
 symmetry: 2-fold; mirror at 45°, 135°
 relations:
   4 × R 41.5 on an orbit R 10.9 about 100,100, uneven spacing
   4 × R 32 on an orbit R 24.5 about 100,100, uneven spacing
   4 × R 19.6 on an orbit R 14.7 about 100,100, uneven spacing
-  R 113.1 & R 112.8: c–c 189.3
-  R 113.1 & R 112.8: overlap, lens 36.6 wide, 123.3 tall
-  R 113.1 & R 57: c–c 102.4
-  R 113.1 & R 57: overlap, lens 67.7 wide, 113.6 tall
-  R 113.1 & R 41.5: c–c 86.2
-  R 113.1 & R 41.5: overlap, lens 68.5 wide, 71.4 tall
-  R 113.1 & R 41.5: c–c 103.9
-  R 113.1 & R 41.5: overlap, lens 50.7 wide, 83 tall
-  R 113.1 & R 32: c–c 81.5
-  R 113.1 & R 32: overlap, lens 63.6 wide, 12.2 tall
-  R 113.1 & R 32: c–c 112
-  R 113.1 & R 32: overlap, lens 33.2 wide, 63.7 tall
-  R 113.1 & R 32: c–c 81.6
-  R 113.1 & R 32: overlap, lens 63.6 wide, 12.3 tall
-  R 113.1 & R 19.6: c–c 109
-  R 113.1 & R 19.6: overlap, lens 23.8 wide, 39 tall
-  R 113.1 & R 19.6: c–c 80.9
+  R 113.2 & R 112.8: c–c 189.4
+  R 113.2 & R 112.8: overlap, lens 36.6 wide, 123.3 tall
+  R 113.2 & R 57: c–c 102.5
+  R 113.2 & R 57: overlap, lens 67.7 wide, 113.6 tall
+  R 113.2 & R 41.5: c–c 86.2
+  R 113.2 & R 41.5: overlap, lens 68.5 wide, 71.4 tall
+  R 113.2 & R 41.5: c–c 104
+  R 113.2 & R 41.5: overlap, lens 50.7 wide, 83 tall
+  R 113.2 & R 32: c–c 81.6
+  R 113.2 & R 32: overlap, lens 63.6 wide, 12.2 tall
+  R 113.2 & R 32: c–c 112
+  R 113.2 & R 32: overlap, lens 33.2 wide, 63.7 tall
+  R 113.2 & R 19.6: c–c 109
+  R 113.2 & R 19.6: overlap, lens 23.8 wide, 39 tall
+  R 113.2 & R 19.6: c–c 80.9
   R 112.8 & R 57: c–c 102.1
   R 112.8 & R 57: overlap, lens 67.7 wide, 113.6 tall
   R 112.8 & R 41.5: c–c 103.6
@@ -1267,7 +1263,7 @@ relations:
   R 19.6 & R 19.6: overlap, lens 10 wide, 26.2 tall
   R 19.6 & R 19.6: overlap, lens 11.1 wide, 27.4 tall
 contacts/gaps between parts: 0-1 touch, 0-2 touch, 0-3 touch, 0-4 touch, 0-5 touch, 1-2 touch, 1-4 touch, 1-5 touch, 2-3 touch, 2-4 touch, 2-5 touch, 3-4 touch, 3-5 touch, 4-5 touch
-ratios: R 57 / R 113.1 = 1/2 (0.504); R 57 / R 113.1 = 1/2 (0.504); R 57 / R 112.8 = 1/2 (0.505); R 57 / R 112.8 = 1/2 (0.505)
+ratios: R 57 / R 113.2 = 1/2 (0.504); R 57 / R 113.2 = 1/2 (0.503); R 57 / R 112.8 = 1/2 (0.505); R 57 / R 112.8 = 1/2 (0.505)
 claims: 92 ✗  65.9u ✓  45° ✗  2 (count) ✓  46.4u ✓  65.9U ✓
 
 ## SYM-052 Meridian (Orbs)
