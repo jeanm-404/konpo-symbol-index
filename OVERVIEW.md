@@ -21,7 +21,7 @@ Symbol Shelter is where those marks go instead. It's a public, living archive of
 
 **The work is real. The paperwork is playful.** Every mark was drawn by Konpo as real identity work for real clients, with client details removed. The records around them are written as playful fiction, told from both sides: a client who didn't buy the proposal, and a designer who still thinks about it. Reasons are vague, faintly contradictory verdicts ("Too Startupy", "Too Enterprise", "Too Happy"). Attachment admits how hard it was to let go.
 
-**Show the thinking, not just the result.** A logo is a set of decisions. Every mark is filed with how it was built: radii, orbits, pitch, part counts. The construction layer draws itself in on hover, so the craft is visible, not implied.
+**Show the thinking, not just the result.** A logo is a set of decisions. Every mark is filed with how it was built: radii, orbits, pitch, weights, gaps, all measured from the drawing rather than remembered. The construction layer draws itself in on hover, so the craft is visible, not implied.
 
 **Adoption, not a free-for-all.** The marks are offered to people and companies with projects worth backing, and they have to make a case. The site is generous to look at and deliberate about letting go: right-click is met with "Not up for grabs," and every mark carries quiet provenance.
 
@@ -69,7 +69,7 @@ Every mark has an id (`SYM-001` to `SYM-096`; retired numbers are never reused),
 - **Opens in place.** A tile grows into a card and pushes its neighbours aside. The canvas can still pan while it's open.
 - **What it shows:** the mark, its description and its full record.
 - **Turn:** the mark stands up as its 3D solid (Three.js) and you spin it by dragging, with a short glide when you let go. One finger or the mouse; no pinch, no zoom. Turn again lays it back into the drawing.
-- **Notes:** replays the construction layer with the spec written as corner notes.
+- **Notes:** replays the mark's construction sheet in build order: guides, dimensions and labels measured from the mark itself, the spec as corner notes, and one line on the decision that makes the mark work.
 - **The controls take turns.** Turn clears the notes first, and Notes lays a spinning mark back down before it draws.
 - **Adopt:** the card flips over to an application (name, organization, email, "make your case"), which drafts an email to Konpo.
 
