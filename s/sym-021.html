@@ -554,6 +554,7 @@
   .construction text.lbl tspan { opacity: 0; transition: opacity 0s; }
   .show-construction .construction text.lbl tspan { opacity: 1; transition-delay: var(--td, 0s); }
   .tile:not(.expanded) .construction text.lbl { display: none; }
+  @media (max-width: 780px) { .construction text.lbl { font-size: calc(9.5px / var(--k, 2)); stroke-width: calc(3.5px / var(--k, 2)); } }
 
   .tile:not(.expanded).annot-ready .construction line:not(.guide),
   .show-construction .construction line:not(.guide) { opacity: 1; stroke-dashoffset: 0; }
