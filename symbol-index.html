@@ -1415,6 +1415,15 @@
   .tile.expanded.settled .xc-controls { transition-delay: .32s; }
   .tile.expanded.settled .xc-close    { transition-delay: .42s; }
 
+  /* ---------- Edge lens ---------- */
+  /* the screen's rim bends the shelter like the edge of a glass sheet (play.soumya.work's curve;
+     movo.video's with ?lens=movo). The maps are baked once
+     per viewport size (see edgeLens() in the script); Chromium only, others see the flat grid.
+     Off on touch screens (the same per-frame cost the glass chips shed there). */
+  .edge-lens { position: fixed; inset: 0; z-index: 2; pointer-events: none; display: none; }
+  body.lens-on.view-grid .edge-lens { display: block; backdrop-filter: url(#edge-lens); }
+  @media (pointer: coarse) { body.lens-on .edge-lens { display: none; } }
+
 </style>
 </head>
 <body>
@@ -1432,6 +1441,8 @@
     <feBlend in="red" in2="green" mode="screen" result="rg"/>
     <feBlend in="rg" in2="blue" mode="screen"/>
   </filter>
+  <!-- the edge lens: filled per viewport by edgeLens() -->
+  <filter id="edge-lens" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB"></filter>
 </svg>
 
 <div id="intro" aria-hidden="true">
@@ -1486,6 +1497,7 @@
   <div class="grid" id="grid"><div class="canvas" id="canvas"></div></div>
   <div class="list" id="list" hidden></div>
   <div class="empty" id="empty" hidden>No marks match.</div>
+  <div class="edge-lens" aria-hidden="true"></div>
 
 
   <div id="scrim"></div>
@@ -4987,6 +4999,97 @@ document.getElementById('toast-case').onclick = () => {
     if (e.key === 'Escape' || e.key === 'Enter') { finish(); document.removeEventListener('keydown', esc); }
   });
 })();
+/* ---------- Edge lens ----------
+   The screen's rim bends the grid like the edge of a glass sheet: for every pixel, where the screen
+   samples from, baked into a displacement map per viewport size (half resolution; feImage stretches it).
+   Two curves, both ported from their sites' shaders:
+   - soumya (play.soumya.work, the default): each axis eases into a band at the edge (7% of the width
+     up to 110px at the sides, 10% of the height up to 90px top and bottom), so the image stretches
+     toward the frame without ever folding. At rest only; their corner pinch (flare), drag boost
+     and colour effects are left out.
+   - movo (movo.video's Refraction mod, ?lens=movo): a rounded rim profile with a corner curl that
+     folds back just before the frame (mirrored slivers, strongest magnification), plus Dispersion.
+   Dispersion rides on the same bend in two passes, one reading a little further in and one a little
+   further out, mixed per channel by LENS.rim (a third, unsplit pass halved the frame rate on a 2x
+   display). The two passes must add back up to white, so the inner ghost takes rim and the outer its
+   complement: Konpo's pastel lavender #d5cbff in, a near-black olive out (a dim edge on the dark grid). */
+const LENS_CURVE = /[?&]lens=movo\b/.test(location.search) ? 'movo' : 'soumya';
+const LENS = LENS_CURVE === 'movo'
+  ? { intensity: 0.5, reach: 0, dispersion: 0.35, rim: [0xd5 / 255, 0xcb / 255, 1] }
+  // flare is off: theirs (0.2) pinches the rows by up to 20% of the screen near the corners, about
+  // 230px on a wide display, and the map's 8 bits then step every 2px (stair-stepped outlines)
+  : { strength: 0.6, flare: 0, side: [0.07, 110], band: [0.1, 90], dispersion: 0, rim: [0xd5 / 255, 0xcb / 255, 1] };
+function edgeLens() {
+  const lens = document.getElementById('edge-lens');
+  if (!lens || !CSS.supports('backdrop-filter', 'url(#edge-lens)') || matchMedia('(pointer: coarse)').matches) return;
+  // a map of CSS px offsets as an 8-bit image: feDisplacementMap reads (channel / 255 - 0.5) * scale,
+  // and 8 bits have no exact 0.5, so zero is always written as 128 (a uniform scale / 510 px shift).
+  // Rounding 127.5 instead flips between 127 and 128 on float noise and jitters every outline.
+  const encode = (mw, mh, off, S) => {
+    const cv = document.createElement('canvas'); cv.width = mw; cv.height = mh;
+    const cx = cv.getContext('2d'), id = cx.createImageData(mw, mh), d = id.data;
+    for (let p = 0; p < mw * mh; p++) {
+      d[p * 4] = Math.round(128 + off[p * 2] * 255 / S);
+      d[p * 4 + 1] = Math.round(128 + off[p * 2 + 1] * 255 / S);
+      d[p * 4 + 2] = 128; d[p * 4 + 3] = 255;
+    }
+    cx.putImageData(id, 0, 0);
+    return cv.toDataURL();
+  };
+  const build = () => {
+    const W = innerWidth, H = innerHeight, q = 0.5;
+    const mw = Math.ceil(W * q), mh = Math.ceil(H * q), A = W / H;
+    // soumya: band widths as a share of each axis, and the eased map inside a band
+    const bandX = Math.min(LENS.side?.[0] ?? 0, (LENS.side?.[1] ?? 0) / W), bandY = Math.min(LENS.band?.[0] ?? 0, (LENS.band?.[1] ?? 0) / H);
+    const edgeT = (d, a) => Math.min(1, Math.max(0, (d - a) / (0.5 - a)));
+    const mapAxis = (x, a, c) => { const ax = Math.abs(x); if (ax <= a) return x; const s = (ax - a) / (0.5 - a); return Math.sign(x) * (a + (0.5 - a) * (s - 0.5 * c * s * s)); };
+    // movo: rim profile and curl
+    const r = 0.24 + (0.82 - 0.24) * (LENS.reach ?? 0), k = (LENS.intensity ?? 0) * 0.46, CURL = 0.6;
+    const inner = new Float32Array(mw * mh * 2), outer = new Float32Array(mw * mh * 2);
+    let max = 0;
+    for (let py = 0; py < mh; py++) for (let px = 0; px < mw; px++) {
+      const u = (px + 0.5) / mw, v = (py + 0.5) / mh;
+      let dx, dy, edge;
+      if (LENS_CURVE === 'soumya') {
+        const ax = 0.5 - bandX, ay = 0.5 - bandY, x = u - 0.5, y = v - 0.5, c = LENS.strength;
+        const tx = edgeT(Math.abs(x), ax), ty = edgeT(Math.abs(y), ay);
+        const sx = mapAxis(x, ax, c) * (1 - LENS.flare * ty * ty), sy = mapAxis(y, ay, c) * (1 - LENS.flare * tx * tx);
+        dx = sx - x; dy = sy - y; edge = Math.max(tx, ty);
+      } else {
+        const cx = (u - 0.5) * A, cy = v - 0.5;
+        const ax = Math.abs(cx) / (0.5 * A), ay = Math.abs(cy) / 0.5;
+        const ex = Math.min(1, Math.max(0, (ax - (1 - r) - r * 0.5) / r));
+        const ey = Math.min(1, Math.max(0, (ay - (1 - r) - r * 0.5) / r));
+        const gx = ex * ex * 0.6 + ex ** 4 * 0.7, gy = ey * ey * 0.6 + ey ** 4 * 0.7, corner = gx * gy;
+        let wx = cx - Math.sign(cx) * (gx + corner * 0.5) * k;
+        let wy = cy - Math.sign(cy) * (gy + corner * 0.5) * k;
+        wx -= (cx / (0.5 * A)) * gy * CURL * k * 1.5;
+        wy -= (cy / 0.5) * gx * CURL * k * 1.5;
+        dx = wx / A + 0.5 - u; dy = wy + 0.5 - v; edge = Math.min(1, gx + gy + corner);
+      }
+      const len = Math.hypot(dx, dy);
+      const disp = len > 1e-6 ? LENS.dispersion * 0.06 * edge / len : 0;
+      const i = (py * mw + px) * 2;
+      inner[i] = (dx + dx * disp) * W; inner[i + 1] = (dy + dy * disp) * H;
+      outer[i] = (dx - dx * disp) * W; outer[i + 1] = (dy - dy * disp) * H;
+      max = Math.max(max, Math.abs(inner[i]), Math.abs(inner[i + 1]), Math.abs(outer[i]), Math.abs(outer[i + 1]));
+    }
+    const S = Math.ceil(2 * max + 4);
+    const img = (u, res) => `<feImage href="${u}" x="0" y="0" width="${W}" height="${H}" preserveAspectRatio="none" result="${res}"/>`;
+    const dm = (map, res) => `<feDisplacementMap in="SourceGraphic" in2="${map}" scale="${S}" xChannelSelector="R" yChannelSelector="G" result="${res}"/>`;
+    const matrix = (inp, [r, g, b], res) => `<feColorMatrix in="${inp}" type="matrix" values="${r} 0 0 0 0  0 ${g} 0 0 0  0 0 ${b} 0 0  0 0 0 1 0" result="${res}"/>`;
+    lens.setAttribute('x', 0); lens.setAttribute('y', 0); lens.setAttribute('width', W); lens.setAttribute('height', H);
+    lens.innerHTML = !LENS.dispersion ? img(encode(mw, mh, inner, S), 'mi') + dm('mi', 'i')
+      : img(encode(mw, mh, inner, S), 'mi') + img(encode(mw, mh, outer, S), 'mo')
+      + dm('mi', 'i') + dm('mo', 'o')
+      + matrix('i', LENS.rim, 'ri') + matrix('o', LENS.rim.map(c => 1 - c), 'bo')
+      + '<feComposite in="ri" in2="bo" operator="arithmetic" k1="0" k2="1" k3="1" k4="0"/>';
+    document.body.classList.add('lens-on');
+  };
+  build();
+  let t; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(build, 150); });
+}
+edgeLens();
 </script>
 </body>
 </html>
