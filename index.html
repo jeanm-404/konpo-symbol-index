@@ -1417,7 +1417,7 @@
 
   /* ---------- Edge lens ---------- */
   /* the screen's rim bends the shelter like the edge of a glass sheet (movo.video's Refraction
-     mod at Intensity 75, Reach 0, Dispersion 49, Frost 0). The displacement maps are baked once
+     mod, softened to Intensity 50, Dispersion 35, with a Konpo lavender rim). The maps are baked once
      per viewport size (see edgeLens() in the script); Chromium only, others see the flat grid.
      Off on touch screens (the same per-frame cost the glass chips shed there). */
   .edge-lens { position: fixed; inset: 0; z-index: 2; pointer-events: none; display: none; }
@@ -5003,11 +5003,15 @@ document.getElementById('toast-case').onclick = () => {
    movo.video's Refraction mod, ported from its fragment shader to SVG: for every pixel, where the
    screen samples from. The rim (outer 6% of each side at Reach 0) pulls the image in from further
    inside with a rounded profile, and the corners curl. Baked at half resolution; feImage stretches it.
-   Dispersion, Movo's colour split, rides on the same bend in two passes: red reads a little further
-   in, blue a little further out, green is the mean of both (Movo's third, unsplit pass would cost a
-   third full-screen pass, which halved the frame rate on a 2x display). Away from the rim both passes
+   Dispersion, Movo's colour split, rides on the same bend in two passes, one reading a little further
+   in and one a little further out, mixed per channel by LENS.rim (Movo's third, unsplit pass would
+   cost a third full-screen pass, which halved the frame rate on a 2x display). Away from the rim both passes
    are identical, so the middle of the screen is untouched. */
-const LENS = { intensity: 0.75, reach: 0, dispersion: 0.49 };
+// rim = the inner pass's share of each channel. The two passes must add back up to white (or the
+// middle of the screen would tint), so the inner ghost takes this colour and the outer ghost its
+// complement: Konpo's pastel lavender #d5cbff in, and the remainder (a near-black olive) out, which
+// reads as a dim edge on the dark grid rather than a second colour.
+const LENS = { intensity: 0.5, reach: 0, dispersion: 0.35, rim: [0xd5 / 255, 0xcb / 255, 1] };
 function edgeLens() {
   const lens = document.getElementById('edge-lens');
   if (!lens || !CSS.supports('backdrop-filter', 'url(#edge-lens)') || matchMedia('(pointer: coarse)').matches) return;
@@ -5052,11 +5056,11 @@ function edgeLens() {
     const S = Math.ceil(2 * max + 4);
     const img = (u, res) => `<feImage href="${u}" x="0" y="0" width="${W}" height="${H}" preserveAspectRatio="none" result="${res}"/>`;
     const dm = (map, res) => `<feDisplacementMap in="SourceGraphic" in2="${map}" scale="${S}" xChannelSelector="R" yChannelSelector="G" result="${res}"/>`;
+    const matrix = (inp, [r, g, b], res) => `<feColorMatrix in="${inp}" type="matrix" values="${r} 0 0 0 0  0 ${g} 0 0 0  0 0 ${b} 0 0  0 0 0 1 0" result="${res}"/>`;
     lens.setAttribute('x', 0); lens.setAttribute('y', 0); lens.setAttribute('width', W); lens.setAttribute('height', H);
     lens.innerHTML = img(encode(mw, mh, inner, S), 'mi') + img(encode(mw, mh, outer, S), 'mo')
       + dm('mi', 'i') + dm('mo', 'o')
-      + '<feColorMatrix in="i" type="matrix" values="1 0 0 0 0  0 .5 0 0 0  0 0 0 0 0  0 0 0 1 0" result="ri"/>'
-      + '<feColorMatrix in="o" type="matrix" values="0 0 0 0 0  0 .5 0 0 0  0 0 1 0 0  0 0 0 1 0" result="bo"/>'
+      + matrix('i', LENS.rim, 'ri') + matrix('o', LENS.rim.map(c => 1 - c), 'bo')
       + '<feComposite in="ri" in2="bo" operator="arithmetic" k1="0" k2="1" k3="1" k4="0"/>';
     document.body.classList.add('lens-on');
   };
