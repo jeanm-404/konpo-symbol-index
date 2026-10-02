@@ -828,9 +828,6 @@
     transition: color .3s, border-color .3s;
   }
   .xc-adopt .aback:hover { color: var(--white); border-color: color-mix(in srgb, var(--white) 30%, transparent); }
-  .asent { font-family: var(--mono); font-size: 1.2rem; letter-spacing: 0.08em;
-    text-transform: uppercase; color: var(--purple-vivid); padding: 0 3.2rem 2.4rem; }
-  .asent[hidden] { display: none; }
 
   /* success: the application went out. The form clears to a clean canvas with
      just the mark and its name (card back on desktop, the drawer on phones) */
@@ -1021,19 +1018,22 @@
   }
   .revive-panel[hidden] { display: none; }
   .revive-note { font-size: 1.4rem; line-height: 1.6; color: var(--body); }
-  .revive-panel textarea {
-    width: 100%; min-height: 12rem; resize: vertical;
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+  .revive-panel input { height: 4.4rem; }
+  .revive-panel textarea { min-height: 12rem; resize: vertical; }
+  .revive-panel textarea, .revive-panel input {
+    width: 100%;
     font-family: var(--sans); font-size: 1.4rem; line-height: 1.5;
     color: var(--white); background: color-mix(in srgb, var(--white) 4%, transparent);
     border: 1px solid var(--line); border-radius: 1.2rem;
     padding: 1.2rem 1.4rem; outline: none;
     transition: border-color .3s;
   }
-  .revive-panel textarea:focus { border-color: color-mix(in srgb, var(--purple) 40%, transparent); }
-  .revive-panel textarea::placeholder { color: var(--fade); }
+  .revive-panel textarea:focus, .revive-panel input:focus { border-color: color-mix(in srgb, var(--purple) 40%, transparent); }
+  .revive-panel textarea::placeholder, .revive-panel input::placeholder { color: var(--fade); }
   /* failed submits say so: red outline + placeholder, cleared on the next keystroke */
-  .revive-panel textarea[aria-invalid="true"] { border-color: color-mix(in srgb, var(--red) 60%, transparent); }
-  .revive-panel textarea[aria-invalid="true"]::placeholder,
+  .revive-panel textarea[aria-invalid="true"], .revive-panel input[aria-invalid="true"] { border-color: color-mix(in srgb, var(--red) 60%, transparent); }
+  .revive-panel textarea[aria-invalid="true"]::placeholder, .revive-panel input[aria-invalid="true"]::placeholder,
   footer .sub input[aria-invalid="true"],
   footer .sub input[aria-invalid="true"]::placeholder { color: var(--red); }
   .revive-send {
@@ -1061,7 +1061,7 @@
       -webkit-backdrop-filter: blur(16px) saturate(140%); backdrop-filter: blur(16px) saturate(140%);
     }
     /* sub-16px inputs make iOS Safari zoom the whole page on focus */
-    .search input, footer .sub input, #revive-text,
+    .search input, footer .sub input, #revive-text, #revive-email,
     .xc-adopt input, .xc-adopt textarea { font-size: 1.6rem; }
   }
   @media (prefers-reduced-motion: reduce) {
@@ -1536,9 +1536,10 @@
           <button class="revive-btn" id="revive-toggle">Adopt this mark</button>
           <div class="revive-panel" id="revive-panel" hidden>
             <p class="revive-note">Make your case. What&rsquo;s the project, who&rsquo;s behind it, and where would this mark live? We only release these to people and companies whose projects we find interesting.</p>
+            <input id="revive-email" type="email" placeholder="you@example.com" autocomplete="email" spellcheck="false" aria-label="Your email">
             <textarea id="revive-text" placeholder="Why this mark, and why you…"></textarea>
             <button class="revive-send" id="revive-send">Submit Application</button>
-            <p class="revive-sent mono" id="revive-sent" hidden>Application drafted. Send it from your mail app.</p>
+            <p class="revive-sent mono" id="revive-sent" hidden>Application sent. We'll get back to you.</p>
           </div>
         </div>
       </div>
@@ -1550,6 +1551,7 @@
       <span class="msg"><span class="lead">New marks soon. </span><span class="cta" id="subOpen" role="button" tabindex="0">Notify me</span></span>
       <form class="sub" id="subForm" novalidate>
         <input id="subEmail" type="email" placeholder="your@email.com" autocomplete="email" spellcheck="false" aria-label="Email address">
+        <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
         <button type="submit">Send&nbsp;&rarr;</button>
         <button type="button" class="cancel" id="subCancel" aria-label="Cancel"><span class="k-word">Esc</span><svg class="k-x" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M15.5554 4.44434L4.44434 15.5554" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.44434 4.44434L15.5554 15.5554" stroke="currentColor" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       </form>
@@ -4559,6 +4561,23 @@ function showAdoptDone(host, s){
   return done;
 }
 
+/* ---------- Intake: sign-ups + adoption requests ----------
+   Both forms post to the Konpo CRM (crm.konpo.co/api/shelter), where they land in its Symbol
+   Shelter tabs. Locally they go to a CRM on :5371 running on its local DB (launch config
+   "konpo-crm-localdb"), so testing never writes to the live one. If the post fails for any reason
+   the old mail draft opens instead, so nothing is lost. `website` is a honeypot field. */
+const INTAKE = location.hostname === 'localhost' ? 'http://localhost:5371/api/shelter' : 'https://crm.konpo.co/api/shelter';
+async function intake(body, root){
+  const hp = root?.querySelector('.hp')?.value || '';
+  try {
+    const r = await fetch(INTAKE, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, website: hp }), keepalive: true });
+    return r.ok;
+  } catch { return false; }
+}
+const mailDraft = (subject, body) => {
+  location.href = 'mailto:hey@konpo.studio?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+};
+
 function adoptFormHTML(s){
   const f = (id, label, ph, type) =>
       `<div class="afield"><label for="${id}">${label}<span class="aerr"></span></label>`
@@ -4573,7 +4592,7 @@ function adoptFormHTML(s){
     + f('a-email', 'Email', 'you@example.com', 'email')
     + `<div class="afield"><label for="a-case">Make your case<span class="aerr"></span></label>`
     +   `<textarea id="a-case" placeholder="Why this mark, and why you…"></textarea></div>`
-    + `<p class="asent mono" hidden>Application drafted. Send it from your mail app.</p>`
+    + `<input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">`
     + `<button type="submit" class="aband">Submit Application</button>`
     + `</form>`;
 }
@@ -4614,10 +4633,9 @@ function wireAdoptForm(tile, s){
       return;
     }
     Sound.play('action.send');
-    const body = `Name: ${name}\nOrganization: ${org || '—'}\nEmail: ${email}\n\n${why}`;
-    location.href = 'mailto:hey@konpo.studio'
-      + '?subject=' + encodeURIComponent(`Adopt ${s.id}${namedMark(s) ? ': ' + s.name : ''}`)
-      + '&body=' + encodeURIComponent(body);
+    intake({ kind: 'request', symId: s.id, symName: namedMark(s) ? s.name : '', name, org, email, message: why, via: 'card' }, form)
+      .then(ok => ok || mailDraft(`Adopt ${s.id}${namedMark(s) ? ': ' + s.name : ''}`,
+        `Name: ${name}\nOrganization: ${org || '—'}\nEmail: ${email}\n\n${why}`));
     const done = showAdoptDone(tile.querySelector('.xc-face.back'), s);
     done.addEventListener('click', () => flipBack(tile));
     Ribbons.burst();
@@ -4803,31 +4821,34 @@ function resetRevive(){
   reviveText.value = '';
   reviveText.removeAttribute('aria-invalid');
 }
+const reviveEmail  = document.getElementById('revive-email');
 reviveText.addEventListener('input', () => reviveText.removeAttribute('aria-invalid'));
+reviveEmail.addEventListener('input', () => reviveEmail.removeAttribute('aria-invalid'));
 
 reviveToggle.onclick = () => {
   const opening = revivePanel.hidden;
   revivePanel.hidden = !opening;
   reviveToggle.classList.toggle('on', opening);
   Sound.play(opening ? 'toggle.on' : 'toggle.off');
-  if (opening) reviveText.focus();
+  if (opening) reviveEmail.focus();
 };
 
 document.getElementById('revive-send').onclick = () => {
-  const why = reviveText.value.trim();
-  if (!why) { reviveText.setAttribute('aria-invalid', 'true'); Sound.play('state.error'); reviveText.focus(); return; }
+  const why = reviveText.value.trim(), email = reviveEmail.value.trim();
+  const badEmail = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  [[reviveEmail, badEmail], [reviveText, !why]].forEach(([el, bad]) => bad ? el.setAttribute('aria-invalid', 'true') : el.removeAttribute('aria-invalid'));
+  if (badEmail || !why) { Sound.play('state.error'); (badEmail ? reviveEmail : reviveText).focus(); return; }
   Sound.play('action.send');
-  location.href = 'mailto:hey@konpo.studio'
-    + '?subject=' + encodeURIComponent('Adopt ' + openId + ': application')
-    + '&body=' + encodeURIComponent(why);
-  const drawer = document.getElementById('drawer');
   const s = S.find(x => x.id === openId);
+  intake({ kind: 'request', symId: openId, symName: s && namedMark(s) ? s.name : '', email, message: why, via: 'drawer' })
+    .then(ok => ok || mailDraft('Adopt ' + openId + ': application', `Email: ${email}\n\n${why}`));
+  const drawer = document.getElementById('drawer');
   if (s) { drawer.scrollTop = 0; drawer.classList.add('adopted'); showAdoptDone(drawer, s); }
   else reviveSent.hidden = false;
 };
 
 /* ---------- Footer: sign up for updates ----------
-   No backend on this page by design, so the form drafts a mail instead. --------- */
+   Posts to the CRM's Shelter sign-ups (see intake()); a mail draft only if that fails. --------- */
 (function wireSubscribe(){
   const foot   = document.getElementById('footer');
   const open   = document.getElementById('subOpen');
@@ -4865,12 +4886,11 @@ document.getElementById('revive-send').onclick = () => {
     const v = email.value.trim();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { email.setAttribute('aria-invalid', 'true'); email.focus(); Sound.play('state.error'); return; }
     Sound.play('action.send');
-    location.href = 'mailto:hey@konpo.studio'
-      + '?subject=' + encodeURIComponent('Symbol Shelter: sign me up')
-      + '&body=' + encodeURIComponent(`Add ${v} to the list. Tell me when more rejections land.`);
+    intake({ kind: 'signup', email: v }, form)
+      .then(ok => ok || mailDraft('Symbol Shelter: sign me up', `Add ${v} to the list. Tell me when more rejections land.`));
     foot.classList.remove('subscribing');
     email.value = '';
-    msg.innerHTML = 'Drafted. Send it from your mail app.';
+    msg.innerHTML = 'You\'re on the list. We\'ll write when new marks land.';
     setTimeout(() => { msg.innerHTML = idle; wireOpen(); }, 6000);
   });
 
