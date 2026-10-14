@@ -251,7 +251,15 @@ export function createSolid(){
     if (c && !(cur && cur.tile === c.tile)) release(c.tile);
   }
   // put the canvas over the run's mark: the whole tile, or the card's stage mark
+  // bufSize: the drawing buffer's size (css px; 0 = unknown). Resizing it reallocates the
+  // antialiased buffer and stalls on the GPU (60-90ms a time in Chrome on a 120Hz laptop), so a
+  // run sizes it once and the canvas stretches to follow its mark: a card growing or shrinking
+  // around a turn used to resize it every frame of the reflow
   let bufSize = 0;
+  // the card's mark box, mirrored from the page's .xc-stage svg (42rem; phones min(42rem, 82vw)):
+  // a tile's turn draws at least this big, so carrying it into its card needs no resize
+  const cardMark = () => { const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 10;
+    return Math.min(42 * rem, innerWidth <= 780 ? 0.82 * innerWidth : Infinity); };
   function place(run){
     const stage = run.tile.classList.contains('expanded') && run.tile.querySelector('.xc-stage');
     const host = stage || run.tile, svg = host.querySelector(':scope > svg');
@@ -265,7 +273,7 @@ export function createSolid(){
     return true;
   }
   function fit(run){
-    let size = run.tile.offsetWidth;                        // layout size: the field's transforms don't count
+    let size = run.tile.offsetWidth, full = 0;             // layout size: the field's transforms don't count
     if (run.carried) {
       // the card's mark is centred in its stage: track its box (the stage may sit under the
       // field's zoom scale, so measure in the stage's own pixels)
@@ -274,10 +282,13 @@ export function createSolid(){
       const hr = run.host.getBoundingClientRect(), sr = run.svg.getBoundingClientRect(), k = hr.width / run.host.offsetWidth || 1;
       const side = Math.min(sr.width, sr.height);
       size = side / k;
+      full = Math.max(sr.width, sr.height) / k;            // its height is already the grown mark's
       const left = (sr.left + (sr.width - side) / 2 - hr.left) / k, top = (sr.top + (sr.height - side) / 2 - hr.top) / k;
       canvas.style.cssText = `position:absolute;pointer-events:none;left:${left}px;top:${top}px;width:${size}px;height:${size}px`;
     }
-    if (size !== bufSize) { renderer.setSize(size, size, false); bufSize = size; }
+    // the run's buffer is fixed at its first fit (see bufSize); the canvas css follows the mark
+    if (!run.buf) run.buf = Math.ceil(full || Math.max(size, cardMark()));
+    if (run.buf !== bufSize) { renderer.setSize(run.buf, run.buf, false); bufSize = run.buf; }
   }
   function play(tile, s, done, ok = () => true, from = 0){
     if (waving) {                                           // the wave owns the renderer for now
@@ -288,8 +299,7 @@ export function createSolid(){
     if (cur && cur.tile === tile) return;                   // mid-run: it finishes from where it is
     if (cur) { queued = { tile, s, done, ok }; return; }
     const b = build(s);
-    const run = cur = { tile, b, host: null };
-    bufSize = 0;
+    const run = cur = { tile, b, host: null };            // a buffer already the run's size is kept
     if (!place(run)) { cur = null; return; }
     scene.add(b.group);
     const T = b.sig.dur, t0 = performance.now() - from, u0 = Math.min(1, from / T);
@@ -325,7 +335,7 @@ export function createSolid(){
     const W = host.clientWidth, H = host.clientHeight, dpr = renderer.getPixelRatio();
     // a full-screen buffer at 2x on a big display is huge: cap the pixel count
     renderer.setPixelRatio(Math.min(dpr, Math.sqrt(8e6 / (W * H))));
-    renderer.setSize(W, H, false);
+    renderer.setSize(W, H, false); bufSize = 0;            // the next run sizes it back
     canvas.classList.add('solid-wave');
     host.appendChild(canvas);
     renderer.setScissorTest(true);
@@ -426,7 +436,6 @@ export function createSolid(){
       const b = build(s), still = matchMedia('(prefers-reduced-motion: reduce)').matches;
       const run = cur = { tile, b, host: null, held: true, dirty: true, leaving: null, onEnd,
         q: REST.clone(), light: 0, intro: { t0: performance.now(), dur: still ? 0 : 700 }, drag: null, w: [0, 0], tLast: 0 };
-      bufSize = 0;
       if (!place(run)) { cur = null; return; }
       scene.add(b.group);
       pose(b, REST, 0);                                      // the drawing, drawn now: no blank frame on the swap
